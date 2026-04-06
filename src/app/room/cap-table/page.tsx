@@ -6,16 +6,18 @@ import type { CapTableEntry } from '@/lib/types'
 
 const typeColors: Record<string, string> = {
   founder: '#C8A85C',
+  investor: '#2ECC71',
+  advisor: '#9B59B6',
   esop: '#4A90D9',
-  seed: '#2ECC71',
-  future: '#666666',
+  reserved: '#666666',
 }
 
 const typeLabels: Record<string, string> = {
-  founder: 'Founders',
+  founder: 'Founder',
+  investor: 'Investor',
+  advisor: 'Advisor',
   esop: 'ESOP',
-  seed: 'Seed',
-  future: 'Future',
+  reserved: 'Reserved',
 }
 
 function formatNumber(n: number) {

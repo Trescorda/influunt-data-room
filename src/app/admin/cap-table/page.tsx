@@ -14,16 +14,18 @@ interface EditableEntry extends Omit<CapTableEntry, 'id' | 'created_at'> {
 
 const entityTypes: { value: CapTableEntityType; label: string }[] = [
   { value: 'founder', label: 'Founder' },
+  { value: 'investor', label: 'Investor' },
+  { value: 'advisor', label: 'Advisor' },
   { value: 'esop', label: 'ESOP' },
-  { value: 'seed', label: 'Seed' },
-  { value: 'future', label: 'Future' },
+  { value: 'reserved', label: 'Reserved' },
 ]
 
 const typeLabels: Record<string, string> = {
   founder: 'Founder',
+  investor: 'Investor',
+  advisor: 'Advisor',
   esop: 'ESOP',
-  seed: 'Seed',
-  future: 'Future',
+  reserved: 'Reserved',
 }
 
 function formatNumberDisplay(n: number): string {
@@ -75,7 +77,7 @@ export default function AdminCapTablePage() {
     setEntries([...entries, {
       _isNew: true,
       shareholder_name: '',
-      entity_type: 'seed',
+      entity_type: 'investor',
       share_class: 'Ordinary',
       shares_held: 0,
       ownership_percentage: 0,
