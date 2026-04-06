@@ -94,6 +94,32 @@ export interface Settings {
   allow_downloads: boolean
   brand_primary_color: string
   brand_accent_color: string
+  calendly_url: string
+  created_at: string
+  updated_at: string
+}
+
+export type CapTableEntityType = 'founder' | 'esop' | 'seed' | 'future'
+
+export interface CapTableEntry {
+  id: string
+  shareholder: string
+  entity_type: CapTableEntityType
+  share_class: string
+  shares_held: number
+  ownership_percentage: number
+  investment_amount: number
+  sort_order: number
+  created_at: string
+}
+
+export interface FAQ {
+  id: string
+  category: string
+  question: string
+  answer: string
+  is_published: boolean
+  sort_order: number
   created_at: string
   updated_at: string
 }

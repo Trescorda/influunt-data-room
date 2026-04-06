@@ -14,7 +14,7 @@ import {
 const navItems = [
   { href: '/room', label: 'Data Room', icon: LayoutDashboard },
   { href: '/room/invest', label: 'Invest', icon: DollarSign },
-  { href: '/room/book', label: 'Book a Call', icon: Calendar },
+  { href: '/room/book-a-call', label: 'Book a Call', icon: Calendar },
   { href: '/room/cap-table', label: 'Cap Table', icon: PieChart },
   { href: '/room/faq', label: 'FAQ', icon: HelpCircle },
   { href: '/room/qa', label: 'Q&A', icon: MessageSquare },

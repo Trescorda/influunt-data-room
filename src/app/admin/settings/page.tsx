@@ -40,6 +40,7 @@ export default function SettingsPage() {
         watermark_opacity: settings.watermark_opacity,
         require_nda: settings.require_nda,
         allow_downloads: settings.allow_downloads,
+        calendly_url: settings.calendly_url,
       }),
     })
 
@@ -125,6 +126,18 @@ export default function SettingsPage() {
               />
               <span className="text-sm text-brand-text">Require NDA before accessing documents</span>
             </label>
+          </div>
+        </Card>
+
+        <Card>
+          <h2 className="text-lg font-semibold text-brand-text mb-4">Integrations</h2>
+          <div className="space-y-4">
+            <Input
+              label="Calendly Booking URL"
+              value={settings.calendly_url || ''}
+              onChange={(e) => setSettings({ ...settings, calendly_url: e.target.value })}
+              placeholder="https://calendly.com/your-link"
+            />
           </div>
         </Card>
 

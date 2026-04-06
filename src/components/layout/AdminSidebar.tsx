@@ -9,6 +9,8 @@ import {
   Activity,
   Settings,
   MessageSquare,
+  PieChart,
+  HelpCircle,
 } from 'lucide-react'
 
 const navItems = [
@@ -17,6 +19,8 @@ const navItems = [
   { href: '/admin/documents', label: 'Documents', icon: FolderOpen },
   { href: '/admin/qa', label: 'Q&A', icon: MessageSquare },
   { href: '/admin/activity', label: 'Activity', icon: Activity },
+  { href: '/admin/cap-table', label: 'Cap Table', icon: PieChart },
+  { href: '/admin/faq', label: 'FAQ', icon: HelpCircle },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
