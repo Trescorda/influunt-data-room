@@ -38,9 +38,6 @@ export default function LoginPage() {
 
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
-      options: {
-        shouldCreateUser: false,
-      },
     })
 
     if (authError) {
@@ -66,7 +63,7 @@ export default function LoginPage() {
     })
 
     if (verifyError) {
-      console.error('Supabase verifyOtp error:', verifyError.message, verifyError)
+      console.error('Supabase verifyOtp error:', JSON.stringify(verifyError, null, 2))
       setError(`Invalid code: ${verifyError.message}`)
       setLoading(false)
       return
