@@ -19,9 +19,9 @@ export default async function RoomLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex min-h-screen bg-brand-darker">
+    <div className="min-h-screen bg-brand-darker">
       <InvestorSidebar isAdmin={isAdmin} />
-      <div className="flex-1 flex flex-col">
+      <div className="ml-60 flex flex-col min-h-screen">
         <Header title="Data Room" subtitle="Influunt — Seed Round $5M" />
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>

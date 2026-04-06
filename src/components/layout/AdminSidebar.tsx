@@ -28,7 +28,7 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 min-h-screen bg-brand-dark border-r border-brand-border flex flex-col">
+    <aside className="fixed top-0 left-0 w-64 h-screen bg-brand-dark border-r border-brand-border flex flex-col overflow-hidden z-30">
       <div className="px-6 py-6 border-b border-brand-border">
         <Link href="/admin" className="block">
           <img src="/influunt-horizontal.png" alt="Influunt" width={140} />

@@ -28,7 +28,7 @@ export function InvestorSidebar({ isAdmin }: InvestorSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 h-screen bg-brand-dark border-r border-brand-border flex flex-col overflow-hidden flex-shrink-0">
+    <aside className="fixed top-0 left-0 w-60 h-screen bg-brand-dark border-r border-brand-border flex flex-col overflow-hidden z-30">
       <div className="px-5 py-4 border-b border-brand-border">
         <Link href="/room" className="block">
           <img src="/influunt-horizontal.png" alt="Influunt" width={130} />
