@@ -29,19 +29,12 @@ export default function DocumentsPage() {
   const supabase = createClient()
 
   const loadDocuments = async () => {
-    const { data: foldersData } = await supabase
-      .from('document_folders')
-      .select('*')
-      .order('sort_order')
+    const res = await fetch('/api/admin/documents')
+    const data = await res.json()
 
-    const { data: docsData } = await supabase
-      .from('documents')
-      .select('*')
-      .order('sort_order')
-
-    const result: FolderWithDocuments[] = (foldersData || []).map((folder) => ({
+    const result: FolderWithDocuments[] = (data.folders || []).map((folder: any) => ({
       ...folder,
-      documents: (docsData || []).filter((doc) => doc.folder_id === folder.id),
+      documents: (data.documents || []).filter((doc: any) => doc.folder_id === folder.id),
     }))
 
     setFolders(result)
@@ -120,7 +113,11 @@ export default function DocumentsPage() {
   }
 
   const toggleDocProp = async (docId: string, prop: 'is_viewable' | 'is_downloadable' | 'is_watermarked', value: boolean) => {
-    await supabase.from('documents').update({ [prop]: value }).eq('id', docId)
+    await fetch('/api/admin/documents', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: docId, [prop]: value }),
+    })
     loadDocuments()
   }
 
