@@ -40,7 +40,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
     <div className="flex flex-col h-[calc(100vh-65px)]">
       {/* Fixed header */}
       <div className="flex-shrink-0 px-6 py-3 border-b border-brand-border bg-brand-darker">
-        <div className="flex items-center justify-between max-w-[950px] mx-auto">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 min-w-0">
             <Link
               href="/room"
@@ -70,7 +70,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
 
       {/* Scrollable document area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-[950px] mx-auto">
+        <div>
           <DocumentViewer
             docId={document.id}
             fileType={document.file_type}
