@@ -99,7 +99,7 @@ export default async function AdminDashboard() {
     .from('activity_log')
     .select('*, investors(name, email), documents(title)')
     .order('created_at', { ascending: false })
-    .limit(15)
+    .limit(20)
 
   const metrics = [
     { label: 'Total investors', value: totalInvestors || 0, icon: Users },
@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden p-5 gap-4">
+    <div className="flex flex-col h-screen overflow-hidden p-6 gap-5">
       {/* Header */}
       <div className="flex-shrink-0">
         <h1 className="text-xl font-semibold text-brand-text">Dashboard</h1>
@@ -127,16 +127,16 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Metrics row */}
-      <div className="flex-shrink-0 grid grid-cols-4 gap-3">
+      <div className="flex-shrink-0 grid grid-cols-4 gap-4">
         {metrics.map(({ label, value, icon: Icon }) => (
-          <Card key={label} padding="sm">
+          <Card key={label} padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-brand-muted">{label}</p>
-                <p className="text-xl font-bold text-brand-text mt-0.5">{value}</p>
+                <p className="text-2xl font-bold text-brand-text mt-1">{value}</p>
               </div>
-              <div className="w-9 h-9 bg-brand-gold/10 rounded-lg flex items-center justify-center">
-                <Icon size={18} className="text-brand-gold" />
+              <div className="w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
+                <Icon size={20} className="text-brand-gold" />
               </div>
             </div>
           </Card>
@@ -144,8 +144,8 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Middle row: Most viewed + Engagement */}
-      <div className="flex-shrink-0 grid grid-cols-2 gap-4">
-        <Card padding="sm">
+      <div className="flex-shrink-0 grid grid-cols-2 gap-5">
+        <Card padding="md" className="min-h-[160px]">
           <h2 className="text-sm font-semibold text-brand-text mb-3">Most viewed documents</h2>
           {topDocs.length === 0 ? (
             <p className="text-xs text-brand-muted py-2 text-center">No document views yet</p>
@@ -169,7 +169,7 @@ export default async function AdminDashboard() {
           )}
         </Card>
 
-        <Card padding="sm">
+        <Card padding="md" className="min-h-[160px]">
           <h2 className="text-sm font-semibold text-brand-text mb-3">Investor engagement</h2>
           {investorStats.length === 0 ? (
             <p className="text-xs text-brand-muted py-2 text-center">No investors yet</p>
