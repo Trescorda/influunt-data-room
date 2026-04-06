@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -5,6 +6,10 @@ import { Users, FileText, Eye, Clock } from 'lucide-react'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
+
+  // Auth check (temporary — normally handled by middleware)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { count: totalInvestors } = await supabase
     .from('investors')

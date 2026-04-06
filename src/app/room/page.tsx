@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { GuidedJourney } from '@/components/GuidedJourney'
 import { CapitalTimeline } from '@/components/CapitalTimeline'
@@ -6,6 +7,10 @@ import type { FolderWithDocuments } from '@/lib/types'
 
 export default async function RoomPage() {
   const supabase = await createClient()
+
+  // Auth check (temporary — normally handled by middleware)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: folders } = await supabase
     .from('document_folders')
