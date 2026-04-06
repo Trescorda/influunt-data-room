@@ -172,7 +172,7 @@ export default function AdminCapTablePage() {
                     <select
                       value={e.entity_type}
                       onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
-                      className="w-full bg-brand-card text-sm text-brand-gold border border-brand-border rounded-md px-3 py-1.5 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                      className="w-full text-sm"
                     >
                       {entityTypes.map((t) => (
                         <option key={t.value} value={t.value}>{t.label}</option>
@@ -184,7 +184,7 @@ export default function AdminCapTablePage() {
                     <select
                       value={e.share_class}
                       onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
-                      className="w-full bg-brand-card text-sm text-brand-muted border border-brand-border rounded-md px-3 py-1.5 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                      className="w-full text-sm"
                     >
                         <option value="Ordinary">Ordinary</option>
                         <option value="Options">Options</option>

@@ -312,7 +312,7 @@ export default function DocumentsPage() {
             <select
               value={uploadFolderId}
               onChange={(e) => setUploadFolderId(e.target.value)}
-              className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+              className="w-full text-sm"
             >
               {folders.map((f) => (
                 <optgroup key={f.id} label={f.name}>

@@ -67,7 +67,7 @@ export function InviteModal({ open, onClose, onInvite }: InviteModalProps) {
           <select
             value={investorType}
             onChange={(e) => setInvestorType(e.target.value)}
-            className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold"
+            className="w-full text-sm"
           >
             <option value="individual">Individual</option>
             <option value="family_office">Family Office</option>

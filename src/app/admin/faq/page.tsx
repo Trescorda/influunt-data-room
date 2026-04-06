@@ -162,7 +162,7 @@ export default function AdminFAQPage() {
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
+              className="w-full text-sm"
             >
               {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
