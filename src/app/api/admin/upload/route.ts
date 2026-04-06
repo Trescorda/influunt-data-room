@@ -27,9 +27,9 @@ export async function POST(request: Request) {
   const title = formData.get('title') as string
   const description = formData.get('description') as string | null
   const folderId = formData.get('folder_id') as string
-  const isViewable = formData.get('is_viewable') === 'true'
-  const isDownloadable = formData.get('is_downloadable') === 'true'
-  const isWatermarked = formData.get('is_watermarked') === 'true'
+  const isViewable = formData.get('is_viewable') !== 'false' // default true
+  const isDownloadable = formData.get('is_downloadable') === 'true' // default false
+  const isWatermarked = formData.get('is_watermarked') !== 'false' // default true
 
   if (!file || !title || !folderId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
