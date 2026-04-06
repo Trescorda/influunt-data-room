@@ -52,7 +52,7 @@ export default function BookACallPage() {
             </div>
             <h2 className="text-lg font-semibold text-brand-text mb-2">Schedule a call</h2>
             <p className="text-sm text-brand-muted mb-1">
-              To schedule a call, email <span className="text-brand-gold">kayde@influunt.global</span>
+              To schedule a call, email <span className="text-brand-gold">brad@influunt.global</span>
             </p>
             <p className="text-xs text-brand-muted">
               We typically respond within 24 hours and can arrange a call at a time that suits you.

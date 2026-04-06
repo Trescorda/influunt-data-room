@@ -86,14 +86,14 @@ export default function InvestPage() {
           <div><span className="text-brand-muted">Reference:</span> <span className="text-brand-text">[Investor Name] — Seed Round</span></div>
         </div>
         <p className="text-xs text-brand-muted mt-3">
-          Bank details are disclosed upon execution of the Subscription Agreement to ensure security of funds. Contact kayde@influunt.global to begin the process.
+          Bank details are disclosed upon execution of the Subscription Agreement to ensure security of funds. Contact brad@influunt.global to begin the process.
         </p>
       </Card>
 
       {/* Contact */}
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-3">For investment enquiries</h2>
-        <p className="text-sm text-brand-muted mb-4">kayde@influunt.global</p>
+        <p className="text-sm text-brand-muted mb-4">brad@influunt.global</p>
         <div className="flex gap-3">
           <Link href="/room/book-a-call" className="inline-flex items-center gap-2 px-4 py-2 bg-brand-gold text-brand-darker text-sm font-semibold rounded-lg hover:bg-brand-gold/90 transition-colors">
             Book a Call <ArrowRight size={14} />
