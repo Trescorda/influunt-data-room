@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { Shield } from 'lucide-react'
 
 interface NdaGateProps {
   ndaText: string
@@ -42,9 +41,7 @@ export function NdaGate({ ndaText, investorId }: NdaGateProps) {
     <div className="min-h-screen bg-brand-darker flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-brand-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield size={28} className="text-brand-gold" />
-          </div>
+          <img src="/influunt-logo.png" alt="Influunt" width={180} className="mx-auto mb-4" />
           <h1 className="text-2xl font-serif text-brand-gold">Non-Disclosure Agreement</h1>
           <p className="text-sm text-brand-muted mt-2">
             Please review and accept to access the data room

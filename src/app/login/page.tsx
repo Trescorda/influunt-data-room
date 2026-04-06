@@ -53,7 +53,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-brand-darker flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-serif text-brand-gold tracking-wide">Influunt</h1>
+          <img src="/influunt-logo.png" alt="Influunt" width={180} className="mx-auto" />
           <p className="text-sm text-brand-muted mt-2">Investor Data Room</p>
         </div>
 
