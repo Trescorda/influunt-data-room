@@ -238,7 +238,7 @@ export default function AdminCapTablePage() {
                       type="number"
                       value={e.sort_order}
                       onChange={(ev) => updateField(i, 'sort_order', parseInt(ev.target.value) || 0)}
-                      className="w-[60px] mx-auto block bg-brand-card text-sm text-brand-muted text-center rounded border border-transparent focus:border-brand-gold outline-none py-1 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                      className="w-[60px] mx-auto block bg-brand-card text-sm text-brand-muted text-center rounded border border-transparent focus:border-brand-gold outline-none py-1"
                     />
                   </td>
                   {/* Delete */}
