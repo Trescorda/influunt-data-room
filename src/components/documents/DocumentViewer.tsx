@@ -16,8 +16,6 @@ interface DocumentViewerProps {
   isDownloadable: boolean
   isWatermarked: boolean
   watermarkOpacity?: number
-  investorName?: string
-  investorEmail?: string
 }
 
 export function DocumentViewer({
@@ -26,8 +24,6 @@ export function DocumentViewer({
   isDownloadable,
   isWatermarked,
   watermarkOpacity = 6,
-  investorName = '',
-  investorEmail = '',
 }: DocumentViewerProps) {
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
   const [numPages, setNumPages] = useState(0)
@@ -193,7 +189,7 @@ export function DocumentViewer({
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
                   />
-                  {isWatermarked && <PageWatermark investorName={investorName} investorEmail={investorEmail} opacity={watermarkOpacity} />}
+                  {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
                   {i < numPages - 1 && (
                     <div className="border-b border-brand-border/30 mt-3" />
                   )}
@@ -211,7 +207,7 @@ export function DocumentViewer({
               className="max-w-full rounded"
               draggable={false}
             />
-            {isWatermarked && <PageWatermark investorName={investorName} investorEmail={investorEmail} opacity={watermarkOpacity} />}
+            {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
           </div>
         )}
 

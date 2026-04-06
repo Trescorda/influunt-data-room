@@ -138,7 +138,7 @@ export default function SettingsPage() {
               <input
                 type="range"
                 min="1"
-                max="30"
+                max="100"
                 value={settings.watermark_opacity}
                 onChange={(e) => setSettings({ ...settings, watermark_opacity: parseInt(e.target.value) })}
                 className="w-full accent-brand-gold"
