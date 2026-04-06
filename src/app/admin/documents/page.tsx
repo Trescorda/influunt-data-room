@@ -53,8 +53,14 @@ export default function DocumentsPage() {
 
     setFolders(topLevel)
     setAllFlatFolders(allFolders)
-    if (allFolders.length > 0 && !uploadFolderId) {
-      setUploadFolderId(allFolders[0].id)
+    if (topLevel.length > 0 && !uploadFolderId) {
+      // Default to first subfolder if available, otherwise first folder
+      const firstWithSubs = topLevel.find((f: any) => f.subfolders?.length > 0)
+      if (firstWithSubs?.subfolders?.[0]) {
+        setUploadFolderId(firstWithSubs.subfolders[0].id)
+      } else if (topLevel[0]) {
+        setUploadFolderId(topLevel[0].id)
+      }
     }
     setLoading(false)
   }
@@ -314,14 +320,18 @@ export default function DocumentsPage() {
               onChange={(e) => setUploadFolderId(e.target.value)}
               className="w-full text-sm"
             >
-              {folders.map((f) => (
+              {folders.map((f) => {
+                const hasSubs = (f.subfolders || []).length > 0
+                return (
                 <optgroup key={f.id} label={f.name}>
-                  <option value={f.id}>{f.name} (root)</option>
+                  {!hasSubs && (
+                    <option value={f.id}>{f.name}</option>
+                  )}
                   {(f.subfolders || []).map((sf) => (
                     <option key={sf.id} value={sf.id}>&nbsp;&nbsp;{sf.name}</option>
                   ))}
                 </optgroup>
-              ))}
+              )})}
             </select>
           </div>
           <div className="flex gap-6">

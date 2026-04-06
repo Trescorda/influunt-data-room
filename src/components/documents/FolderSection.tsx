@@ -97,29 +97,45 @@ export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
       </button>
       {open && (
         <div className="bg-brand-darker">
-          {/* Direct documents in this folder */}
-          {directDocCount > 0 && (
-            <div className="px-2 py-2 space-y-0.5">
-              {folder.documents.map((doc) => (
-                <DocumentCard key={doc.id} doc={doc} />
-              ))}
-            </div>
-          )}
-
-          {/* Subfolders */}
-          {hasSubfolders && (
-            <div className="py-1">
-              {(folder.subfolders || []).map((sf) => (
-                <SubfolderSection key={sf.id} folder={sf} />
-              ))}
-            </div>
-          )}
-
-          {/* Empty state */}
-          {totalDocs === 0 && !hasSubfolders && (
-            <div className="px-5 py-4 text-center text-xs text-brand-muted italic">
-              No documents uploaded yet
-            </div>
+          {hasSubfolders ? (
+            <>
+              {/* Subfolders */}
+              <div className="py-1">
+                {(folder.subfolders || []).map((sf) => (
+                  <SubfolderSection key={sf.id} folder={sf} />
+                ))}
+              </div>
+              {/* Documents assigned directly to parent → show as "Uncategorised" */}
+              {directDocCount > 0 && (
+                <div className="ml-5 border-l-2 border-brand-border/40">
+                  <div className="flex items-center gap-2.5 px-4 py-2">
+                    <Folder size={13} className="text-brand-muted" />
+                    <h4 className="text-xs font-semibold text-brand-muted">Uncategorised</h4>
+                  </div>
+                  <div className="ml-4 px-2 py-1 space-y-0.5">
+                    {folder.documents.map((doc) => (
+                      <DocumentCard key={doc.id} doc={doc} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* No subfolders — show documents directly */}
+              {directDocCount > 0 && (
+                <div className="px-2 py-2 space-y-0.5">
+                  {folder.documents.map((doc) => (
+                    <DocumentCard key={doc.id} doc={doc} />
+                  ))}
+                </div>
+              )}
+              {directDocCount === 0 && (
+                <div className="px-5 py-4 text-center text-xs text-brand-muted italic">
+                  No documents uploaded yet
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
