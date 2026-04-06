@@ -16,8 +16,8 @@ export function InvestorSidebar() {
     <aside className="w-64 min-h-screen bg-brand-dark border-r border-brand-border flex flex-col">
       <div className="px-6 py-6 border-b border-brand-border">
         <Link href="/room" className="block">
-          <h1 className="text-xl font-serif text-brand-gold tracking-wide">Influunt</h1>
-          <p className="text-xs text-brand-muted mt-1">Investor Data Room</p>
+          <img src="/influunt-shield.png" alt="Influunt" width={40} />
+          <p className="text-xs text-brand-muted mt-2">Data Room</p>
         </Link>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
