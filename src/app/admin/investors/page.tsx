@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { InviteModal } from '@/components/investors/InviteModal'
-import { UserPlus, Key, Check, Trash2, Copy } from 'lucide-react'
+import { UserPlus, Key, Check, Trash2, Copy, Link2 } from 'lucide-react'
 import type { Investor } from '@/lib/types'
 
 const statusVariant: Record<string, 'gold' | 'green' | 'red' | 'gray' | 'blue'> = {
@@ -38,6 +38,8 @@ export default function InvestorsPage() {
   const [settingPassword, setSettingPassword] = useState(false)
   const [passwordSet, setPasswordSet] = useState(false)
   const [copiedCreds, setCopiedCreds] = useState(false)
+  const [copiedLink, setCopiedLink] = useState<string | null>(null)
+  const [generatingLink, setGeneratingLink] = useState<string | null>(null)
 
   const loadInvestors = async () => {
     const res = await fetch('/api/admin/investors')
@@ -120,6 +122,25 @@ export default function InvestorsPage() {
     setCopiedCreds(false)
   }
 
+  const handleCopyInviteLink = async (email: string) => {
+    setGeneratingLink(email)
+    const res = await fetch('/api/admin/generate-reset-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    const data = await res.json()
+    setGeneratingLink(null)
+
+    if (data.resetLink) {
+      await navigator.clipboard.writeText(data.resetLink)
+      setCopiedLink(email)
+      setTimeout(() => setCopiedLink(null), 2000)
+    } else {
+      alert(data.error || 'Failed to generate link')
+    }
+  }
+
   return (
     <div className="px-4 md:px-8 py-4 md:py-6">
       <div className="flex items-center justify-between mb-6">
@@ -173,12 +194,25 @@ export default function InvestorsPage() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
                         <button
+                          onClick={() => handleCopyInviteLink(inv.email)}
+                          disabled={generatingLink === inv.email}
+                          className="inline-flex items-center gap-1.5 text-xs text-brand-gold hover:text-brand-gold/80 transition-colors disabled:opacity-50"
+                          title="Copy invite link (lets investor set their own password)"
+                        >
+                          {copiedLink === inv.email ? (
+                            <><Check size={13} /> Copied!</>
+                          ) : generatingLink === inv.email ? (
+                            <>Generating...</>
+                          ) : (
+                            <><Link2 size={13} /> Invite link</>
+                          )}
+                        </button>
+                        <button
                           onClick={() => setPasswordTarget(inv)}
-                          className="inline-flex items-center gap-1.5 text-xs text-brand-gold hover:text-brand-gold/80 transition-colors"
-                          title="Set password & copy credentials"
+                          className="inline-flex items-center gap-1.5 text-xs text-brand-muted hover:text-brand-text transition-colors"
+                          title="Set password manually"
                         >
                           <Key size={13} />
-                          Set password
                         </button>
                         <button
                           onClick={() => setDeleteTarget(inv)}
