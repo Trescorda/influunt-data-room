@@ -51,7 +51,8 @@ export async function POST(request: Request) {
   }
 
   // Insert document record using admin client
-  const { error: insertError } = await admin.from('documents').insert({
+  console.log('[Upload] Inserting doc:', { folder_id: folderId, title, file_type: fileExt, file_path: filePath, is_viewable: isViewable })
+  const { data: insertedDoc, error: insertError } = await admin.from('documents').insert({
     folder_id: folderId,
     title,
     description: description || null,
@@ -61,11 +62,13 @@ export async function POST(request: Request) {
     is_viewable: isViewable,
     is_downloadable: isDownloadable,
     is_watermarked: isWatermarked,
-  })
+  }).select().single()
 
   if (insertError) {
+    console.error('[Upload] DB insert error:', insertError.message, insertError)
     return NextResponse.json({ error: 'Failed to save: ' + insertError.message }, { status: 500 })
   }
 
+  console.log('[Upload] Success, inserted doc:', insertedDoc)
   return NextResponse.json({ success: true })
 }

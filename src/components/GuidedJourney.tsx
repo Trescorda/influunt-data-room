@@ -49,11 +49,11 @@ interface GuidedJourneyProps {
 export function GuidedJourney({ documents }: GuidedJourneyProps) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-brand-text mb-1">Your investment journey</h2>
-      <p className="text-sm text-brand-muted mb-5">
+      <h2 className="text-sm font-semibold text-brand-text mb-0.5">Your investment journey</h2>
+      <p className="text-xs text-brand-muted mb-3">
         Follow these steps to understand the Influunt opportunity
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
         {steps.map((step, i) => {
           const Icon = step.icon
           const doc = documents[i]
@@ -63,7 +63,7 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
 
           const content = (
             <>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 rounded-full bg-brand-gold/20 text-brand-gold text-xs font-bold flex items-center justify-center">
                   {step.number}
                 </span>
@@ -88,7 +88,7 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
               <Link
                 key={step.number}
                 href={href}
-                className="group bg-brand-card border border-brand-border rounded-xl p-4 hover:border-brand-gold/40 transition-all"
+                className="group bg-brand-card border border-brand-border rounded-xl p-3 hover:border-brand-gold/40 transition-all"
               >
                 {content}
               </Link>
@@ -98,7 +98,7 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
           return (
             <div
               key={step.number}
-              className="bg-brand-card border border-brand-border rounded-xl p-4 opacity-60"
+              className="bg-brand-card border border-brand-border rounded-xl p-3 opacity-60"
             >
               {content}
             </div>

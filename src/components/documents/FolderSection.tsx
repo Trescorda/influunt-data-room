@@ -9,19 +9,16 @@ export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="border border-brand-border rounded-xl overflow-hidden">
+    <div className="border border-brand-border rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-5 py-4 bg-brand-card hover:bg-brand-card/80 transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-2.5 bg-brand-card hover:bg-brand-card/80 transition-colors text-left"
       >
-        <div className="flex-shrink-0 w-8 h-8 bg-brand-gold/10 rounded-lg flex items-center justify-center">
-          <Folder size={16} className="text-brand-gold" />
+        <div className="flex-shrink-0 w-7 h-7 bg-brand-gold/10 rounded flex items-center justify-center">
+          <Folder size={14} className="text-brand-gold" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-brand-text">{folder.name}</h3>
-          {folder.description && (
-            <p className="text-xs text-brand-muted mt-0.5">{folder.description}</p>
-          )}
         </div>
         <span className="text-xs text-brand-muted mr-2">
           {folder.documents.length} {folder.documents.length === 1 ? 'document' : 'documents'}

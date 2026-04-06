@@ -2,14 +2,29 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FolderOpen, MessageSquare } from 'lucide-react'
+import {
+  LayoutDashboard,
+  MessageSquare,
+  DollarSign,
+  Calendar,
+  PieChart,
+  HelpCircle,
+} from 'lucide-react'
 
 const navItems = [
   { href: '/room', label: 'Data Room', icon: LayoutDashboard },
+  { href: '/room/invest', label: 'Invest', icon: DollarSign },
+  { href: '/room/book', label: 'Book a Call', icon: Calendar },
+  { href: '/room/cap-table', label: 'Cap Table', icon: PieChart },
+  { href: '/room/faq', label: 'FAQ', icon: HelpCircle },
   { href: '/room/qa', label: 'Q&A', icon: MessageSquare },
 ]
 
-export function InvestorSidebar() {
+interface InvestorSidebarProps {
+  isAdmin?: boolean
+}
+
+export function InvestorSidebar({ isAdmin }: InvestorSidebarProps) {
   const pathname = usePathname()
 
   return (
@@ -38,8 +53,19 @@ export function InvestorSidebar() {
           )
         })}
       </nav>
-      <div className="px-6 py-4 border-t border-brand-border">
-        <p className="text-xs text-brand-muted">Confidential — Do not distribute</p>
+      <div className="px-4 py-4 border-t border-brand-border space-y-3">
+        {isAdmin && (
+          <div className="flex justify-center">
+            <Link
+              href="/admin"
+              className="block text-center text-sm text-brand-gold border border-brand-gold rounded-lg hover:bg-brand-gold/10 transition-colors"
+              style={{ fontSize: '14px', padding: '10px 16px', borderRadius: '8px' }}
+            >
+              View as admin &rarr;
+            </Link>
+          </div>
+        )}
+        <p className="text-xs text-brand-muted text-center">Confidential — Do not distribute</p>
       </div>
     </aside>
   )

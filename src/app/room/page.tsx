@@ -25,13 +25,19 @@ export default async function RoomPage() {
     .eq('is_viewable', true)
     .order('sort_order')
 
+  // Debug: also fetch ALL documents with no filters
+  const { data: allDocs, error: allDocsError } = await admin
+    .from('documents')
+    .select('id, title, folder_id, is_viewable, file_path')
+
   console.log('[Room] Folders:', folders?.length, 'error:', foldersError?.message)
-  console.log('[Room] Documents:', documents?.length, 'error:', docsError?.message)
-  if (documents?.length) {
-    console.log('[Room] First doc folder_id:', documents[0].folder_id, 'title:', documents[0].title)
+  console.log('[Room] Viewable documents:', documents?.length, 'error:', docsError?.message)
+  console.log('[Room] ALL documents (no filter):', allDocs?.length, 'error:', allDocsError?.message)
+  if (allDocs?.length) {
+    allDocs.forEach((d) => console.log('[Room] Doc:', d.id, d.title, 'folder:', d.folder_id, 'viewable:', d.is_viewable))
   }
   if (folders?.length) {
-    console.log('[Room] First folder id:', folders[0].id, 'name:', folders[0].name)
+    folders.forEach((f) => console.log('[Room] Folder:', f.id, f.name))
   }
 
   const foldersWithDocs: FolderWithDocuments[] = (folders || []).map((folder) => ({
@@ -57,8 +63,8 @@ export default async function RoomPage() {
   ]
 
   return (
-    <div className="p-8 space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="px-6 py-4 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <GuidedJourney documents={journeyDocs} />
         </div>
@@ -68,11 +74,11 @@ export default async function RoomPage() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold text-brand-text mb-1">All documents</h2>
-        <p className="text-sm text-brand-muted mb-5">
+        <h2 className="text-sm font-semibold text-brand-text mb-0.5">All documents</h2>
+        <p className="text-xs text-brand-muted mb-3">
           Explore detailed materials by category
         </p>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {foldersWithDocs.map((folder) => (
             <FolderSection key={folder.id} folder={folder} />
           ))}
