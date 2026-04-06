@@ -41,6 +41,7 @@ export default function AdminCapTablePage() {
   const [saved, setSaved] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [editingCell, setEditingCell] = useState<{ row: number; field: string } | null>(null)
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     fetch('/api/admin/cap-table')
@@ -73,7 +74,7 @@ export default function AdminCapTablePage() {
   const addRow = () => {
     setEntries([...entries, {
       _isNew: true,
-      shareholder: '',
+      shareholder_name: '',
       entity_type: 'seed',
       share_class: 'Ordinary',
       shares_held: 0,
@@ -85,16 +86,22 @@ export default function AdminCapTablePage() {
 
   const handleSave = async () => {
     setSaving(true)
-    await fetch('/api/admin/cap-table', {
+    setSaveError('')
+    const res = await fetch('/api/admin/cap-table', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ entries }),
     })
+    const result = await res.json()
     setSaving(false)
+    if (!res.ok) {
+      setSaveError(result.error || 'Failed to save')
+      return
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
-    const res = await fetch('/api/admin/cap-table')
-    const d = await res.json()
+    const reloadRes = await fetch('/api/admin/cap-table')
+    const d = await reloadRes.json()
     setEntries(d.entries || [])
   }
 
@@ -127,6 +134,10 @@ export default function AdminCapTablePage() {
         </Button>
       </div>
 
+      {saveError && (
+        <p className="text-sm text-red-400 mb-4">{saveError}</p>
+      )}
+
       <Card padding="sm">
         <div className="overflow-x-auto">
           <table className="w-full" style={{ minWidth: '800px' }}>
@@ -148,8 +159,8 @@ export default function AdminCapTablePage() {
                   {/* Shareholder */}
                   <td className="px-3 py-2">
                     <input
-                      value={e.shareholder}
-                      onChange={(ev) => updateField(i, 'shareholder', ev.target.value)}
+                      value={e.shareholder_name || ''}
+                      onChange={(ev) => updateField(i, 'shareholder_name', ev.target.value)}
                       className="w-full bg-transparent text-sm text-brand-text border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
                       placeholder="Enter name"
                     />

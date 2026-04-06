@@ -125,7 +125,7 @@ export default function CapTablePage() {
                 <tbody>
                   {entries.map((e) => (
                     <tr key={e.id} className="border-b border-brand-border last:border-0 hover:bg-brand-card/50">
-                      <td className="px-4 py-3 text-sm text-brand-text font-medium">{e.shareholder}</td>
+                      <td className="px-4 py-3 text-sm text-brand-text font-medium">{e.shareholder_name}</td>
                       <td className="px-4 py-3">
                         <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: `${typeColors[e.entity_type]}20`, color: typeColors[e.entity_type] }}>
                           {typeLabels[e.entity_type] || e.entity_type}

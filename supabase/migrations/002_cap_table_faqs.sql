@@ -3,7 +3,7 @@
 -- ============================================
 create table public.cap_table_entries (
   id uuid primary key default uuid_generate_v4(),
-  shareholder text not null,
+  shareholder_name text not null,
   entity_type text not null check (entity_type in ('founder', 'esop', 'seed', 'future')),
   share_class text default 'Ordinary',
   shares_held bigint not null default 0,

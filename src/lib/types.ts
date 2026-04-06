@@ -103,7 +103,7 @@ export type CapTableEntityType = 'founder' | 'esop' | 'seed' | 'future'
 
 export interface CapTableEntry {
   id: string
-  shareholder: string
+  shareholder_name: string
   entity_type: CapTableEntityType
   share_class: string
   shares_held: number
