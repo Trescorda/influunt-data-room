@@ -1,32 +1,23 @@
 'use client'
 
-interface WatermarkProps {
-  opacity: number
-}
-
-export function Watermark({ opacity }: WatermarkProps) {
+export function PageWatermark() {
   return (
     <div
-      className="absolute inset-0 overflow-hidden pointer-events-none select-none z-10"
-      style={{ opacity: opacity / 100 }}
+      className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+      style={{ zIndex: 20 }}
     >
-      <div className="absolute inset-0" style={{ transform: 'rotate(-45deg)', transformOrigin: 'center' }}>
-        <div className="flex flex-col gap-16 -mt-[50%] -ml-[50%]" style={{ width: '200%', height: '200%' }}>
-          {Array.from({ length: 20 }).map((_, row) => (
-            <div key={row} className="flex gap-24 whitespace-nowrap">
-              {Array.from({ length: 10 }).map((_, col) => (
-                <span
-                  key={col}
-                  className="text-brand-muted text-lg font-medium"
-                  style={{ fontSize: '18px' }}
-                >
-                  influunt
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <span
+        style={{
+          fontSize: '80px',
+          fontWeight: 700,
+          color: 'rgba(0, 0, 0, 0.07)',
+          transform: 'rotate(-30deg)',
+          whiteSpace: 'nowrap',
+          userSelect: 'none',
+        }}
+      >
+        influunt
+      </span>
     </div>
   )
 }

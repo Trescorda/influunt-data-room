@@ -31,11 +31,6 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
 
   if (!investor) redirect('/login')
 
-  const { data: settings } = await admin
-    .from('settings')
-    .select('watermark_opacity')
-    .single()
-
   return (
     <div className="flex flex-col h-[calc(100vh-65px)]">
       {/* Fixed header */}
@@ -76,7 +71,6 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
             fileType={document.file_type}
             isDownloadable={document.is_downloadable}
             isWatermarked={document.is_watermarked}
-            watermarkOpacity={settings?.watermark_opacity ?? 15}
           />
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
-import { Watermark } from './Watermark'
+import { PageWatermark } from './Watermark'
 import { Button } from '@/components/ui/Button'
 import { Download, Loader2 } from 'lucide-react'
 
@@ -15,7 +15,6 @@ interface DocumentViewerProps {
   fileType: string
   isDownloadable: boolean
   isWatermarked: boolean
-  watermarkOpacity: number
 }
 
 export function DocumentViewer({
@@ -23,7 +22,6 @@ export function DocumentViewer({
   fileType,
   isDownloadable,
   isWatermarked,
-  watermarkOpacity,
 }: DocumentViewerProps) {
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
   const [numPages, setNumPages] = useState(0)
@@ -158,10 +156,6 @@ export function DocumentViewer({
 
       {/* Scrollable document area */}
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-brand-darker">
-        {isWatermarked && (
-          <Watermark opacity={watermarkOpacity} />
-        )}
-
         {isPdf && signedUrl && (
           <div className="flex flex-col items-center py-4">
             <Document
@@ -185,7 +179,7 @@ export function DocumentViewer({
                 <div
                   key={i}
                   ref={(el) => { pageRefs.current[i] = el }}
-                  className="mb-3"
+                  className="relative mb-3"
                 >
                   <Page
                     pageNumber={i + 1}
@@ -193,6 +187,7 @@ export function DocumentViewer({
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
                   />
+                  {isWatermarked && <PageWatermark />}
                   {i < numPages - 1 && (
                     <div className="border-b border-brand-border/30 mt-3" />
                   )}
@@ -203,13 +198,14 @@ export function DocumentViewer({
         )}
 
         {isImage && signedUrl && (
-          <div className="flex justify-center p-6">
+          <div className="relative flex justify-center p-6">
             <img
               src={signedUrl}
               alt="Document"
               className="max-w-full rounded"
               draggable={false}
             />
+            {isWatermarked && <PageWatermark />}
           </div>
         )}
 
