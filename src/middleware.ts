@@ -28,11 +28,6 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const pathname = request.nextUrl.pathname
 
-  // Auth callback — let it run without interference so it can exchange the code
-  if (pathname.startsWith('/auth/callback')) {
-    return supabaseResponse
-  }
-
   // Public routes
   if (pathname === '/login') {
     if (user) {

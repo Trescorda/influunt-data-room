@@ -1,20 +1,23 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card } from '@/components/ui/Card'
-import { Lock } from 'lucide-react'
+import { Lock, ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [step, setStep] = useState<'email' | 'code'>('email')
   const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const router = useRouter()
   const supabase = createClient()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -36,19 +39,48 @@ export default function LoginPage() {
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        shouldCreateUser: false,
       },
     })
 
     if (authError) {
       console.error('Supabase signInWithOtp error:', authError.message, authError)
-      setError(`Failed to send access link: ${authError.message}`)
+      setError(`Failed to send code: ${authError.message}`)
       setLoading(false)
       return
     }
 
-    setSent(true)
+    setStep('code')
     setLoading(false)
+  }
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: email.toLowerCase().trim(),
+      token: otpCode.trim(),
+      type: 'email',
+    })
+
+    if (verifyError) {
+      console.error('Supabase verifyOtp error:', verifyError.message, verifyError)
+      setError(`Invalid code: ${verifyError.message}`)
+      setLoading(false)
+      return
+    }
+
+    // Session is now set — check where to redirect
+    const redirectRes = await fetch('/api/auth-redirect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: (await supabase.auth.getUser()).data.user?.id }),
+    })
+    const { redirectTo } = await redirectRes.json()
+
+    router.replace(redirectTo || '/nda')
   }
 
   return (
@@ -60,28 +92,48 @@ export default function LoginPage() {
         </div>
 
         <Card padding="lg">
-          {sent ? (
-            <div className="text-center py-4">
-              <div className="w-12 h-12 bg-brand-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock size={20} className="text-brand-gold" />
+          {step === 'code' ? (
+            <form onSubmit={handleVerifyCode} className="space-y-4">
+              <div className="text-center mb-2">
+                <div className="w-12 h-12 bg-brand-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock size={20} className="text-brand-gold" />
+                </div>
+                <h2 className="text-lg font-semibold text-brand-text">Enter your code</h2>
+                <p className="text-sm text-brand-muted mt-1">
+                  We sent a 6-digit code to{' '}
+                  <span className="text-brand-gold">{email}</span>
+                </p>
               </div>
-              <h2 className="text-lg font-semibold text-brand-text mb-2">Check your email</h2>
-              <p className="text-sm text-brand-muted">
-                We&apos;ve sent a secure access link to{' '}
-                <span className="text-brand-gold">{email}</span>
-              </p>
-              <p className="text-xs text-brand-muted mt-4">
-                The link will expire in 1 hour. Check your spam folder if you don&apos;t see it.
+              <Input
+                type="text"
+                placeholder="000000"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="text-center text-2xl tracking-[0.5em] font-mono"
+                maxLength={6}
+                autoFocus
+                required
+              />
+              {error && (
+                <p className="text-sm text-red-400 text-center">{error}</p>
+              )}
+              <Button type="submit" loading={loading} disabled={otpCode.length !== 6} className="w-full" size="lg">
+                Verify & enter
+              </Button>
+              <p className="text-xs text-brand-muted text-center">
+                Check your spam folder if you don&apos;t see the email.
               </p>
               <button
-                onClick={() => { setSent(false); setEmail('') }}
-                className="text-sm text-brand-gold hover:text-brand-gold/80 mt-4 transition-colors"
+                type="button"
+                onClick={() => { setStep('email'); setOtpCode(''); setError('') }}
+                className="flex items-center gap-1 text-sm text-brand-gold hover:text-brand-gold/80 mx-auto transition-colors"
               >
+                <ArrowLeft size={14} />
                 Use a different email
               </button>
-            </div>
+            </form>
           ) : (
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleSendCode} className="space-y-4">
               <div className="text-center mb-2">
                 <h2 className="text-lg font-semibold text-brand-text">Welcome</h2>
                 <p className="text-sm text-brand-muted mt-1">
@@ -99,7 +151,7 @@ export default function LoginPage() {
                 <p className="text-sm text-red-400 text-center">{error}</p>
               )}
               <Button type="submit" loading={loading} className="w-full" size="lg">
-                Send access link
+                Send access code
               </Button>
               <p className="text-xs text-brand-muted text-center">
                 Access is by invitation only. Contact your Influunt representative if you need an invite.

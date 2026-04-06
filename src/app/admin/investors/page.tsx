@@ -48,11 +48,11 @@ export default function InvestorsPage() {
       return
     }
 
-    // Send magic link invite
+    // Send OTP code to invite the investor
     await supabase.auth.signInWithOtp({
       email: data.email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        shouldCreateUser: true,
         data: { invited: true },
       },
     })
