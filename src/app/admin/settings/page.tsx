@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -13,12 +12,13 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const supabase = createClient()
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('settings').select('*').single()
-      if (data) setSettings(data)
+      const res = await fetch('/api/admin/settings')
+      const data = await res.json()
+      if (data.settings) setSettings(data.settings)
       setLoading(false)
     }
     load()
@@ -27,20 +27,31 @@ export default function SettingsPage() {
   const handleSave = async () => {
     if (!settings) return
     setSaving(true)
-    await supabase
-      .from('settings')
-      .update({
+    setError('')
+
+    const res = await fetch('/api/admin/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: settings.id,
         room_name: settings.room_name,
         room_description: settings.room_description,
         nda_text: settings.nda_text,
         watermark_opacity: settings.watermark_opacity,
         require_nda: settings.require_nda,
         allow_downloads: settings.allow_downloads,
-      })
-      .eq('id', settings.id)
+      }),
+    })
+
+    const data = await res.json()
     setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+
+    if (res.ok) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } else {
+      setError(data.error || 'Failed to save')
+    }
   }
 
   if (loading) {
@@ -71,6 +82,10 @@ export default function SettingsPage() {
           {saved ? 'Saved!' : 'Save changes'}
         </Button>
       </div>
+
+      {error && (
+        <p className="text-sm text-red-400 mb-4">{error}</p>
+      )}
 
       <div className="space-y-6">
         <Card>
@@ -122,8 +137,8 @@ export default function SettingsPage() {
               </label>
               <input
                 type="range"
-                min="5"
-                max="50"
+                min="1"
+                max="30"
                 value={settings.watermark_opacity}
                 onChange={(e) => setSettings({ ...settings, watermark_opacity: parseInt(e.target.value) })}
                 className="w-full accent-brand-gold"

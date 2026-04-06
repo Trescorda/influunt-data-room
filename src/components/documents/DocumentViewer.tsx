@@ -15,6 +15,7 @@ interface DocumentViewerProps {
   fileType: string
   isDownloadable: boolean
   isWatermarked: boolean
+  watermarkOpacity?: number
 }
 
 export function DocumentViewer({
@@ -22,6 +23,7 @@ export function DocumentViewer({
   fileType,
   isDownloadable,
   isWatermarked,
+  watermarkOpacity = 6,
 }: DocumentViewerProps) {
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
   const [numPages, setNumPages] = useState(0)
@@ -187,7 +189,7 @@ export function DocumentViewer({
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
                   />
-                  {isWatermarked && <PageWatermark />}
+                  {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
                   {i < numPages - 1 && (
                     <div className="border-b border-brand-border/30 mt-3" />
                   )}
@@ -205,7 +207,7 @@ export function DocumentViewer({
               className="max-w-full rounded"
               draggable={false}
             />
-            {isWatermarked && <PageWatermark />}
+            {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
           </div>
         )}
 
