@@ -49,10 +49,11 @@ export function AdminSidebar() {
           )
         })}
       </nav>
-      <div className="px-6 py-4 border-t border-brand-border">
+      <div className="px-4 py-4 border-t border-brand-border flex justify-center">
         <Link
           href="/room"
-          className="text-xs text-brand-muted hover:text-brand-gold transition-colors"
+          className="block text-center text-sm text-brand-gold border border-brand-gold rounded-lg px-4 py-2.5 hover:bg-brand-gold/10 transition-colors"
+          style={{ fontSize: '14px', padding: '10px 16px', borderRadius: '8px' }}
         >
           View as investor &rarr;
         </Link>
