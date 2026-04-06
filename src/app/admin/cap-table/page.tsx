@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { Plus, Trash2, Save, ChevronDown } from 'lucide-react'
+import { Plus, Trash2, Save } from 'lucide-react'
 import type { CapTableEntry, CapTableEntityType } from '@/lib/types'
 
 interface EditableEntry extends Omit<CapTableEntry, 'id' | 'created_at'> {
@@ -169,33 +169,27 @@ export default function AdminCapTablePage() {
                   </td>
                   {/* Type */}
                   <td className="px-3 py-2">
-                    <div className="relative">
-                      <select
-                        value={e.entity_type}
-                        onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
-                        className="w-full appearance-none bg-brand-card text-sm text-brand-gold border border-brand-border rounded-md px-3 py-1.5 pr-8 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
-                      >
-                        {entityTypes.map((t) => (
-                          <option key={t.value} value={t.value}>{t.label}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
-                    </div>
+                    <select
+                      value={e.entity_type}
+                      onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
+                      className="w-full bg-brand-card text-sm text-brand-gold border border-brand-border rounded-md px-3 py-1.5 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                    >
+                      {entityTypes.map((t) => (
+                        <option key={t.value} value={t.value}>{t.label}</option>
+                      ))}
+                    </select>
                   </td>
                   {/* Class */}
                   <td className="px-3 py-2">
-                    <div className="relative">
-                      <select
-                        value={e.share_class}
-                        onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
-                        className="w-full appearance-none bg-brand-card text-sm text-brand-muted border border-brand-border rounded-md px-3 py-1.5 pr-8 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
-                      >
+                    <select
+                      value={e.share_class}
+                      onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
+                      className="w-full bg-brand-card text-sm text-brand-muted border border-brand-border rounded-md px-3 py-1.5 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                    >
                         <option value="Ordinary">Ordinary</option>
                         <option value="Options">Options</option>
                         <option value="Preference">Preference</option>
-                      </select>
-                      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
-                    </div>
+                    </select>
                   </td>
                   {/* Shares — show formatted, edit raw */}
                   <td className="px-3 py-2">
