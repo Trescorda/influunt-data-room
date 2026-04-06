@@ -24,7 +24,7 @@ export default function BookACallPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-4 overflow-y-auto h-full">
+    <div className="px-8 py-6 space-y-4 overflow-y-auto h-full">
       <div>
         <h1 className="text-xl font-semibold text-brand-text">Book a Call</h1>
         <p className="text-sm text-brand-muted mt-1">

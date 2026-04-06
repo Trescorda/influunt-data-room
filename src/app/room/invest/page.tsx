@@ -20,7 +20,7 @@ const stages = [
 
 export default function InvestPage() {
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6 overflow-y-auto h-full">
+    <div className="px-8 py-6 space-y-6 overflow-y-auto h-full">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-brand-text">Invest in Influunt</h1>
