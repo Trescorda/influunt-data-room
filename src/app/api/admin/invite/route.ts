@@ -55,6 +55,9 @@ export async function POST(request: Request) {
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: 'recovery',
     email: normalizedEmail,
+    options: {
+      redirectTo: 'https://invest.influunt.global/login',
+    },
   })
 
   if (linkError) {
@@ -95,29 +98,34 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // Check if auth user exists, create if not
-  const { data: existingUsers } = await admin.auth.admin.listUsers()
-  const existingUser = existingUsers?.users?.find(u => u.email === email.toLowerCase().trim())
+  const normalizedEmail = email.toLowerCase().trim()
 
-  if (!existingUser) {
-    const tempPassword = crypto.randomUUID() + '-Aa1!'
-    await admin.auth.admin.createUser({
-      email: email.toLowerCase().trim(),
-      password: tempPassword,
-      email_confirm: true,
-    })
+  // Ensure auth user exists — try to create, ignore if already exists
+  const tempPassword = crypto.randomUUID() + '-Aa1!'
+  const { error: createErr } = await admin.auth.admin.createUser({
+    email: normalizedEmail,
+    password: tempPassword,
+    email_confirm: true,
+  })
+  if (createErr && !createErr.message.includes('already')) {
+    console.error('[Invite GET] createUser error:', createErr.message)
   }
 
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: 'recovery',
-    email: email.toLowerCase().trim(),
+    email: normalizedEmail,
+    options: {
+      redirectTo: 'https://invest.influunt.global/login',
+    },
   })
 
   if (linkError) {
+    console.error('[Invite GET] generateLink error:', linkError.message)
     return NextResponse.json({ error: linkError.message }, { status: 500 })
   }
 
   const inviteLink = linkData?.properties?.action_link || ''
+  console.log('[Invite GET] Generated link for', normalizedEmail, inviteLink ? 'OK' : 'EMPTY')
 
   return NextResponse.json({ inviteLink })
 }
