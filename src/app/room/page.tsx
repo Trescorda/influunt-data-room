@@ -7,26 +7,34 @@ import { FolderSection } from '@/components/documents/FolderSection'
 import type { FolderWithDocuments, DocumentFolder, Document } from '@/lib/types'
 
 function buildFolderTree(folders: DocumentFolder[], documents: Document[]): FolderWithDocuments[] {
+  // IDs that are referenced as parents
+  const parentIds = new Set(folders.filter((f) => f.parent_id).map((f) => f.parent_id))
+
   // Top-level folders (no parent)
   const topLevel = folders.filter((f) => !f.parent_id).sort((a, b) => a.sort_order - b.sort_order)
 
-  return topLevel.map((folder) => {
-    // Find subfolders
-    const subs = folders
-      .filter((f) => f.parent_id === folder.id)
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map((sf) => ({
-        ...sf,
-        documents: documents.filter((d) => d.folder_id === sf.id),
-        subfolders: [],
-      }))
+  return topLevel
+    .map((folder) => {
+      const subs = folders
+        .filter((f) => f.parent_id === folder.id)
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((sf) => ({
+          ...sf,
+          documents: documents.filter((d) => d.folder_id === sf.id),
+          subfolders: [],
+        }))
 
-    return {
-      ...folder,
-      documents: documents.filter((d) => d.folder_id === folder.id),
-      subfolders: subs,
-    }
-  })
+      const directDocs = documents.filter((d) => d.folder_id === folder.id)
+
+      return {
+        ...folder,
+        documents: directDocs,
+        subfolders: subs,
+      }
+    })
+    // Hide empty top-level folders that have no subfolders and no documents
+    // (these are likely orphaned old folders from before subfolder migration)
+    .filter((f) => f.documents.length > 0 || (f.subfolders && f.subfolders.length > 0))
 }
 
 export default async function RoomPage() {

@@ -184,11 +184,18 @@ export default function AdminCapTablePage() {
                   </td>
                   {/* Class */}
                   <td className="px-3 py-2">
-                    <input
-                      value={e.share_class}
-                      onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
-                      className="w-full bg-transparent text-sm text-brand-muted border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
-                    />
+                    <div className="relative">
+                      <select
+                        value={e.share_class}
+                        onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
+                        className="w-full appearance-none bg-brand-card text-sm text-brand-muted border border-brand-border rounded-md px-3 py-1.5 pr-8 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                      >
+                        <option value="Ordinary">Ordinary</option>
+                        <option value="Options">Options</option>
+                        <option value="Preference">Preference</option>
+                      </select>
+                      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
+                    </div>
                   </td>
                   {/* Shares — show formatted, edit raw */}
                   <td className="px-3 py-2">
