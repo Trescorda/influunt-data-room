@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { InviteModal } from '@/components/investors/InviteModal'
-import { UserPlus, Link2, Check } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
+import { UserPlus, Link2, Check, Trash2 } from 'lucide-react'
 import type { Investor } from '@/lib/types'
 
 const statusVariant: Record<string, 'gold' | 'green' | 'red' | 'gray' | 'blue'> = {
@@ -31,6 +32,8 @@ export default function InvestorsPage() {
   const [loading, setLoading] = useState(true)
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
   const [generatingLink, setGeneratingLink] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Investor | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const loadInvestors = async () => {
     const res = await fetch('/api/admin/documents') // reuse admin auth check
@@ -92,6 +95,24 @@ export default function InvestorsPage() {
     }
   }
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(true)
+
+    await fetch('/api/admin/investors', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ investorId: deleteTarget.id, authUserId: deleteTarget.auth_user_id }),
+    })
+
+    setDeleteTarget(null)
+    setDeleting(false)
+
+    const reloadRes = await fetch('/api/admin/investors')
+    const reloadData = await reloadRes.json()
+    setInvestors(reloadData.investors || [])
+  }
+
   return (
     <div className="px-8 py-6">
       <div className="flex items-center justify-between mb-6">
@@ -145,20 +166,29 @@ export default function InvestorsPage() {
                     </td>
                     <td className="px-4 py-3 text-xs text-brand-muted">{new Date(inv.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleCopyLink(inv.email)}
-                        disabled={generatingLink === inv.email}
-                        className="inline-flex items-center gap-1.5 text-xs text-brand-gold hover:text-brand-gold/80 transition-colors disabled:opacity-50"
-                        title="Copy invite/password reset link"
-                      >
-                        {copiedEmail === inv.email ? (
-                          <><Check size={13} /> Copied!</>
-                        ) : generatingLink === inv.email ? (
-                          <>Generating...</>
-                        ) : (
-                          <><Link2 size={13} /> Copy link</>
-                        )}
-                      </button>
+                      <div className="flex items-center justify-end gap-3">
+                        <button
+                          onClick={() => handleCopyLink(inv.email)}
+                          disabled={generatingLink === inv.email}
+                          className="inline-flex items-center gap-1.5 text-xs text-brand-gold hover:text-brand-gold/80 transition-colors disabled:opacity-50"
+                          title="Copy invite/password reset link"
+                        >
+                          {copiedEmail === inv.email ? (
+                            <><Check size={13} /> Copied!</>
+                          ) : generatingLink === inv.email ? (
+                            <>Generating...</>
+                          ) : (
+                            <><Link2 size={13} /> Copy link</>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(inv)}
+                          className="text-[#666] hover:text-red-500 transition-colors"
+                          title="Remove investor"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -173,6 +203,23 @@ export default function InvestorsPage() {
         onClose={() => setShowInvite(false)}
         onInvite={handleInvite}
       />
+
+      <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Remove investor">
+        <p className="text-sm text-brand-muted mb-4">
+          Remove investor? This will revoke access for{' '}
+          <span className="text-brand-text font-medium">{deleteTarget?.name}</span>{' '}
+          (<span className="text-brand-muted">{deleteTarget?.email}</span>).
+          This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setDeleteTarget(null)} className="flex-1">
+            Cancel
+          </Button>
+          <Button variant="danger" loading={deleting} onClick={handleDelete} className="flex-1">
+            Remove
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }
