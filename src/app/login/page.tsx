@@ -47,14 +47,16 @@ export default function LoginPage() {
     }
 
     // Session is now set — check where to redirect
+    const { data: { user } } = await supabase.auth.getUser()
     const redirectRes = await fetch('/api/auth-redirect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: (await supabase.auth.getUser()).data.user?.id }),
+      body: JSON.stringify({ userId: user?.id }),
     })
     const { redirectTo } = await redirectRes.json()
 
-    router.replace(redirectTo || '/nda')
+    // Hard redirect so the browser sends fresh cookies to middleware
+    window.location.href = redirectTo || '/nda'
   }
 
   return (

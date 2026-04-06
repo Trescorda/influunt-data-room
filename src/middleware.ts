@@ -25,8 +25,14 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // Refresh session (important: writes updated cookies to response)
   const { data: { user } } = await supabase.auth.getUser()
   const pathname = request.nextUrl.pathname
+
+  // API routes — don't apply redirect logic
+  if (pathname.startsWith('/api/')) {
+    return supabaseResponse
+  }
 
   // Public routes
   if (pathname === '/login') {
