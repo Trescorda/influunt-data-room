@@ -1,4 +1,6 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 
@@ -22,8 +24,12 @@ const actionVariant: Record<string, 'gold' | 'green' | 'blue' | 'gray'> = {
 
 export default async function ActivityPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-  const { data: activities } = await supabase
+  const admin = createAdminClient()
+
+  const { data: activities } = await admin
     .from('activity_log')
     .select('*, investors(name, email, organisation), documents(title)')
     .order('created_at', { ascending: false })

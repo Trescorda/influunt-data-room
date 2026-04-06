@@ -25,13 +25,13 @@ export function NdaGate({ ndaText, investorId }: NdaGateProps) {
         .update({ nda_signed: true, nda_signed_at: new Date().toISOString() })
         .eq('id', investorId)
 
-      await supabase.from('activity_log').insert({
-        investor_id: investorId,
-        action: 'sign_nda',
+      await fetch('/api/activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'sign_nda' }),
       })
 
-      router.push('/room')
-      router.refresh()
+      window.location.href = '/room'
     } catch {
       setLoading(false)
     }

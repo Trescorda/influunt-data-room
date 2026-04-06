@@ -46,6 +46,13 @@ export default function LoginPage() {
       return
     }
 
+    // Log login activity
+    await fetch('/api/activity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login' }),
+    })
+
     // Session is now set — check where to redirect
     const { data: { user } } = await supabase.auth.getUser()
     const redirectRes = await fetch('/api/auth-redirect', {

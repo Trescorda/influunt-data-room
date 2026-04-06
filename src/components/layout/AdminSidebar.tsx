@@ -8,12 +8,14 @@ import {
   FolderOpen,
   Activity,
   Settings,
+  MessageSquare,
 } from 'lucide-react'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/investors', label: 'Investors', icon: Users },
   { href: '/admin/documents', label: 'Documents', icon: FolderOpen },
+  { href: '/admin/qa', label: 'Q&A', icon: MessageSquare },
   { href: '/admin/activity', label: 'Activity', icon: Activity },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]

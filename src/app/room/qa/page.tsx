@@ -57,9 +57,10 @@ export default function QAPage() {
       setQuestions([data, ...questions])
       setNewQuestion('')
 
-      await supabase.from('activity_log').insert({
-        investor_id: investorId,
-        action: 'submit_question',
+      await fetch('/api/activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'submit_question' }),
       })
     }
     setLoading(false)
@@ -107,15 +108,18 @@ export default function QAPage() {
                 {q.status}
               </Badge>
             </div>
-            {q.answer && (
+            {q.status === 'answered' && q.answer ? (
               <div className="mt-3 pt-3 border-t border-brand-border">
+                <p className="text-xs font-medium text-brand-gold mb-1">Influunt team:</p>
                 <p className="text-sm text-brand-text/80">{q.answer}</p>
                 <p className="text-xs text-brand-muted mt-2">
                   Answered {q.answered_at ? new Date(q.answered_at).toLocaleDateString() : ''}
                 </p>
               </div>
+            ) : (
+              <p className="text-xs text-brand-muted mt-2 italic">Awaiting response</p>
             )}
-            <p className="text-xs text-brand-muted mt-2">
+            <p className="text-xs text-brand-muted mt-1">
               Asked {new Date(q.created_at).toLocaleDateString()}
             </p>
           </Card>
