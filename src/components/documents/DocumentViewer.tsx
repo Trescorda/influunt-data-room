@@ -106,7 +106,7 @@ export function DocumentViewer({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-32">
+      <div className="flex items-center justify-center h-full">
         <Loader2 className="animate-spin text-brand-gold" size={32} />
       </div>
     )
@@ -114,7 +114,7 @@ export function DocumentViewer({
 
   if (error) {
     return (
-      <div className="text-center py-32">
+      <div className="flex items-center justify-center h-full">
         <p className="text-red-400 text-sm">{error}</p>
       </div>
     )
@@ -122,11 +122,13 @@ export function DocumentViewer({
 
   const isPdf = fileType === 'pdf'
   const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileType)
+  const showBottomBar = isPdf && numPages > 1
 
   return (
-    <div onContextMenu={handleContextMenu}>
+    <div onContextMenu={handleContextMenu} className="flex flex-col h-full">
+      {/* Download bar */}
       {isDownloadable && (
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end px-4 py-2 flex-shrink-0">
           <Button onClick={handleDownload} variant="secondary" size="sm">
             <Download size={14} className="mr-2" />
             Download
@@ -134,7 +136,8 @@ export function DocumentViewer({
         </div>
       )}
 
-      <div className="relative bg-brand-darker rounded-lg border border-brand-border overflow-hidden">
+      {/* Scrollable document area */}
+      <div className="relative flex-1 overflow-y-auto bg-brand-darker">
         {isWatermarked && (
           <Watermark
             name={investorName}
@@ -144,7 +147,7 @@ export function DocumentViewer({
         )}
 
         {isPdf && signedUrl && (
-          <div className="flex flex-col items-center py-6">
+          <div className="flex flex-col items-center py-4">
             <Document
               file={signedUrl}
               onLoadSuccess={({ numPages }) => setNumPages(numPages)}
@@ -166,32 +169,6 @@ export function DocumentViewer({
                 renderAnnotationLayer={true}
               />
             </Document>
-
-            {numPages > 1 && (
-              <div className="flex items-center gap-4 mt-6 pb-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage <= 1}
-                >
-                  <ChevronLeft size={16} />
-                  Previous
-                </Button>
-                <span className="text-sm text-brand-muted">
-                  Page {currentPage} of {numPages}
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(numPages, p + 1))}
-                  disabled={currentPage >= numPages}
-                >
-                  Next
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
-            )}
           </div>
         )}
 
@@ -207,19 +184,46 @@ export function DocumentViewer({
         )}
 
         {!isPdf && !isImage && (
-          <div className="text-center py-32">
-            <p className="text-brand-muted text-sm">
-              This document type ({fileType.toUpperCase()}) cannot be previewed in-browser.
-            </p>
-            {isDownloadable && (
-              <Button onClick={handleDownload} className="mt-4" size="sm">
-                <Download size={14} className="mr-2" />
-                Download to view
-              </Button>
-            )}
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-brand-muted text-sm">
+                This document type ({fileType.toUpperCase()}) cannot be previewed in-browser.
+              </p>
+              {isDownloadable && (
+                <Button onClick={handleDownload} className="mt-4" size="sm">
+                  <Download size={14} className="mr-2" />
+                  Download to view
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </div>
+
+      {/* Fixed bottom page navigation */}
+      {showBottomBar && (
+        <div className="flex-shrink-0 flex items-center justify-center gap-6 px-4 py-2.5 bg-brand-dark border-t border-brand-border">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage <= 1}
+            className="flex items-center gap-1 text-sm text-brand-muted hover:text-brand-gold disabled:opacity-30 disabled:hover:text-brand-muted transition-colors"
+          >
+            <ChevronLeft size={16} />
+            Previous
+          </button>
+          <span className="text-sm text-brand-muted">
+            Page {currentPage} of {numPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(numPages, p + 1))}
+            disabled={currentPage >= numPages}
+            className="flex items-center gap-1 text-sm text-brand-muted hover:text-brand-gold disabled:opacity-30 disabled:hover:text-brand-muted transition-colors"
+          >
+            Next
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
