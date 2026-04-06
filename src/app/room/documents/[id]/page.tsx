@@ -25,7 +25,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
 
   const { data: investor } = await admin
     .from('investors')
-    .select('id')
+    .select('id, name, email')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -77,6 +77,8 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
             isDownloadable={document.is_downloadable}
             isWatermarked={document.is_watermarked}
             watermarkOpacity={settings?.watermark_opacity ?? 6}
+            investorName={investor.name}
+            investorEmail={investor.email}
           />
         </div>
       </div>

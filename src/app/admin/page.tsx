@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { Users, FileText, Eye, Clock } from 'lucide-react'
 
 function formatDuration(seconds: number): string {
@@ -29,7 +28,6 @@ export default async function AdminDashboard() {
 
   const admin = createAdminClient()
 
-  // Metrics
   const { count: totalInvestors } = await admin
     .from('investors')
     .select('*', { count: 'exact', head: true })
@@ -54,7 +52,6 @@ export default async function AdminDashboard() {
     ? Math.round(viewDurations.reduce((sum, v) => sum + (v.duration_seconds || 0), 0) / viewDurations.length)
     : 0
 
-  // Most viewed documents
   const { data: docViews } = await admin
     .from('activity_log')
     .select('document_id, documents(title)')
@@ -74,7 +71,6 @@ export default async function AdminDashboard() {
     .slice(0, 5)
   const maxViews = topDocs.length > 0 ? topDocs[0][1].count : 1
 
-  // Investor engagement
   const { data: allInvestors } = await admin
     .from('investors')
     .select('id, name, organisation, status')
@@ -99,7 +95,6 @@ export default async function AdminDashboard() {
     return new Date(b.lastAct.created_at).getTime() - new Date(a.lastAct.created_at).getTime()
   })
 
-  // Recent activity
   const { data: recentActivity } = await admin
     .from('activity_log')
     .select('*, investors(name, email), documents(title)')
@@ -124,46 +119,47 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-brand-text">Dashboard</h1>
-        <p className="text-sm text-brand-muted mt-1">Overview of your data room</p>
+    <div className="flex flex-col h-full overflow-hidden p-5 gap-4">
+      {/* Header */}
+      <div className="flex-shrink-0">
+        <h1 className="text-xl font-semibold text-brand-text">Dashboard</h1>
+        <p className="text-xs text-brand-muted mt-0.5">Overview of your data room</p>
       </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Metrics row */}
+      <div className="flex-shrink-0 grid grid-cols-4 gap-3">
         {metrics.map(({ label, value, icon: Icon }) => (
-          <Card key={label} padding="md">
+          <Card key={label} padding="sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-brand-muted">{label}</p>
-                <p className="text-2xl font-bold text-brand-text mt-1">{value}</p>
+                <p className="text-xs text-brand-muted">{label}</p>
+                <p className="text-xl font-bold text-brand-text mt-0.5">{value}</p>
               </div>
-              <div className="w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
-                <Icon size={20} className="text-brand-gold" />
+              <div className="w-9 h-9 bg-brand-gold/10 rounded-lg flex items-center justify-center">
+                <Icon size={18} className="text-brand-gold" />
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Most viewed documents */}
-        <Card>
-          <h2 className="text-lg font-semibold text-brand-text mb-4">Most viewed documents</h2>
+      {/* Middle row: Most viewed + Engagement */}
+      <div className="flex-shrink-0 grid grid-cols-2 gap-4">
+        <Card padding="sm">
+          <h2 className="text-sm font-semibold text-brand-text mb-3">Most viewed documents</h2>
           {topDocs.length === 0 ? (
-            <p className="text-sm text-brand-muted py-4 text-center">No document views yet</p>
+            <p className="text-xs text-brand-muted py-2 text-center">No document views yet</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {topDocs.map(([docId, { title, count }]) => (
                 <div key={docId}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-brand-text truncate mr-4">{title}</span>
-                    <span className="text-brand-muted flex-shrink-0">{count} views</span>
+                  <div className="flex justify-between text-xs mb-0.5">
+                    <span className="text-brand-text truncate mr-3">{title}</span>
+                    <span className="text-brand-muted flex-shrink-0">{count}</span>
                   </div>
-                  <div className="w-full bg-brand-border rounded-full h-2">
+                  <div className="w-full bg-brand-border rounded-full h-1.5">
                     <div
-                      className="bg-brand-gold rounded-full h-2 transition-all"
+                      className="bg-brand-gold rounded-full h-1.5 transition-all"
                       style={{ width: `${(count / maxViews) * 100}%` }}
                     />
                   </div>
@@ -173,26 +169,19 @@ export default async function AdminDashboard() {
           )}
         </Card>
 
-        {/* Investor engagement */}
-        <Card>
-          <h2 className="text-lg font-semibold text-brand-text mb-4">Investor engagement</h2>
+        <Card padding="sm">
+          <h2 className="text-sm font-semibold text-brand-text mb-3">Investor engagement</h2>
           {investorStats.length === 0 ? (
-            <p className="text-sm text-brand-muted py-4 text-center">No investors yet</p>
+            <p className="text-xs text-brand-muted py-2 text-center">No investors yet</p>
           ) : (
-            <div className="space-y-2">
-              {investorStats.slice(0, 8).map((inv) => (
-                <div key={inv.id} className="flex items-center gap-3 py-2 border-b border-brand-border last:border-0">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${inv.isRecentlyActive ? 'bg-green-400' : 'bg-brand-border'}`} />
+            <div className="space-y-1">
+              {investorStats.slice(0, 6).map((inv) => (
+                <div key={inv.id} className="flex items-center gap-2 py-1.5 border-b border-brand-border last:border-0">
+                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${inv.isRecentlyActive ? 'bg-green-400' : 'bg-brand-border'}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-brand-text truncate">{inv.name}</p>
-                    <p className="text-xs text-brand-muted">{inv.organisation || '—'}</p>
+                    <p className="text-xs text-brand-text truncate">{inv.name}</p>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-xs text-brand-muted">{inv.docsViewed} docs &middot; {formatDuration(inv.totalTime)}</p>
-                    <p className="text-xs text-brand-muted">
-                      {inv.lastAct ? timeAgo(inv.lastAct.created_at) : 'No activity'}
-                    </p>
-                  </div>
+                  <p className="text-xs text-brand-muted flex-shrink-0">{inv.docsViewed} docs &middot; {formatDuration(inv.totalTime)}</p>
                 </div>
               ))}
             </div>
@@ -200,25 +189,25 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Recent activity */}
-      <Card>
-        <h2 className="text-lg font-semibold text-brand-text mb-4">Recent activity</h2>
+      {/* Recent activity — fills remaining space with internal scroll */}
+      <Card padding="sm" className="flex-1 min-h-0 flex flex-col">
+        <h2 className="text-sm font-semibold text-brand-text mb-2 flex-shrink-0">Recent activity</h2>
         {(!recentActivity || recentActivity.length === 0) ? (
-          <p className="text-sm text-brand-muted py-8 text-center">No activity yet</p>
+          <p className="text-xs text-brand-muted py-4 text-center">No activity yet</p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex-1 overflow-y-auto min-h-0 space-y-1">
             {recentActivity.map((activity: any) => (
               <div
                 key={activity.id}
-                className="flex items-center justify-between py-2 border-b border-brand-border last:border-0"
+                className="flex items-center justify-between py-1.5 border-b border-brand-border last:border-0"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 bg-brand-card rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-brand-gold">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 bg-brand-card rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-[10px] font-bold text-brand-gold">
                       {activity.investors?.name?.[0] || '?'}
                     </span>
                   </div>
-                  <p className="text-sm text-brand-text truncate">
+                  <p className="text-xs text-brand-text truncate">
                     <span className="font-medium">{activity.investors?.name || 'Unknown'}</span>{' '}
                     <span className="text-brand-muted">
                       {actionLabels[activity.action] || activity.action}
@@ -226,12 +215,9 @@ export default async function AdminDashboard() {
                     {activity.documents?.title && (
                       <span className="text-brand-muted"> &ldquo;{activity.documents.title}&rdquo;</span>
                     )}
-                    {activity.duration_seconds && (
-                      <span className="text-brand-muted"> &middot; {formatDuration(activity.duration_seconds)}</span>
-                    )}
                   </p>
                 </div>
-                <span className="text-xs text-brand-muted flex-shrink-0 ml-4">
+                <span className="text-[10px] text-brand-muted flex-shrink-0 ml-3">
                   {timeAgo(activity.created_at)}
                 </span>
               </div>
