@@ -49,11 +49,11 @@ interface GuidedJourneyProps {
 export function GuidedJourney({ documents }: GuidedJourneyProps) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-brand-text mb-0.5">Your investment journey</h2>
-      <p className="text-xs text-brand-muted mb-3">
+      <h2 className="text-lg font-bold text-brand-text mb-1">Your investment journey</h2>
+      <p className="text-sm text-brand-muted mb-4">
         Follow these steps to understand the Influunt opportunity
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {steps.map((step, i) => {
           const Icon = step.icon
           const doc = documents[i]
@@ -63,22 +63,22 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
 
           const content = (
             <>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 rounded-full bg-brand-gold/20 text-brand-gold text-xs font-bold flex items-center justify-center">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-8 h-8 rounded-full bg-brand-gold/20 text-brand-gold text-lg font-bold flex items-center justify-center">
                   {step.number}
                 </span>
-                <Icon size={16} className="text-brand-gold" />
+                <Icon size={18} className="text-brand-gold" />
               </div>
-              <h3 className="text-sm font-semibold text-brand-text group-hover:text-brand-gold transition-colors">
+              <h3 className="text-base font-semibold text-brand-text group-hover:text-brand-gold transition-colors">
                 {step.title}
               </h3>
-              <p className="text-xs text-brand-muted mt-1">
+              <p className="text-sm text-brand-muted mt-1">
                 {doc ? doc.title : step.subtitle}
               </p>
               {hasLink ? (
-                step.time && <p className="text-xs text-brand-gold/70 mt-2">{step.time}</p>
+                step.time && <p className="text-xs text-brand-gold/70 mt-3">{step.time}</p>
               ) : (
-                <p className="text-xs text-brand-muted/50 mt-2 italic">Coming soon</p>
+                <p className="text-xs text-brand-gold/40 mt-3 italic">Available soon</p>
               )}
             </>
           )
@@ -88,7 +88,7 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
               <Link
                 key={step.number}
                 href={href}
-                className="group bg-brand-card border border-brand-border rounded-xl p-3 hover:border-brand-gold/40 transition-all"
+                className="group bg-brand-card border border-brand-border rounded-xl p-4 min-h-[140px] hover:border-brand-gold/40 transition-all"
               >
                 {content}
               </Link>
@@ -98,7 +98,7 @@ export function GuidedJourney({ documents }: GuidedJourneyProps) {
           return (
             <div
               key={step.number}
-              className="bg-brand-card border border-brand-border rounded-xl p-3 opacity-60"
+              className="bg-brand-card border border-brand-border rounded-xl p-4 min-h-[140px] opacity-50"
             >
               {content}
             </div>

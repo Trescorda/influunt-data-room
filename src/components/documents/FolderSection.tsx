@@ -72,21 +72,21 @@ export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
   const hasSubfolders = (folder.subfolders || []).length > 0
 
   return (
-    <div className="border border-brand-border rounded-lg overflow-hidden">
+    <div className="border border-brand-border rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-2.5 bg-brand-card hover:bg-brand-card/80 transition-colors text-left"
+        className="w-full flex items-center gap-4 px-5 py-5 bg-brand-card hover:bg-[#222222] transition-colors text-left"
       >
-        <div className="flex-shrink-0 w-7 h-7 bg-brand-gold/10 rounded flex items-center justify-center">
-          <FolderIcon size={14} className="text-brand-gold" />
+        <div className="flex-shrink-0 w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
+          <FolderIcon size={20} className="text-brand-gold" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-brand-text">{folder.name}</h3>
+          <h3 className="text-base font-semibold text-brand-text">{folder.name}</h3>
           {folder.description && (
-            <p className="text-[11px] text-brand-muted mt-0.5 truncate">{folder.description}</p>
+            <p className="text-sm text-brand-muted mt-0.5 truncate">{folder.description}</p>
           )}
         </div>
-        <span className="text-xs text-brand-muted mr-2">
+        <span className="text-sm text-brand-muted mr-2">
           {totalDocs} {totalDocs === 1 ? 'document' : 'documents'}
         </span>
         {open ? (

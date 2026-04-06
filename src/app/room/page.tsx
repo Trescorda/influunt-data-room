@@ -83,8 +83,8 @@ export default async function RoomPage() {
   ]
 
   return (
-    <div className="px-6 py-4 space-y-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="px-8 py-6 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
           <GuidedJourney documents={journeyDocs} />
         </div>
@@ -93,12 +93,12 @@ export default async function RoomPage() {
         </div>
       </div>
 
-      <div>
-        <h2 className="text-sm font-semibold text-brand-text mb-0.5">All documents</h2>
-        <p className="text-xs text-brand-muted mb-3">
+      <div className="mt-8">
+        <h2 className="text-xl font-bold text-brand-text mb-1">All documents</h2>
+        <p className="text-sm text-[#999] mb-4">
           Explore detailed materials by category
         </p>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {folderTree.map((folder) => (
             <FolderSection key={folder.id} folder={folder} />
           ))}
