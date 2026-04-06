@@ -30,7 +30,7 @@ export default function InvestPage() {
       {/* Investment Overview */}
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-3">Investment Overview</h2>
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-3 gap-x-8 gap-y-3 text-sm">
           <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text">Seed (Stage 1 of 3)</span></div>
           <div><span className="text-brand-muted">Target raise:</span> <span className="text-brand-text">A$5,000,000</span></div>
           <div><span className="text-brand-muted">Minimum investment:</span> <span className="text-brand-text">A$50,000</span></div>
@@ -43,9 +43,9 @@ export default function InvestPage() {
       {/* Capital Raise Timeline */}
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-4">Capital Raise Timeline</h2>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-3 gap-4">
           {stages.map((s) => (
-            <div key={s.name} className={`flex-1 rounded-lg p-3 border ${s.current ? 'border-brand-gold bg-brand-gold/5' : 'border-brand-border'}`}>
+            <div key={s.name} className={`rounded-lg p-4 border ${s.current ? 'border-brand-gold bg-brand-gold/5' : 'border-brand-border'}`}>
               <p className={`text-sm font-semibold ${s.current ? 'text-brand-gold' : 'text-brand-text'}`}>{s.name}</p>
               <p className="text-lg font-bold text-brand-text mt-1">{s.amount}</p>
               <p className="text-xs text-brand-muted mt-1">{s.timing}</p>
@@ -58,14 +58,14 @@ export default function InvestPage() {
       {/* How to Invest */}
       <div>
         <h2 className="text-sm font-semibold text-brand-text mb-3">How to Invest</h2>
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {steps.map((step, i) => (
             <Card key={i} padding="sm">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-brand-gold/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-xs font-bold text-brand-gold">{i + 1}</span>
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-sm font-semibold text-brand-text">{step.title}</p>
                   <p className="text-xs text-brand-muted mt-0.5">{step.desc}</p>
                 </div>
@@ -78,12 +78,12 @@ export default function InvestPage() {
       {/* Bank Transfer Details */}
       <Card padding="md" className="border-brand-gold/30">
         <h2 className="text-sm font-semibold text-brand-text mb-3">Bank Transfer Details</h2>
-        <div className="space-y-2 text-sm">
-          <div><span className="text-brand-muted">Account Name:</span> <span className="text-brand-text">Influunt Pty Ltd</span></div>
-          <div><span className="text-brand-muted">BSB:</span> <span className="text-brand-text italic">Provided upon execution of Subscription Agreement</span></div>
-          <div><span className="text-brand-muted">Account Number:</span> <span className="text-brand-text italic">Provided upon execution of Subscription Agreement</span></div>
-          <div><span className="text-brand-muted">Bank:</span> <span className="text-brand-text italic">Provided upon execution of Subscription Agreement</span></div>
-          <div><span className="text-brand-muted">Reference:</span> <span className="text-brand-text">[Investor Name] — Seed Round</span></div>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+          <div><span className="text-brand-muted">Account Name:</span> <span className="text-brand-text ml-2">Influunt Pty Ltd</span></div>
+          <div><span className="text-brand-muted">Reference:</span> <span className="text-brand-text ml-2">[Investor Name] — Seed Round</span></div>
+          <div><span className="text-brand-muted">BSB:</span> <span className="text-brand-text italic ml-2">Provided upon execution of Subscription Agreement</span></div>
+          <div><span className="text-brand-muted">Bank:</span> <span className="text-brand-text italic ml-2">Provided upon execution of Subscription Agreement</span></div>
+          <div><span className="text-brand-muted">Account Number:</span> <span className="text-brand-text italic ml-2">Provided upon execution of Subscription Agreement</span></div>
         </div>
         <p className="text-xs text-brand-muted mt-3">
           Bank details are disclosed upon execution of the Subscription Agreement to ensure security of funds. Contact brad@influunt.global to begin the process.
