@@ -33,6 +33,7 @@ export interface DocumentFolder {
   sort_order: number
   is_collapsed_default: boolean
   icon: string
+  parent_id: string | null
   created_at: string
 }
 
@@ -126,6 +127,7 @@ export interface FAQ {
 
 export interface FolderWithDocuments extends DocumentFolder {
   documents: Document[]
+  subfolders?: FolderWithDocuments[]
 }
 
 export interface ActivityLogWithRelations extends ActivityLog {

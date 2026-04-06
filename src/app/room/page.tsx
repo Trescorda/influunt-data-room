@@ -4,7 +4,30 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { GuidedJourney } from '@/components/GuidedJourney'
 import { CapitalTimeline } from '@/components/CapitalTimeline'
 import { FolderSection } from '@/components/documents/FolderSection'
-import type { FolderWithDocuments } from '@/lib/types'
+import type { FolderWithDocuments, DocumentFolder, Document } from '@/lib/types'
+
+function buildFolderTree(folders: DocumentFolder[], documents: Document[]): FolderWithDocuments[] {
+  // Top-level folders (no parent)
+  const topLevel = folders.filter((f) => !f.parent_id).sort((a, b) => a.sort_order - b.sort_order)
+
+  return topLevel.map((folder) => {
+    // Find subfolders
+    const subs = folders
+      .filter((f) => f.parent_id === folder.id)
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((sf) => ({
+        ...sf,
+        documents: documents.filter((d) => d.folder_id === sf.id),
+        subfolders: [],
+      }))
+
+    return {
+      ...folder,
+      documents: documents.filter((d) => d.folder_id === folder.id),
+      subfolders: subs,
+    }
+  })
+}
 
 export default async function RoomPage() {
   const supabase = await createClient()
@@ -14,41 +37,27 @@ export default async function RoomPage() {
 
   const admin = createAdminClient()
 
-  const { data: folders, error: foldersError } = await admin
+  const { data: folders } = await admin
     .from('document_folders')
     .select('*')
     .order('sort_order')
 
-  const { data: documents, error: docsError } = await admin
+  const { data: documents } = await admin
     .from('documents')
     .select('*')
     .eq('is_viewable', true)
     .order('sort_order')
 
-  // Debug: also fetch ALL documents with no filters
-  const { data: allDocs, error: allDocsError } = await admin
-    .from('documents')
-    .select('id, title, folder_id, is_viewable, file_path')
+  const folderTree = buildFolderTree(folders || [], documents || [])
 
-  console.log('[Room] Folders:', folders?.length, 'error:', foldersError?.message)
-  console.log('[Room] Viewable documents:', documents?.length, 'error:', docsError?.message)
-  console.log('[Room] ALL documents (no filter):', allDocs?.length, 'error:', allDocsError?.message)
-  if (allDocs?.length) {
-    allDocs.forEach((d) => console.log('[Room] Doc:', d.id, d.title, 'folder:', d.folder_id, 'viewable:', d.is_viewable))
-  }
-  if (folders?.length) {
-    folders.forEach((f) => console.log('[Room] Folder:', f.id, f.name))
-  }
-
-  const foldersWithDocs: FolderWithDocuments[] = (folders || []).map((folder) => ({
+  // Flatten all folders for journey step matching (includes subfolders)
+  const allFoldersWithDocs: FolderWithDocuments[] = (folders || []).map((folder) => ({
     ...folder,
     documents: (documents || []).filter((doc) => doc.folder_id === folder.id),
   }))
 
-  // Build journey steps from actual documents
-  // Match folders by name keywords (case-insensitive)
   const findFolder = (...keywords: string[]) =>
-    foldersWithDocs.find((f) => {
+    allFoldersWithDocs.find((f) => {
       const name = f.name.toLowerCase()
       return keywords.some((k) => name.includes(k))
     })
@@ -62,7 +71,7 @@ export default async function RoomPage() {
     opportunityFolder?.documents[1] || null,
     technicalFolder?.documents[0] || null,
     financialsFolder?.documents[0] || null,
-    null, // Q&A step — always links to /room/qa
+    null,
   ]
 
   return (
@@ -82,7 +91,7 @@ export default async function RoomPage() {
           Explore detailed materials by category
         </p>
         <div className="space-y-2">
-          {foldersWithDocs.map((folder) => (
+          {folderTree.map((folder) => (
             <FolderSection key={folder.id} folder={folder} />
           ))}
         </div>

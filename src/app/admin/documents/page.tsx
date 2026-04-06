@@ -8,10 +8,11 @@ import { Badge } from '@/components/ui/Badge'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { Upload, FileText, Eye, Download, Lock, Folder, Trash2, UploadCloud } from 'lucide-react'
-import type { FolderWithDocuments } from '@/lib/types'
+import type { DocumentFolder, FolderWithDocuments } from '@/lib/types'
 
 export default function DocumentsPage() {
   const [folders, setFolders] = useState<FolderWithDocuments[]>([])
+  const [allFlatFolders, setAllFlatFolders] = useState<DocumentFolder[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [showUpload, setShowUpload] = useState(false)
@@ -31,15 +32,29 @@ export default function DocumentsPage() {
   const loadDocuments = async () => {
     const res = await fetch('/api/admin/documents')
     const data = await res.json()
+    const allFolders = data.folders || []
+    const allDocs = data.documents || []
 
-    const result: FolderWithDocuments[] = (data.folders || []).map((folder: any) => ({
-      ...folder,
-      documents: (data.documents || []).filter((doc: any) => doc.folder_id === folder.id),
-    }))
+    // Build tree: top-level folders with subfolders
+    const topLevel = allFolders
+      .filter((f: any) => !f.parent_id)
+      .sort((a: any, b: any) => a.sort_order - b.sort_order)
+      .map((folder: any) => ({
+        ...folder,
+        documents: allDocs.filter((d: any) => d.folder_id === folder.id),
+        subfolders: allFolders
+          .filter((sf: any) => sf.parent_id === folder.id)
+          .sort((a: any, b: any) => a.sort_order - b.sort_order)
+          .map((sf: any) => ({
+            ...sf,
+            documents: allDocs.filter((d: any) => d.folder_id === sf.id),
+          })),
+      }))
 
-    setFolders(result)
-    if (result.length > 0 && !uploadFolderId) {
-      setUploadFolderId(result[0].id)
+    setFolders(topLevel)
+    setAllFlatFolders(allFolders)
+    if (allFolders.length > 0 && !uploadFolderId) {
+      setUploadFolderId(allFolders[0].id)
     }
     setLoading(false)
   }
@@ -144,18 +159,18 @@ export default function DocumentsPage() {
         <div className="py-12 text-center text-brand-muted text-sm">Loading...</div>
       ) : (
         <div className="space-y-4">
-          {folders.map((folder) => (
+          {folders.map((folder) => {
+            const allDocs = [...folder.documents, ...(folder.subfolders || []).flatMap((sf) => sf.documents)]
+            return (
             <Card key={folder.id} padding="sm">
               <div className="flex items-center gap-3 px-4 py-3 border-b border-brand-border">
                 <Folder size={16} className="text-brand-gold" />
                 <h3 className="text-sm font-semibold text-brand-text">{folder.name}</h3>
-                <Badge variant="gray">{folder.documents.length}</Badge>
+                <Badge variant="gray">{allDocs.length}</Badge>
               </div>
-              {folder.documents.length === 0 ? (
-                <div className="px-4 py-6 text-center text-sm text-brand-muted">
-                  No documents in this folder
-                </div>
-              ) : (
+
+              {/* Direct documents */}
+              {folder.documents.length > 0 && (
                 <div className="divide-y divide-brand-border">
                   {folder.documents.map((doc) => (
                     <div key={doc.id} className="flex items-center gap-4 px-4 py-3">
@@ -200,8 +215,49 @@ export default function DocumentsPage() {
                   ))}
                 </div>
               )}
+
+              {/* Subfolders */}
+              {(folder.subfolders || []).map((sf) => (
+                <div key={sf.id}>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-brand-dark/30 border-t border-brand-border">
+                    <Folder size={13} className="text-brand-muted" />
+                    <span className="text-xs font-semibold text-brand-muted">{sf.name}</span>
+                    <Badge variant="gray">{sf.documents.length}</Badge>
+                  </div>
+                  {sf.documents.length > 0 ? (
+                    <div className="divide-y divide-brand-border">
+                      {sf.documents.map((doc) => (
+                        <div key={doc.id} className="flex items-center gap-4 px-4 py-3 pl-8">
+                          <FileText size={16} className="text-brand-gold flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-brand-text truncate">{doc.title}</p>
+                            <p className="text-xs text-brand-muted">
+                              {doc.file_type.toUpperCase()} &middot; {formatSize(doc.file_size)} &middot; {new Date(doc.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <button onClick={() => toggleDocProp(doc.id, 'is_viewable', !doc.is_viewable)} className={`p-1.5 rounded transition-colors ${doc.is_viewable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Viewable"><Eye size={14} /></button>
+                            <button onClick={() => toggleDocProp(doc.id, 'is_downloadable', !doc.is_downloadable)} className={`p-1.5 rounded transition-colors ${doc.is_downloadable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Downloadable"><Download size={14} /></button>
+                            <button onClick={() => toggleDocProp(doc.id, 'is_watermarked', !doc.is_watermarked)} className={`p-1.5 rounded transition-colors ${doc.is_watermarked ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Watermarked"><Lock size={14} /></button>
+                            <button onClick={() => setDeleteId(doc.id)} className="p-1.5 rounded text-brand-muted hover:text-red-400 transition-colors" title="Delete"><Trash2 size={14} /></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="px-8 py-3 text-xs text-brand-muted italic">No documents</div>
+                  )}
+                </div>
+              ))}
+
+              {/* Empty state for folders with no docs and no subfolders */}
+              {allDocs.length === 0 && (folder.subfolders || []).length === 0 && (
+                <div className="px-4 py-6 text-center text-sm text-brand-muted">
+                  No documents in this folder
+                </div>
+              )}
             </Card>
-          ))}
+          )})}
         </div>
       )}
 
@@ -259,7 +315,12 @@ export default function DocumentsPage() {
               className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
             >
               {folders.map((f) => (
-                <option key={f.id} value={f.id}>{f.name}</option>
+                <optgroup key={f.id} label={f.name}>
+                  <option value={f.id}>{f.name} (root)</option>
+                  {(f.subfolders || []).map((sf) => (
+                    <option key={sf.id} value={sf.id}>&nbsp;&nbsp;{sf.name}</option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
