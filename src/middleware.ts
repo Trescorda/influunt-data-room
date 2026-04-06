@@ -25,11 +25,29 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session tokens (keeps cookies up to date)
-  await supabase.auth.getUser()
+  // Refresh session tokens
+  const { data: { user } } = await supabase.auth.getUser()
+  const pathname = request.nextUrl.pathname
 
-  // TODO: Re-enable auth redirect logic once login session persistence is confirmed.
-  // All auth checks are temporarily handled in page server components.
+  // Skip auth checks for public routes and API
+  if (pathname === '/login' || pathname === '/expired' || pathname.startsWith('/api/')) {
+    return supabaseResponse
+  }
+
+  // Check access expiration for authenticated users on protected routes
+  if (user && (pathname.startsWith('/room') || pathname.startsWith('/admin') || pathname === '/nda')) {
+    const { data: investor } = await supabase
+      .from('investors')
+      .select('access_expires_at')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (investor?.access_expires_at && new Date(investor.access_expires_at) < new Date()) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/expired'
+      return NextResponse.redirect(url)
+    }
+  }
 
   return supabaseResponse
 }

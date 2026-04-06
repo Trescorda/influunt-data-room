@@ -99,7 +99,7 @@ export default function CapTablePage() {
   }
 
   return (
-    <div className="px-8 py-6 space-y-6">
+    <div className="px-4 md:px-8 py-4 md:py-6 space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-brand-text">Cap Table</h1>
         <p className="text-sm text-brand-muted mt-1">Current ownership structure</p>

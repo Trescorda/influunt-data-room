@@ -49,7 +49,7 @@ export default function QAPage() {
   }
 
   return (
-    <div className="px-8 py-6">
+    <div className="px-4 md:px-8 py-4 md:py-6">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-brand-text">Questions & Answers</h2>
         <p className="text-sm text-brand-muted mt-1">

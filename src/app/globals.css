@@ -52,6 +52,16 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(200, 168, 92, 0.25);
 }
 
+/* Mobile-friendly touch targets */
+@media (max-width: 768px) {
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  input, textarea {
+    font-size: 16px; /* prevents iOS zoom */
+  }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

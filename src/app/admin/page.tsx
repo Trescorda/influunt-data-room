@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden p-6 gap-5">
+    <div className="flex flex-col h-screen overflow-hidden p-4 md:p-6 gap-4 md:gap-5">
       {/* Header */}
       <div className="flex-shrink-0">
         <h1 className="text-xl font-semibold text-brand-text">Dashboard</h1>
@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Metrics row */}
-      <div className="flex-shrink-0 grid grid-cols-4 gap-4">
+      <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {metrics.map(({ label, value, icon: Icon }) => (
           <Card key={label} padding="md">
             <div className="flex items-center justify-between">
@@ -144,7 +144,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Middle row: Most viewed + Engagement */}
-      <div className="flex-shrink-0 grid grid-cols-2 gap-5">
+      <div className="flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
         <Card padding="md" className="min-h-[160px]">
           <h2 className="text-sm font-semibold text-brand-text mb-3">Most viewed documents</h2>
           {topDocs.length === 0 ? (

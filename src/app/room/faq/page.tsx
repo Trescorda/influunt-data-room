@@ -30,7 +30,7 @@ export default function FAQPage() {
   if (loading) return <div className="p-8 text-center text-brand-muted text-sm">Loading...</div>
 
   return (
-    <div className="px-8 py-6 space-y-6 overflow-y-auto h-full">
+    <div className="px-4 md:px-8 py-4 md:py-6 space-y-6 overflow-y-auto h-full">
       <div>
         <h1 className="text-xl font-semibold text-brand-text">Frequently Asked Questions</h1>
         <p className="text-sm text-brand-muted mt-1">Find answers to common questions about investing in Influunt</p>
