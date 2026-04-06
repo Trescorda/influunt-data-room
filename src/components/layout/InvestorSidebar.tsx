@@ -79,7 +79,7 @@ export function InvestorSidebar({ isAdmin, mobileOpen, onClose }: InvestorSideba
               View as admin &rarr;
             </Link>
           )}
-          <p className="text-[10px] text-brand-muted text-center">Confidential — Do not distribute</p>
+
         </div>
       </aside>
     </>

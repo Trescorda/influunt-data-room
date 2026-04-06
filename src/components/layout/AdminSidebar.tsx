@@ -84,7 +84,7 @@ export function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps) {
             <LogOut size={14} />
             Sign out
           </button>
-          <p className="text-[10px] text-brand-muted text-center">Confidential — Do not distribute</p>
+
         </div>
       </aside>
     </>
