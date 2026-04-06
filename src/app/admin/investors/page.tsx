@@ -52,9 +52,7 @@ export default function InvestorsPage() {
     await supabase.auth.signInWithOtp({
       email: data.email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: process.env.NODE_ENV === 'development'
-          ? `${window.location.origin}/auth/callback`
-          : 'https://influunt-data-room.vercel.app/auth/callback',
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: { invited: true },
       },
     })

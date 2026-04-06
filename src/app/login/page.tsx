@@ -36,9 +36,7 @@ export default function LoginPage() {
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
       options: {
-        emailRedirectTo: process.env.NODE_ENV === 'development'
-          ? `${window.location.origin}/auth/callback`
-          : 'https://influunt-data-room.vercel.app/auth/callback',
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
 
