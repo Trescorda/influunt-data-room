@@ -4,12 +4,34 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { Plus, Trash2, Save } from 'lucide-react'
+import { Plus, Trash2, Save, ChevronDown } from 'lucide-react'
 import type { CapTableEntry, CapTableEntityType } from '@/lib/types'
 
 interface EditableEntry extends Omit<CapTableEntry, 'id' | 'created_at'> {
   id?: string
   _isNew?: boolean
+}
+
+const entityTypes: { value: CapTableEntityType; label: string }[] = [
+  { value: 'founder', label: 'Founder' },
+  { value: 'esop', label: 'ESOP' },
+  { value: 'seed', label: 'Seed' },
+  { value: 'future', label: 'Future' },
+]
+
+const typeLabels: Record<string, string> = {
+  founder: 'Founder',
+  esop: 'ESOP',
+  seed: 'Seed',
+  future: 'Future',
+}
+
+function formatNumberDisplay(n: number): string {
+  return n.toLocaleString('en-AU')
+}
+
+function formatCurrencyDisplay(n: number): string {
+  return `$${n.toLocaleString('en-AU', { minimumFractionDigits: 0 })}`
 }
 
 export default function AdminCapTablePage() {
@@ -18,6 +40,7 @@ export default function AdminCapTablePage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [editingCell, setEditingCell] = useState<{ row: number; field: string } | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/cap-table')
@@ -66,7 +89,6 @@ export default function AdminCapTablePage() {
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
-    // Reload
     const res = await fetch('/api/admin/cap-table')
     const d = await res.json()
     setEntries(d.entries || [])
@@ -79,9 +101,12 @@ export default function AdminCapTablePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: deleteId }),
     })
-    setEntries(entries.filter((e) => e.id !== deleteId))
+    setEntries(recalcPercentages(entries.filter((e) => e.id !== deleteId)))
     setDeleteId(null)
   }
+
+  const isEditing = (row: number, field: string) =>
+    editingCell?.row === row && editingCell?.field === field
 
   if (loading) return <div className="p-8 text-center text-brand-muted text-sm">Loading...</div>
 
@@ -100,76 +125,113 @@ export default function AdminCapTablePage() {
 
       <Card padding="sm">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full" style={{ minWidth: '800px' }}>
             <thead>
               <tr className="border-b border-brand-border">
-                <th className="text-left px-3 py-2 text-xs font-medium text-brand-muted uppercase">Shareholder</th>
-                <th className="text-left px-3 py-2 text-xs font-medium text-brand-muted uppercase">Type</th>
-                <th className="text-left px-3 py-2 text-xs font-medium text-brand-muted uppercase">Class</th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-brand-muted uppercase">Shares</th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-brand-muted uppercase">%</th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-brand-muted uppercase">Investment</th>
-                <th className="text-right px-3 py-2 text-xs font-medium text-brand-muted uppercase">Order</th>
-                <th className="px-3 py-2"></th>
+                <th className="text-left px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '22%' }}>Shareholder</th>
+                <th className="text-left px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '12%' }}>Type</th>
+                <th className="text-left px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '12%' }}>Class</th>
+                <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '14%' }}>Shares</th>
+                <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '10%' }}>Ownership</th>
+                <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '16%' }}>Investment</th>
+                <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '8%' }}>Order</th>
+                <th className="px-3 py-2.5" style={{ width: '6%' }}></th>
               </tr>
             </thead>
             <tbody>
               {entries.map((e, i) => (
-                <tr key={e.id || `new-${i}`} className="border-b border-brand-border last:border-0">
+                <tr key={e.id || `new-${i}`} className="border-b border-brand-border last:border-0 hover:bg-brand-card/30">
+                  {/* Shareholder */}
                   <td className="px-3 py-2">
                     <input
                       value={e.shareholder}
                       onChange={(ev) => updateField(i, 'shareholder', ev.target.value)}
-                      className="w-full bg-transparent text-sm text-brand-text border-b border-transparent focus:border-brand-gold outline-none py-1"
-                      placeholder="Name"
+                      className="w-full bg-transparent text-sm text-brand-text border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
+                      placeholder="Enter name"
                     />
                   </td>
+                  {/* Type */}
                   <td className="px-3 py-2">
-                    <select
-                      value={e.entity_type}
-                      onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
-                      className="bg-brand-dark text-sm text-brand-text border border-brand-border rounded px-2 py-1"
-                    >
-                      <option value="founder">Founder</option>
-                      <option value="esop">ESOP</option>
-                      <option value="seed">Seed</option>
-                      <option value="future">Future</option>
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={e.entity_type}
+                        onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
+                        className="w-full appearance-none bg-brand-card text-sm text-brand-gold border border-brand-border rounded-md px-3 py-1.5 pr-8 cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold"
+                      >
+                        {entityTypes.map((t) => (
+                          <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
+                    </div>
                   </td>
+                  {/* Class */}
                   <td className="px-3 py-2">
                     <input
                       value={e.share_class}
                       onChange={(ev) => updateField(i, 'share_class', ev.target.value)}
-                      className="w-20 bg-transparent text-sm text-brand-muted border-b border-transparent focus:border-brand-gold outline-none py-1"
+                      className="w-full bg-transparent text-sm text-brand-muted border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
                     />
                   </td>
+                  {/* Shares — show formatted, edit raw */}
                   <td className="px-3 py-2">
-                    <input
-                      type="number"
-                      value={e.shares_held}
-                      onChange={(ev) => updateField(i, 'shares_held', parseInt(ev.target.value) || 0)}
-                      className="w-24 bg-transparent text-sm text-brand-text text-right border-b border-transparent focus:border-brand-gold outline-none py-1"
-                    />
+                    {isEditing(i, 'shares') ? (
+                      <input
+                        type="number"
+                        value={e.shares_held}
+                        onChange={(ev) => updateField(i, 'shares_held', parseInt(ev.target.value) || 0)}
+                        onBlur={() => setEditingCell(null)}
+                        autoFocus
+                        className="w-full bg-transparent text-sm text-brand-text text-right border-b border-brand-gold outline-none py-1"
+                      />
+                    ) : (
+                      <div
+                        onClick={() => setEditingCell({ row: i, field: 'shares' })}
+                        className="text-sm text-brand-text text-right py-1 cursor-pointer border-b border-transparent hover:border-brand-border"
+                      >
+                        {formatNumberDisplay(e.shares_held)}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-3 py-2 text-sm text-brand-gold text-right">{e.ownership_percentage.toFixed(2)}%</td>
+                  {/* Ownership % */}
+                  <td className="px-3 py-2 text-sm text-brand-gold text-right font-medium">
+                    {e.ownership_percentage.toFixed(2)}%
+                  </td>
+                  {/* Investment — show formatted, edit raw */}
                   <td className="px-3 py-2">
-                    <input
-                      type="number"
-                      value={e.investment_amount}
-                      onChange={(ev) => updateField(i, 'investment_amount', parseFloat(ev.target.value) || 0)}
-                      className="w-28 bg-transparent text-sm text-brand-muted text-right border-b border-transparent focus:border-brand-gold outline-none py-1"
-                    />
+                    {isEditing(i, 'investment') ? (
+                      <input
+                        type="number"
+                        value={e.investment_amount}
+                        onChange={(ev) => updateField(i, 'investment_amount', parseFloat(ev.target.value) || 0)}
+                        onBlur={() => setEditingCell(null)}
+                        autoFocus
+                        className="w-full bg-transparent text-sm text-brand-text text-right border-b border-brand-gold outline-none py-1"
+                      />
+                    ) : (
+                      <div
+                        onClick={() => setEditingCell({ row: i, field: 'investment' })}
+                        className="text-sm text-brand-muted text-right py-1 cursor-pointer border-b border-transparent hover:border-brand-border"
+                      >
+                        {formatCurrencyDisplay(e.investment_amount)}
+                      </div>
+                    )}
                   </td>
+                  {/* Order */}
                   <td className="px-3 py-2">
                     <input
                       type="number"
                       value={e.sort_order}
                       onChange={(ev) => updateField(i, 'sort_order', parseInt(ev.target.value) || 0)}
-                      className="w-12 bg-transparent text-sm text-brand-muted text-right border-b border-transparent focus:border-brand-gold outline-none py-1"
+                      className="w-full bg-transparent text-sm text-brand-muted text-right border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
                     />
                   </td>
-                  <td className="px-3 py-2">
-                    <button onClick={() => e.id ? setDeleteId(e.id) : setEntries(entries.filter((_, j) => j !== i))} className="text-brand-muted hover:text-red-400 transition-colors">
+                  {/* Delete */}
+                  <td className="px-3 py-2 text-center">
+                    <button
+                      onClick={() => e.id ? setDeleteId(e.id) : setEntries(recalcPercentages(entries.filter((_, j) => j !== i)))}
+                      className="text-brand-muted hover:text-red-400 transition-colors p-1"
+                    >
                       <Trash2 size={14} />
                     </button>
                   </td>
