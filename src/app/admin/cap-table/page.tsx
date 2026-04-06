@@ -45,7 +45,11 @@ export default function AdminCapTablePage() {
   useEffect(() => {
     fetch('/api/admin/cap-table')
       .then((r) => r.json())
-      .then((d) => { setEntries(d.entries || []); setLoading(false) })
+      .then((d) => {
+        console.log('[CapTable] Loaded entries:', d.entries)
+        setEntries(d.entries || [])
+        setLoading(false)
+      })
   }, [])
 
   const recalcPercentages = (rows: EditableEntry[]): EditableEntry[] => {
@@ -134,7 +138,7 @@ export default function AdminCapTablePage() {
                 <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '14%' }}>Shares</th>
                 <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '10%' }}>Ownership</th>
                 <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '16%' }}>Investment</th>
-                <th className="text-right px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '8%' }}>Order</th>
+                <th className="text-center px-3 py-2.5 text-xs font-medium text-brand-muted uppercase tracking-wider" style={{ width: '8%' }}>Sort</th>
                 <th className="px-3 py-2.5" style={{ width: '6%' }}></th>
               </tr>
             </thead>
@@ -217,13 +221,13 @@ export default function AdminCapTablePage() {
                       </div>
                     )}
                   </td>
-                  {/* Order */}
+                  {/* Sort */}
                   <td className="px-3 py-2">
                     <input
                       type="number"
                       value={e.sort_order}
                       onChange={(ev) => updateField(i, 'sort_order', parseInt(ev.target.value) || 0)}
-                      className="w-full bg-transparent text-sm text-brand-muted text-right border-b border-transparent hover:border-brand-border focus:border-brand-gold outline-none py-1"
+                      className="w-[60px] mx-auto block bg-brand-card text-sm text-brand-muted text-center rounded border border-transparent focus:border-brand-gold outline-none py-1 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
                     />
                   </td>
                   {/* Delete */}
