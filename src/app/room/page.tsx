@@ -46,19 +46,22 @@ export default async function RoomPage() {
   }))
 
   // Build journey steps from actual documents
-  // Map: step 1 & 2 → "The opportunity" folder (first two docs)
-  // step 3 → "Technical architecture" or presentation
-  // step 4 → "Traction & evidence" or financials
-  // step 5 → Q&A (hardcoded)
-  const opportunityFolder = foldersWithDocs.find((f) => f.name.toLowerCase().includes('opportunity'))
-  const technicalFolder = foldersWithDocs.find((f) => f.name.toLowerCase().includes('technical'))
-  const tractionFolder = foldersWithDocs.find((f) => f.name.toLowerCase().includes('traction'))
+  // Match folders by name keywords (case-insensitive)
+  const findFolder = (...keywords: string[]) =>
+    foldersWithDocs.find((f) => {
+      const name = f.name.toLowerCase()
+      return keywords.some((k) => name.includes(k))
+    })
+
+  const opportunityFolder = findFolder('opportunity')
+  const technicalFolder = findFolder('technical', 'architecture', 'presentation')
+  const financialsFolder = findFolder('financial', 'numbers', 'traction')
 
   const journeyDocs = [
     opportunityFolder?.documents[0] || null,
     opportunityFolder?.documents[1] || null,
     technicalFolder?.documents[0] || null,
-    tractionFolder?.documents[0] || null,
+    financialsFolder?.documents[0] || null,
     null, // Q&A step — always links to /room/qa
   ]
 
