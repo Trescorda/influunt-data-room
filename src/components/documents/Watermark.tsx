@@ -1,14 +1,10 @@
 'use client'
 
 interface WatermarkProps {
-  name: string
-  email: string
   opacity: number
 }
 
-export function Watermark({ name, email, opacity }: WatermarkProps) {
-  const text = `${name} — ${email}`
-
+export function Watermark({ opacity }: WatermarkProps) {
   return (
     <div
       className="absolute inset-0 overflow-hidden pointer-events-none select-none z-10"
@@ -24,7 +20,7 @@ export function Watermark({ name, email, opacity }: WatermarkProps) {
                   className="text-brand-muted text-lg font-medium"
                   style={{ fontSize: '18px' }}
                 >
-                  {text}
+                  influunt
                 </span>
               ))}
             </div>

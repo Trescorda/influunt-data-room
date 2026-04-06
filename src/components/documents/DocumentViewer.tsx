@@ -6,7 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 import { Watermark } from './Watermark'
 import { Button } from '@/components/ui/Button'
-import { ChevronLeft, ChevronRight, Download, Loader2 } from 'lucide-react'
+import { Download, Loader2 } from 'lucide-react'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
@@ -15,8 +15,6 @@ interface DocumentViewerProps {
   fileType: string
   isDownloadable: boolean
   isWatermarked: boolean
-  investorName: string
-  investorEmail: string
   watermarkOpacity: number
 }
 
@@ -25,8 +23,6 @@ export function DocumentViewer({
   fileType,
   isDownloadable,
   isWatermarked,
-  investorName,
-  investorEmail,
   watermarkOpacity,
 }: DocumentViewerProps) {
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
@@ -36,6 +32,8 @@ export function DocumentViewer({
   const [error, setError] = useState('')
   const activityIdRef = useRef<string | null>(null)
   const startTimeRef = useRef(Date.now())
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Fetch signed URL
   useEffect(() => {
@@ -86,6 +84,29 @@ export function DocumentViewer({
     }
   }, [docId])
 
+  // Track scroll position to update current page
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container || numPages === 0) return
+
+    const handleScroll = () => {
+      const containerTop = container.scrollTop
+      const containerHeight = container.clientHeight
+      const scrollCenter = containerTop + containerHeight / 3
+
+      for (let i = pageRefs.current.length - 1; i >= 0; i--) {
+        const el = pageRefs.current[i]
+        if (el && el.offsetTop <= scrollCenter) {
+          setCurrentPage(i + 1)
+          break
+        }
+      }
+    }
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [numPages])
+
   // Disable right-click if not downloadable
   const handleContextMenu = useCallback(
     (e: React.MouseEvent) => {
@@ -122,7 +143,6 @@ export function DocumentViewer({
 
   const isPdf = fileType === 'pdf'
   const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileType)
-  const showBottomBar = isPdf && numPages > 1
 
   return (
     <div onContextMenu={handleContextMenu} className="flex flex-col h-full">
@@ -137,20 +157,19 @@ export function DocumentViewer({
       )}
 
       {/* Scrollable document area */}
-      <div className="relative flex-1 overflow-y-auto bg-brand-darker">
+      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-brand-darker">
         {isWatermarked && (
-          <Watermark
-            name={investorName}
-            email={investorEmail}
-            opacity={watermarkOpacity}
-          />
+          <Watermark opacity={watermarkOpacity} />
         )}
 
         {isPdf && signedUrl && (
           <div className="flex flex-col items-center py-4">
             <Document
               file={signedUrl}
-              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+              onLoadSuccess={({ numPages }) => {
+                setNumPages(numPages)
+                pageRefs.current = new Array(numPages).fill(null)
+              }}
               loading={
                 <div className="flex items-center justify-center py-32">
                   <Loader2 className="animate-spin text-brand-gold" size={32} />
@@ -162,12 +181,23 @@ export function DocumentViewer({
                 </div>
               }
             >
-              <Page
-                pageNumber={currentPage}
-                width={Math.min(850, typeof window !== 'undefined' ? window.innerWidth - 100 : 850)}
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-              />
+              {Array.from({ length: numPages }, (_, i) => (
+                <div
+                  key={i}
+                  ref={(el) => { pageRefs.current[i] = el }}
+                  className="mb-3"
+                >
+                  <Page
+                    pageNumber={i + 1}
+                    width={Math.min(850, typeof window !== 'undefined' ? window.innerWidth - 100 : 850)}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                  />
+                  {i < numPages - 1 && (
+                    <div className="border-b border-brand-border/30 mt-3" />
+                  )}
+                </div>
+              ))}
             </Document>
           </div>
         )}
@@ -198,32 +228,16 @@ export function DocumentViewer({
             </div>
           </div>
         )}
-      </div>
 
-      {/* Fixed bottom page navigation */}
-      {showBottomBar && (
-        <div className="flex-shrink-0 flex items-center justify-center gap-6 px-4 py-2.5 bg-brand-dark border-t border-brand-border">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage <= 1}
-            className="flex items-center gap-1 text-sm text-brand-muted hover:text-brand-gold disabled:opacity-30 disabled:hover:text-brand-muted transition-colors"
-          >
-            <ChevronLeft size={16} />
-            Previous
-          </button>
-          <span className="text-sm text-brand-muted">
-            Page {currentPage} of {numPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(numPages, p + 1))}
-            disabled={currentPage >= numPages}
-            className="flex items-center gap-1 text-sm text-brand-muted hover:text-brand-gold disabled:opacity-30 disabled:hover:text-brand-muted transition-colors"
-          >
-            Next
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
+        {/* Floating page counter */}
+        {isPdf && numPages > 1 && (
+          <div className="sticky bottom-3 flex justify-end pr-4 pointer-events-none z-20">
+            <span className="pointer-events-auto bg-brand-dark/90 border border-brand-border text-xs text-brand-muted px-3 py-1.5 rounded-lg">
+              Page {currentPage} of {numPages}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
