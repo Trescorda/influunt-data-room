@@ -41,7 +41,7 @@ export function NdaGate({ ndaText, investorId }: NdaGateProps) {
     <div className="min-h-screen bg-brand-darker flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <img src="/influunt-logo.png" alt="Influunt" width={180} className="mx-auto mb-4" />
+          <img src="/influunt-horizontal.png" alt="Influunt" width={200} className="mx-auto mb-4" />
           <h1 className="text-2xl font-serif text-brand-gold">Non-Disclosure Agreement</h1>
           <p className="text-sm text-brand-muted mt-2">
             Please review and accept to access the data room

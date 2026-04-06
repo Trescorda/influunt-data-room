@@ -25,8 +25,7 @@ export function AdminSidebar() {
     <aside className="w-64 min-h-screen bg-brand-dark border-r border-brand-border flex flex-col">
       <div className="px-6 py-6 border-b border-brand-border">
         <Link href="/admin" className="block">
-          <img src="/influunt-shield.png" alt="Influunt" width={40} />
-          <p className="text-xs text-brand-muted mt-2">Admin Console</p>
+          <img src="/influunt-horizontal.png" alt="Influunt" width={140} />
         </Link>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
