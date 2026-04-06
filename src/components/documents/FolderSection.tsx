@@ -6,7 +6,7 @@ import { DocumentCard } from './DocumentCard'
 import type { FolderWithDocuments } from '@/lib/types'
 
 export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
-  const [open, setOpen] = useState(!folder.is_collapsed_default)
+  const [open, setOpen] = useState(false)
 
   return (
     <div className="border border-brand-border rounded-xl overflow-hidden">

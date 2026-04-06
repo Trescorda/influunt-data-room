@@ -14,16 +14,25 @@ export default async function RoomPage() {
 
   const admin = createAdminClient()
 
-  const { data: folders } = await admin
+  const { data: folders, error: foldersError } = await admin
     .from('document_folders')
     .select('*')
     .order('sort_order')
 
-  const { data: documents } = await admin
+  const { data: documents, error: docsError } = await admin
     .from('documents')
     .select('*')
     .eq('is_viewable', true)
     .order('sort_order')
+
+  console.log('[Room] Folders:', folders?.length, 'error:', foldersError?.message)
+  console.log('[Room] Documents:', documents?.length, 'error:', docsError?.message)
+  if (documents?.length) {
+    console.log('[Room] First doc folder_id:', documents[0].folder_id, 'title:', documents[0].title)
+  }
+  if (folders?.length) {
+    console.log('[Room] First folder id:', folders[0].id, 'name:', folders[0].name)
+  }
 
   const foldersWithDocs: FolderWithDocuments[] = (folders || []).map((folder) => ({
     ...folder,
