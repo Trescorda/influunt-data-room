@@ -75,33 +75,20 @@ export default function DocumentsPage() {
 
     setUploading(true)
 
-    const fileExt = selectedFile.name.split('.').pop()?.toLowerCase() || 'bin'
-    const filePath = `${uploadFolderId}/${Date.now()}_${selectedFile.name}`
+    const formData = new FormData()
+    formData.append('file', selectedFile)
+    formData.append('title', uploadTitle)
+    formData.append('description', uploadDescription)
+    formData.append('folder_id', uploadFolderId)
+    formData.append('is_viewable', String(uploadViewable))
+    formData.append('is_downloadable', String(uploadDownloadable))
+    formData.append('is_watermarked', String(uploadWatermarked))
 
-    const { error: uploadError } = await supabase.storage
-      .from('documents')
-      .upload(filePath, selectedFile)
+    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData })
+    const result = await res.json()
 
-    if (uploadError) {
-      alert('Upload failed: ' + uploadError.message)
-      setUploading(false)
-      return
-    }
-
-    const { error: insertError } = await supabase.from('documents').insert({
-      folder_id: uploadFolderId,
-      title: uploadTitle,
-      description: uploadDescription || null,
-      file_path: filePath,
-      file_type: fileExt,
-      file_size: selectedFile.size,
-      is_viewable: uploadViewable,
-      is_downloadable: uploadDownloadable,
-      is_watermarked: uploadWatermarked,
-    })
-
-    if (insertError) {
-      alert('Failed to save document: ' + insertError.message)
+    if (!res.ok) {
+      alert(result.error || 'Upload failed')
       setUploading(false)
       return
     }
