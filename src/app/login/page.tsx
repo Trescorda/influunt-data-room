@@ -19,14 +19,15 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    // Check if email exists in investors table
-    const { data: investor } = await supabase
-      .from('investors')
-      .select('id')
-      .eq('email', email.toLowerCase().trim())
-      .single()
+    // Check if email exists in investors table (server-side, bypasses RLS)
+    const res = await fetch('/api/check-investor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.toLowerCase().trim() }),
+    })
+    const { exists } = await res.json()
 
-    if (!investor) {
+    if (!exists) {
       setError('This email is not authorized to access the data room.')
       setLoading(false)
       return
