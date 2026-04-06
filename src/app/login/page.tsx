@@ -43,7 +43,8 @@ export default function LoginPage() {
     })
 
     if (authError) {
-      setError('Failed to send access link. Please try again.')
+      console.error('Supabase signInWithOtp error:', authError.message, authError)
+      setError(`Failed to send access link: ${authError.message}`)
       setLoading(false)
       return
     }
