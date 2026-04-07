@@ -1,14 +1,25 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/Card'
-import { ActivityRow } from '@/components/admin/ActivityRow'
-import { Users, FileText, Eye, Clock } from 'lucide-react'
+import { Badge } from '@/components/ui/Badge'
+import { RelativeTime } from '@/components/admin/RelativeTime'
+import { Users, FileText, Eye, Clock, MessageSquare, CheckCircle, Activity, TrendingUp, ArrowRight } from 'lucide-react'
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds}s`
   if (seconds < 3600) return `${Math.round(seconds / 60)}m`
-  return `${(seconds / 3600).toFixed(1)}h`
+  const h = Math.floor(seconds / 3600)
+  const m = Math.round((seconds % 3600) / 60)
+  return `${h}h ${m}m`
+}
+
+function formatAvgTime(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`
+  const m = Math.floor(seconds / 60)
+  const s = Math.round(seconds % 60)
+  return `${m}m ${s}s`
 }
 
 export default async function AdminDashboard() {
@@ -17,109 +28,168 @@ export default async function AdminDashboard() {
   if (!user) redirect('/login')
 
   const admin = createAdminClient()
-  console.log('[Dashboard] User:', user.id, 'Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
 
-  const { count: totalInvestors, error: invError } = await admin
+  // Core counts
+  const { count: totalInvestors } = await admin
     .from('investors')
     .select('*', { count: 'exact', head: true })
     .eq('is_admin', false)
 
-  console.log('[Dashboard] totalInvestors:', totalInvestors, 'error:', invError?.message)
+  const { count: ndasSigned } = await admin
+    .from('investors')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_admin', false)
+    .eq('nda_signed', true)
 
+  const { count: pendingQuestions } = await admin
+    .from('questions')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending')
+
+  // Weekly activity
   const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  const { data: weeklyActive } = await admin
+  const { data: weeklyActivity } = await admin
     .from('activity_log')
     .select('investor_id')
     .gte('created_at', oneWeekAgo)
 
-  const uniqueActiveIds = new Set(weeklyActive?.map((a) => a.investor_id) || [])
+  const uniqueWeeklyInvestors = new Set(weeklyActivity?.map((a) => a.investor_id) || [])
 
-  const { data: viewDurations } = await admin
+  // Count activity per investor this week → find most active
+  const weeklyCounts: Record<string, number> = {}
+  for (const a of weeklyActivity || []) {
+    if (a.investor_id) weeklyCounts[a.investor_id] = (weeklyCounts[a.investor_id] || 0) + 1
+  }
+  const mostActiveId = Object.entries(weeklyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null
+
+  // All view_document activities with durations for avg session calc
+  const { data: viewActivities } = await admin
     .from('activity_log')
-    .select('duration_seconds')
+    .select('investor_id, document_id, duration_seconds, created_at')
     .eq('action', 'view_document')
-    .not('duration_seconds', 'is', null)
 
-  const totalDocViews = viewDurations?.length || 0
-  const avgTime = viewDurations && viewDurations.length > 0
-    ? Math.round(viewDurations.reduce((sum, v) => sum + (v.duration_seconds || 0), 0) / viewDurations.length)
+  const totalDocViews = viewActivities?.length || 0
+  const durationsWithValue = (viewActivities || []).filter((v) => v.duration_seconds)
+  const avgSessionDuration = durationsWithValue.length > 0
+    ? Math.round(durationsWithValue.reduce((sum, v) => sum + (v.duration_seconds || 0), 0) / durationsWithValue.length)
     : 0
 
-  const { data: docViews } = await admin
-    .from('activity_log')
-    .select('document_id, documents(title)')
-    .eq('action', 'view_document')
-    .not('document_id', 'is', null)
-
-  const viewCounts: Record<string, { title: string; count: number }> = {}
-  for (const v of docViews || []) {
-    if (!v.document_id) continue
-    if (!viewCounts[v.document_id]) {
-      viewCounts[v.document_id] = { title: (v.documents as any)?.title || 'Unknown', count: 0 }
-    }
-    viewCounts[v.document_id].count++
-  }
-  const topDocs = Object.entries(viewCounts)
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 5)
-  const maxViews = topDocs.length > 0 ? topDocs[0][1].count : 1
-
+  // Fetch all non-admin investors
   const { data: allInvestors } = await admin
     .from('investors')
     .select('id, name, organisation, status')
     .eq('is_admin', false)
-    .order('updated_at', { ascending: false })
 
+  // Fetch all activity log for per-investor aggregation
   const { data: allActivity } = await admin
     .from('activity_log')
-    .select('investor_id, action, duration_seconds, created_at')
-    .order('created_at', { ascending: false })
+    .select('investor_id, action, duration_seconds, document_id, created_at')
 
+  // Build per-investor stats for the Investor Overview table
   const investorStats = (allInvestors || []).map((inv) => {
     const acts = (allActivity || []).filter((a) => a.investor_id === inv.id)
-    const lastAct = acts[0]
-    const totalTime = acts.reduce((sum, a) => sum + (a.duration_seconds || 0), 0)
-    const docsViewed = acts.filter((a) => a.action === 'view_document').length
-    const isRecentlyActive = lastAct && (Date.now() - new Date(lastAct.created_at).getTime()) < 24 * 60 * 60 * 1000
-    return { ...inv, lastAct, totalTime, docsViewed, isRecentlyActive }
+    const lastAct = acts.sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )[0]
+    const views = acts.filter((a) => a.action === 'view_document')
+    const uniqueDocs = new Set(views.map((v) => v.document_id).filter(Boolean))
+    const totalTime = views.reduce((sum, a) => sum + (a.duration_seconds || 0), 0)
+    return {
+      ...inv,
+      lastActivityAt: lastAct?.created_at || null,
+      docsViewed: uniqueDocs.size,
+      timeSpent: totalTime,
+    }
   }).sort((a, b) => {
-    if (!a.lastAct) return 1
-    if (!b.lastAct) return -1
-    return new Date(b.lastAct.created_at).getTime() - new Date(a.lastAct.created_at).getTime()
-  })
+    if (!a.lastActivityAt) return 1
+    if (!b.lastActivityAt) return -1
+    return new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime()
+  }).slice(0, 10)
 
-  const { data: recentActivity } = await admin
-    .from('activity_log')
-    .select('*, investors(name, email), documents(title)')
-    .order('created_at', { ascending: false })
-    .limit(20)
+  // Most active investor name
+  const mostActiveInvestor = mostActiveId
+    ? (allInvestors || []).find((i) => i.id === mostActiveId)?.name || '—'
+    : '—'
+
+  // Document engagement: aggregate by document_id
+  const { data: docMeta } = await admin.from('documents').select('id, title')
+  const docTitleById: Record<string, string> = {}
+  for (const d of docMeta || []) docTitleById[d.id] = d.title
+
+  const docStats: Record<string, { title: string; views: number; uniqueViewers: Set<string>; totalDuration: number; durationCount: number }> = {}
+  for (const v of viewActivities || []) {
+    if (!v.document_id) continue
+    if (!docStats[v.document_id]) {
+      docStats[v.document_id] = {
+        title: docTitleById[v.document_id] || 'Unknown',
+        views: 0,
+        uniqueViewers: new Set(),
+        totalDuration: 0,
+        durationCount: 0,
+      }
+    }
+    docStats[v.document_id].views++
+    if (v.investor_id) docStats[v.document_id].uniqueViewers.add(v.investor_id)
+    if (v.duration_seconds) {
+      docStats[v.document_id].totalDuration += v.duration_seconds
+      docStats[v.document_id].durationCount++
+    }
+  }
+
+  const docEngagement = Object.entries(docStats)
+    .map(([id, s]) => ({
+      id,
+      title: s.title,
+      views: s.views,
+      uniqueViewers: s.uniqueViewers.size,
+      avgTime: s.durationCount > 0 ? Math.round(s.totalDuration / s.durationCount) : 0,
+    }))
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 10)
+
+  const maxDocViews = docEngagement[0]?.views || 1
 
   const metrics = [
     { label: 'Total investors', value: totalInvestors || 0, icon: Users },
-    { label: 'Active this week', value: uniqueActiveIds.size, icon: Clock },
+    { label: 'Active this week', value: uniqueWeeklyInvestors.size, icon: Clock },
     { label: 'Documents viewed', value: totalDocViews, icon: Eye },
-    { label: 'Avg view time', value: avgTime > 0 ? formatDuration(avgTime) : '—', icon: FileText },
+    { label: 'Avg view time', value: avgSessionDuration > 0 ? formatDuration(avgSessionDuration) : '—', icon: FileText },
   ]
 
-  const actionLabels: Record<string, string> = {
-    login: 'logged in',
-    logout: 'logged out',
-    view_document: 'viewed',
-    download_document: 'downloaded',
-    sign_nda: 'signed NDA',
-    request_access: 'requested access',
-    submit_question: 'asked a question',
-  }
+  const quickStats = [
+    {
+      label: 'Questions Pending',
+      value: pendingQuestions || 0,
+      icon: MessageSquare,
+      href: '/admin/qa',
+      gold: true,
+    },
+    {
+      label: 'Avg Session Duration',
+      value: avgSessionDuration > 0 ? formatAvgTime(avgSessionDuration) : '—',
+      icon: Activity,
+    },
+    {
+      label: 'Most Active Investor',
+      value: mostActiveInvestor,
+      icon: TrendingUp,
+    },
+    {
+      label: 'NDAs Signed',
+      value: `${ndasSigned || 0} / ${totalInvestors || 0}`,
+      icon: CheckCircle,
+    },
+  ]
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden p-4 md:p-6 gap-4 md:gap-5">
+    <div className="flex flex-col min-h-screen p-4 md:p-6 gap-4 md:gap-5">
       {/* Header */}
       <div className="flex-shrink-0">
         <h1 className="text-xl font-semibold text-brand-text">Dashboard</h1>
         <p className="text-xs text-brand-muted mt-0.5">Overview of your data room</p>
       </div>
 
-      {/* Metrics row */}
+      {/* Top metrics */}
       <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {metrics.map(({ label, value, icon: Icon }) => (
           <Card key={label} padding="md">
@@ -136,72 +206,131 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {/* Middle row: Most viewed + Engagement */}
-      <div className="flex-shrink-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-        <Card padding="md" className="min-h-[160px]">
-          <h2 className="text-sm font-semibold text-brand-text mb-3">Most viewed documents</h2>
-          {topDocs.length === 0 ? (
-            <p className="text-xs text-brand-muted py-2 text-center">No document views yet</p>
+      {/* Two-column analytics grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+        {/* Investor Overview */}
+        <Card padding="sm" className="flex flex-col">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-brand-border">
+            <h2 className="text-sm font-semibold text-brand-text">Investor Overview</h2>
+            <Link href="/admin/investors" className="text-xs text-brand-gold hover:text-brand-gold/80 flex items-center gap-1">
+              View all <ArrowRight size={12} />
+            </Link>
+          </div>
+          {investorStats.length === 0 ? (
+            <p className="text-xs text-brand-muted py-8 text-center">No investors yet</p>
           ) : (
-            <div className="space-y-2">
-              {topDocs.map(([docId, { title, count }]) => (
-                <div key={docId}>
-                  <div className="flex justify-between text-xs mb-0.5">
-                    <span className="text-brand-text truncate mr-3">{title}</span>
-                    <span className="text-brand-muted flex-shrink-0">{count}</span>
-                  </div>
-                  <div className="w-full bg-brand-border rounded-full h-1.5">
-                    <div
-                      className="bg-brand-gold rounded-full h-1.5 transition-all"
-                      style={{ width: `${(count / maxViews) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-brand-card z-10">
+                  <tr className="border-b border-brand-border">
+                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Name</th>
+                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Last Active</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Docs</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Time</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {investorStats.map((inv) => (
+                    <tr key={inv.id} className="border-b border-brand-border last:border-0 hover:bg-brand-dark/30">
+                      <td className="px-3 py-2">
+                        <p className="text-xs text-brand-text truncate max-w-[140px]">{inv.name}</p>
+                        {inv.organisation && (
+                          <p className="text-[10px] text-brand-muted truncate max-w-[140px]">{inv.organisation}</p>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-[11px] text-brand-muted">
+                        {inv.lastActivityAt ? <RelativeTime timestamp={inv.lastActivityAt} /> : '—'}
+                      </td>
+                      <td className="px-3 py-2 text-[11px] text-brand-text text-right">{inv.docsViewed}</td>
+                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right">
+                        {inv.timeSpent > 0 ? formatDuration(inv.timeSpent) : '—'}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <Badge variant={inv.status === 'active' ? 'green' : inv.status === 'invited' ? 'blue' : 'gray'}>
+                          {inv.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </Card>
 
-        <Card padding="md" className="min-h-[160px]">
-          <h2 className="text-sm font-semibold text-brand-text mb-3">Investor engagement</h2>
-          {investorStats.length === 0 ? (
-            <p className="text-xs text-brand-muted py-2 text-center">No investors yet</p>
+        {/* Document Engagement */}
+        <Card padding="sm" className="flex flex-col">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-brand-border">
+            <h2 className="text-sm font-semibold text-brand-text">Document Engagement</h2>
+            <Link href="/admin/documents" className="text-xs text-brand-gold hover:text-brand-gold/80 flex items-center gap-1">
+              View all <ArrowRight size={12} />
+            </Link>
+          </div>
+          {docEngagement.length === 0 ? (
+            <p className="text-xs text-brand-muted py-8 text-center">No document views yet</p>
           ) : (
-            <div className="space-y-1">
-              {investorStats.slice(0, 6).map((inv) => (
-                <div key={inv.id} className="flex items-center gap-2 py-1.5 border-b border-brand-border last:border-0">
-                  <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${inv.isRecentlyActive ? 'bg-green-400' : 'bg-brand-border'}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-brand-text truncate">{inv.name}</p>
-                  </div>
-                  <p className="text-xs text-brand-muted flex-shrink-0">{inv.docsViewed} docs &middot; {formatDuration(inv.totalTime)}</p>
-                </div>
-              ))}
+            <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-brand-card z-10">
+                  <tr className="border-b border-brand-border">
+                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Document</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Views</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Unique</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Avg Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {docEngagement.map((doc) => (
+                    <tr key={doc.id} className="border-b border-brand-border last:border-0 hover:bg-brand-dark/30">
+                      <td className="px-3 py-2">
+                        <p className="text-xs text-brand-text truncate max-w-[180px] mb-1">{doc.title}</p>
+                        <div className="w-full bg-brand-border rounded-full h-1">
+                          <div
+                            className="bg-brand-gold rounded-full h-1"
+                            style={{ width: `${(doc.views / maxDocViews) * 100}%` }}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-[11px] text-brand-text text-right align-top">{doc.views}</td>
+                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right align-top">{doc.uniqueViewers}</td>
+                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right align-top">
+                        {doc.avgTime > 0 ? formatAvgTime(doc.avgTime) : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </Card>
       </div>
 
-      {/* Recent activity — fills remaining space with internal scroll */}
-      <Card padding="sm" className="flex-1 min-h-0 flex flex-col">
-        <h2 className="text-sm font-semibold text-brand-text mb-2 flex-shrink-0">Recent activity</h2>
-        {(!recentActivity || recentActivity.length === 0) ? (
-          <p className="text-xs text-brand-muted py-4 text-center">No activity yet</p>
-        ) : (
-          <div className="flex-1 overflow-y-auto min-h-0 space-y-1">
-            {recentActivity.map((activity: any) => (
-              <ActivityRow
-                key={activity.id}
-                initial={activity.investors?.name?.[0] || '?'}
-                name={activity.investors?.name || 'Unknown'}
-                actionLabel={actionLabels[activity.action] || activity.action}
-                documentTitle={activity.documents?.title}
-                createdAt={activity.created_at}
-              />
-            ))}
-          </div>
-        )}
-      </Card>
+      {/* Quick stats row */}
+      <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {quickStats.map(({ label, value, icon: Icon, href, gold }) => {
+          const content = (
+            <Card padding="md" className={`hover:border-brand-gold/40 transition-colors ${href ? 'cursor-pointer' : ''}`}>
+              <div className="flex items-center justify-between">
+                <div className="min-w-0">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">{label}</p>
+                  <p className={`text-lg font-bold mt-1 truncate ${gold ? 'text-brand-gold' : 'text-brand-text'}`}>
+                    {value}
+                  </p>
+                </div>
+                <div className="w-8 h-8 bg-brand-gold/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Icon size={16} className="text-brand-gold" />
+                </div>
+              </div>
+            </Card>
+          )
+          return href ? (
+            <Link key={label} href={href}>{content}</Link>
+          ) : (
+            <div key={label}>{content}</div>
+          )
+        })}
+      </div>
     </div>
   )
 }
