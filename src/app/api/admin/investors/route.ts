@@ -21,11 +21,15 @@ export async function GET() {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const { data } = await admin
+  console.log('[Admin Investors GET] Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+
+  const { data, error: queryError } = await admin
     .from('investors')
     .select('*')
     .eq('is_admin', false)
     .order('created_at', { ascending: false })
+
+  console.log('[Admin Investors GET] Result:', data?.length, 'rows, error:', queryError?.message)
 
   return NextResponse.json({ investors: data || [] })
 }

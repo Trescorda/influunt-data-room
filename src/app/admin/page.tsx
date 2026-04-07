@@ -27,11 +27,14 @@ export default async function AdminDashboard() {
   if (!user) redirect('/login')
 
   const admin = createAdminClient()
+  console.log('[Dashboard] User:', user.id, 'Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
 
-  const { count: totalInvestors } = await admin
+  const { count: totalInvestors, error: invError } = await admin
     .from('investors')
     .select('*', { count: 'exact', head: true })
     .eq('is_admin', false)
+
+  console.log('[Dashboard] totalInvestors:', totalInvestors, 'error:', invError?.message)
 
   const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data: weeklyActive } = await admin
