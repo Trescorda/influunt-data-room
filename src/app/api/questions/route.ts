@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendEmail, newQuestionEmail } from '@/lib/email'
+
+const ADMIN_EMAILS = ['brad@influunt.global', 'kayde@influunt.global']
 
 // GET: Fetch the current investor's questions
 export async function GET() {
@@ -44,7 +47,7 @@ export async function POST(request: Request) {
 
   const { data: investor } = await admin
     .from('investors')
-    .select('id')
+    .select('id, name, email')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -70,6 +73,17 @@ export async function POST(request: Request) {
     investor_id: investor.id,
     action: 'submit_question',
   })
+
+  // Notify admins via email (don't block on failure)
+  try {
+    await sendEmail(
+      ADMIN_EMAILS,
+      `New question from ${investor.name}`,
+      newQuestionEmail(investor.name, question.trim()),
+    )
+  } catch (emailErr) {
+    console.error('[Questions POST] Email notify failed:', emailErr)
+  }
 
   return NextResponse.json({ question: newQuestion })
 }

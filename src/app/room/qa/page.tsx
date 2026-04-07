@@ -13,6 +13,7 @@ export default function QAPage() {
   const [loading, setLoading] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const loadQuestions = async () => {
     const res = await fetch('/api/questions')
@@ -31,19 +32,28 @@ export default function QAPage() {
 
     setLoading(true)
     setSuccess(false)
+    setError('')
 
-    const res = await fetch('/api/questions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: newQuestion.trim() }),
-    })
-    const data = await res.json()
+    try {
+      const res = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: newQuestion.trim() }),
+      })
+      const data = await res.json()
+      console.log('[Q&A Submit] Response:', { status: res.status, data })
 
-    if (res.ok && data.question) {
-      setQuestions([data.question, ...questions])
-      setNewQuestion('')
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 3000)
+      if (res.ok && data.question) {
+        setQuestions([data.question, ...questions])
+        setNewQuestion('')
+        setSuccess(true)
+        setTimeout(() => setSuccess(false), 3000)
+      } else {
+        setError(data.error || 'Failed to submit question')
+      }
+    } catch (err: any) {
+      console.error('[Q&A Submit] Fetch failed:', err)
+      setError('Network error — please try again')
     }
     setLoading(false)
   }
@@ -72,6 +82,8 @@ export default function QAPage() {
                 <CheckCircle size={16} />
                 Question submitted successfully
               </div>
+            ) : error ? (
+              <p className="text-sm text-red-400">{error}</p>
             ) : (
               <div />
             )}
