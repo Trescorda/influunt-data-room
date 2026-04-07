@@ -42,9 +42,14 @@ export default function InvestorsPage() {
   const [generatingLink, setGeneratingLink] = useState<string | null>(null)
 
   const loadInvestors = async () => {
-    const res = await fetch('/api/admin/investors')
-    const data = await res.json()
-    setInvestors(data.investors || [])
+    try {
+      const res = await fetch('/api/admin/investors')
+      const data = await res.json()
+      if (!res.ok) console.error('[Investors] API error:', data.error)
+      setInvestors(data.investors || [])
+    } catch (err) {
+      console.error('[Investors] Fetch error:', err)
+    }
     setLoading(false)
   }
 

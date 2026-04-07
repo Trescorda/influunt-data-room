@@ -4,7 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  console.log('[Admin Investors GET] user:', user?.id, 'error:', authError?.message)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
@@ -15,6 +16,7 @@ export async function GET() {
     .eq('auth_user_id', user.id)
     .single()
 
+  console.log('[Admin Investors GET] is_admin:', currentInvestor?.is_admin)
   if (!currentInvestor?.is_admin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
