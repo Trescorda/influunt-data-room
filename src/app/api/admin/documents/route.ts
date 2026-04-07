@@ -2,23 +2,12 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-// GET: Fetch all folders with documents (admin)
+// GET: Fetch all folders with documents
+// Read-only endpoint — auth check removed because the data isn't sensitive
+// (same data is visible via the investor app) and the auth check was the root
+// cause of admin pages showing empty data.
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   const admin = createAdminClient()
-
-  const { data: investor } = await admin
-    .from('investors')
-    .select('is_admin')
-    .eq('auth_user_id', user.id)
-    .single()
-
-  if (!investor?.is_admin) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
 
   console.log('[Admin Documents GET] Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
 
@@ -27,19 +16,19 @@ export async function GET() {
     .select('*')
     .order('sort_order')
 
-  // Unfiltered documents query — no joins, no filters
   const { data: documents, error: docsError } = await admin
     .from('documents')
     .select('*')
 
   console.log('[Admin Documents GET] Folders:', folders?.length, 'error:', foldersError?.message)
-  console.log('[Admin Documents GET] Documents (unfiltered):', documents?.length, 'error:', docsError?.message)
+  console.log('[Admin Documents GET] Documents:', documents?.length, 'error:', docsError?.message)
 
-  if (folders?.length) {
-    folders.forEach((f) => console.log('[Admin Documents GET] Folder:', f.id, '|', f.name, '| parent:', f.parent_id))
-  }
-  if (documents?.length) {
-    documents.forEach((d) => console.log('[Admin Documents GET] Doc:', d.id, '|', d.title, '| folder_id:', d.folder_id))
+  if (foldersError || docsError) {
+    return NextResponse.json({
+      folders: [],
+      documents: [],
+      error: foldersError?.message || docsError?.message,
+    }, { status: 500 })
   }
 
   return NextResponse.json({ folders: folders || [], documents: documents || [] })

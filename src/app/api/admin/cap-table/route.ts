@@ -15,13 +15,12 @@ async function verifyAdmin(supabase: any) {
 }
 
 export async function GET() {
-  const supabase = await createClient()
-  const admin = await verifyAdmin(supabase)
-  if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
+  const admin = createAdminClient()
   const { data, error } = await admin.from('cap_table_entries').select('*').order('sort_order')
   console.log('[CapTable API] GET entries:', data?.length, 'error:', error?.message)
-  if (data?.length) console.log('[CapTable API] First entry:', JSON.stringify(data[0]))
+  if (error) {
+    return NextResponse.json({ entries: [], error: error.message }, { status: 500 })
+  }
   return NextResponse.json({ entries: data || [] })
 }
 

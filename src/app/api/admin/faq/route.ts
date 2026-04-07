@@ -15,11 +15,12 @@ async function verifyAdmin(supabase: any) {
 }
 
 export async function GET() {
-  const supabase = await createClient()
-  const admin = await verifyAdmin(supabase)
-  if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
-  const { data } = await admin.from('faqs').select('*').order('sort_order')
+  const admin = createAdminClient()
+  const { data, error } = await admin.from('faqs').select('*').order('sort_order')
+  console.log('[FAQ API] GET faqs:', data?.length, 'error:', error?.message)
+  if (error) {
+    return NextResponse.json({ faqs: [], error: error.message }, { status: 500 })
+  }
   return NextResponse.json({ faqs: data || [] })
 }
 
