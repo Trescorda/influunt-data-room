@@ -30,37 +30,85 @@ export default function DocumentsPage() {
   const supabase = createClient()
 
   const loadDocuments = async () => {
-    const res = await fetch('/api/admin/documents')
-    const data = await res.json()
-    const allFolders = data.folders || []
-    const allDocs = data.documents || []
+    try {
+      const res = await fetch('/api/admin/documents')
+      const data = await res.json()
+      console.log('[Admin Docs Page] API response:', { status: res.status, folderCount: data.folders?.length, docCount: data.documents?.length })
 
-    // Build tree: top-level folders with subfolders
-    const topLevel = allFolders
-      .filter((f: any) => !f.parent_id)
-      .sort((a: any, b: any) => a.sort_order - b.sort_order)
-      .map((folder: any) => ({
-        ...folder,
-        documents: allDocs.filter((d: any) => d.folder_id === folder.id),
-        subfolders: allFolders
-          .filter((sf: any) => sf.parent_id === folder.id)
-          .sort((a: any, b: any) => a.sort_order - b.sort_order)
-          .map((sf: any) => ({
-            ...sf,
-            documents: allDocs.filter((d: any) => d.folder_id === sf.id),
-          })),
-      }))
-
-    setFolders(topLevel)
-    setAllFlatFolders(allFolders)
-    if (topLevel.length > 0 && !uploadFolderId) {
-      // Default to first subfolder if available, otherwise first folder
-      const firstWithSubs = topLevel.find((f: any) => f.subfolders?.length > 0)
-      if (firstWithSubs?.subfolders?.[0]) {
-        setUploadFolderId(firstWithSubs.subfolders[0].id)
-      } else if (topLevel[0]) {
-        setUploadFolderId(topLevel[0].id)
+      if (!res.ok) {
+        console.error('[Admin Docs Page] API error:', data.error)
+        setLoading(false)
+        return
       }
+
+      const allFolders = data.folders || []
+      const allDocs = data.documents || []
+
+      console.log('[Admin Docs Page] All folders:', allFolders.map((f: any) => ({ id: f.id, name: f.name, parent_id: f.parent_id })))
+      console.log('[Admin Docs Page] All docs:', allDocs.map((d: any) => ({ id: d.id, title: d.title, folder_id: d.folder_id })))
+
+      // Track which docs we've placed so we can find orphans
+      const placedDocIds = new Set<string>()
+
+      // Build tree: top-level folders with subfolders
+      // Top-level = no parent_id
+      const topLevel = allFolders
+        .filter((f: any) => !f.parent_id)
+        .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+        .map((folder: any) => {
+          const directDocs = allDocs.filter((d: any) => d.folder_id === folder.id)
+          directDocs.forEach((d: any) => placedDocIds.add(d.id))
+
+          const subfolders = allFolders
+            .filter((sf: any) => sf.parent_id === folder.id)
+            .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+            .map((sf: any) => {
+              const subDocs = allDocs.filter((d: any) => d.folder_id === sf.id)
+              subDocs.forEach((d: any) => placedDocIds.add(d.id))
+              return { ...sf, documents: subDocs }
+            })
+
+          return {
+            ...folder,
+            documents: directDocs,
+            subfolders,
+          }
+        })
+
+      // Find orphaned documents (folder_id doesn't match any folder, or null)
+      const orphanedDocs = allDocs.filter((d: any) => !placedDocIds.has(d.id))
+      if (orphanedDocs.length > 0) {
+        console.warn('[Admin Docs Page] Orphaned documents (folder_id does not match any folder):', orphanedDocs)
+        // Add an "Uncategorised" pseudo-folder to display them
+        topLevel.push({
+          id: '__orphans__',
+          name: 'Uncategorised',
+          description: 'Documents with no matching folder',
+          parent_id: null,
+          sort_order: 9999,
+          documents: orphanedDocs,
+          subfolders: [],
+        })
+      }
+
+      console.log('[Admin Docs Page] Final tree:', topLevel.map((f: any) => ({
+        name: f.name,
+        directDocs: f.documents.length,
+        subfolders: f.subfolders?.map((sf: any) => ({ name: sf.name, docs: sf.documents.length })),
+      })))
+
+      setFolders(topLevel)
+      setAllFlatFolders(allFolders)
+      if (topLevel.length > 0 && !uploadFolderId) {
+        const firstWithSubs = topLevel.find((f: any) => f.subfolders?.length > 0)
+        if (firstWithSubs?.subfolders?.[0]) {
+          setUploadFolderId(firstWithSubs.subfolders[0].id)
+        } else if (topLevel[0]) {
+          setUploadFolderId(topLevel[0].id)
+        }
+      }
+    } catch (err) {
+      console.error('[Admin Docs Page] Fetch failed:', err)
     }
     setLoading(false)
   }

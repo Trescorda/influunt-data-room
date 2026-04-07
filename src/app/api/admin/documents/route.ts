@@ -20,15 +20,27 @@ export async function GET() {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const { data: folders } = await admin
+  console.log('[Admin Documents GET] Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+
+  const { data: folders, error: foldersError } = await admin
     .from('document_folders')
     .select('*')
     .order('sort_order')
 
-  const { data: documents } = await admin
+  // Unfiltered documents query — no joins, no filters
+  const { data: documents, error: docsError } = await admin
     .from('documents')
     .select('*')
-    .order('sort_order')
+
+  console.log('[Admin Documents GET] Folders:', folders?.length, 'error:', foldersError?.message)
+  console.log('[Admin Documents GET] Documents (unfiltered):', documents?.length, 'error:', docsError?.message)
+
+  if (folders?.length) {
+    folders.forEach((f) => console.log('[Admin Documents GET] Folder:', f.id, '|', f.name, '| parent:', f.parent_id))
+  }
+  if (documents?.length) {
+    documents.forEach((d) => console.log('[Admin Documents GET] Doc:', d.id, '|', d.title, '| folder_id:', d.folder_id))
+  }
 
   return NextResponse.json({ folders: folders || [], documents: documents || [] })
 }
