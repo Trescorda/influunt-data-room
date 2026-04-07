@@ -7,22 +7,23 @@ import { FolderSection } from '@/components/documents/FolderSection'
 import type { FolderWithDocuments, DocumentFolder, Document } from '@/lib/types'
 
 function buildFolderTree(folders: DocumentFolder[], documents: Document[]): FolderWithDocuments[] {
-  // IDs that are referenced as parents
-  const parentIds = new Set(folders.filter((f) => f.parent_id).map((f) => f.parent_id))
-
   // Top-level folders (no parent)
-  const topLevel = folders.filter((f) => !f.parent_id).sort((a, b) => a.sort_order - b.sort_order)
+  const topLevel = folders
+    .filter((f) => !f.parent_id)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
 
   return topLevel
     .map((folder) => {
+      // Build subfolders, but only keep those that contain at least one document
       const subs = folders
         .filter((f) => f.parent_id === folder.id)
-        .sort((a, b) => a.sort_order - b.sort_order)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
         .map((sf) => ({
           ...sf,
           documents: documents.filter((d) => d.folder_id === sf.id),
           subfolders: [],
         }))
+        .filter((sf) => sf.documents.length > 0)
 
       const directDocs = documents.filter((d) => d.folder_id === folder.id)
 
@@ -32,8 +33,7 @@ function buildFolderTree(folders: DocumentFolder[], documents: Document[]): Fold
         subfolders: subs,
       }
     })
-    // Hide empty top-level folders that have no subfolders and no documents
-    // (these are likely orphaned old folders from before subfolder migration)
+    // Hide top-level folders that have no direct documents AND no non-empty subfolders
     .filter((f) => f.documents.length > 0 || (f.subfolders && f.subfolders.length > 0))
 }
 
