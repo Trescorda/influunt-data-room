@@ -10,6 +10,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Influunt — Investor Data Room',
   description: 'Secure investor data room for Influunt',
+  icons: {
+    icon: '/influunt-shield.png',
+    apple: '/influunt-shield.png',
+    shortcut: '/influunt-shield.png',
+  },
 }
 
 export default function RootLayout({
