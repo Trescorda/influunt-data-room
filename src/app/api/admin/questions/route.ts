@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail, answerEmail } from '@/lib/email'
 
@@ -21,36 +20,29 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
   const admin = createAdminClient()
-
-  const { data: investor } = await admin
-    .from('investors')
-    .select('id, is_admin')
-    .eq('auth_user_id', user.id)
-    .single()
-
-  if (!investor?.is_admin) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
   const { id, answer } = await request.json()
 
+  if (!id || !answer || typeof answer !== 'string' || !answer.trim()) {
+    return NextResponse.json({ error: 'Missing question id or answer' }, { status: 400 })
+  }
+
   // Fetch the question first so we have the original text + investor info for the email
-  const { data: question } = await admin
+  const { data: question, error: fetchError } = await admin
     .from('questions')
     .select('*, investors(name, email)')
     .eq('id', id)
     .single()
 
+  if (fetchError || !question) {
+    console.error('[Admin Questions PATCH] Question not found:', fetchError?.message)
+    return NextResponse.json({ error: 'Question not found' }, { status: 404 })
+  }
+
   const { error } = await admin
     .from('questions')
     .update({
-      answer,
-      answered_by: investor.id,
+      answer: answer.trim(),
       answered_at: new Date().toISOString(),
       status: 'answered',
     })
