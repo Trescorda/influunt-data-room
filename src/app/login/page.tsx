@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [mode, setMode] = useState<'login' | 'forgot'>('login')
+  const [resetSent, setResetSent] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -20,7 +22,6 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    // Check if email exists in investors table (server-side, bypasses RLS)
     const res = await fetch('/api/check-investor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,14 +47,12 @@ export default function LoginPage() {
       return
     }
 
-    // Log login activity
     await fetch('/api/activity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'login' }),
     })
 
-    // Session is now set — check where to redirect
     const { data: { user } } = await supabase.auth.getUser()
     const redirectRes = await fetch('/api/auth-redirect', {
       method: 'POST',
@@ -62,8 +61,22 @@ export default function LoginPage() {
     })
     const { redirectTo } = await redirectRes.json()
 
-    // Hard redirect so the browser sends fresh cookies to middleware
     window.location.href = redirectTo || '/nda'
+  }
+
+  // IMPORTANT: Add https://invest.influunt.global/auth/reset to
+  // Supabase Dashboard > Authentication > URL Configuration > Redirect URLs
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+      redirectTo: 'https://invest.influunt.global/auth/reset',
+    })
+
+    setLoading(false)
+    setResetSent(true)
   }
 
   return (
@@ -75,39 +88,89 @@ export default function LoginPage() {
         </div>
 
         <Card padding="lg">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="text-center mb-2">
-              <h2 className="text-lg font-semibold text-brand-text">Welcome</h2>
-              <p className="text-sm text-brand-muted mt-1">
-                Sign in to access the data room
+          {mode === 'forgot' ? (
+            resetSent ? (
+              <div className="text-center py-4">
+                <h2 className="text-lg font-semibold text-brand-text mb-2">Check your email</h2>
+                <p className="text-sm text-brand-muted">
+                  If an account exists with that email, you&apos;ll receive a reset link shortly.
+                </p>
+                <button
+                  onClick={() => { setMode('login'); setResetSent(false); setError('') }}
+                  className="text-sm text-brand-gold hover:text-brand-gold/80 mt-4 transition-colors"
+                >
+                  Back to sign in
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="text-center mb-2">
+                  <h2 className="text-lg font-semibold text-brand-text">Reset password</h2>
+                  <p className="text-sm text-brand-muted mt-1">
+                    Enter your email and we&apos;ll send you a reset link
+                  </p>
+                </div>
+                <Input
+                  type="email"
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+                <Button type="submit" loading={loading} className="w-full" size="lg">
+                  Send reset link
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setError('') }}
+                  className="block w-full text-center text-sm text-brand-gold hover:text-brand-gold/80 transition-colors"
+                >
+                  Back to sign in
+                </button>
+              </form>
+            )
+          ) : (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="text-center mb-2">
+                <h2 className="text-lg font-semibold text-brand-text">Welcome</h2>
+                <p className="text-sm text-brand-muted mt-1">
+                  Sign in to access the data room
+                </p>
+              </div>
+              <Input
+                type="email"
+                label="Email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+              <Button type="submit" loading={loading} className="w-full" size="lg">
+                Sign in
+              </Button>
+              <button
+                type="button"
+                onClick={() => { setMode('forgot'); setError('') }}
+                className="block w-full text-center text-sm text-brand-gold hover:text-brand-gold/80 transition-colors"
+              >
+                Forgot password?
+              </button>
+              <p className="text-xs text-brand-muted text-center">
+                Access is by invitation only. Contact your Influunt representative if you need an invite.
               </p>
-            </div>
-            <Input
-              type="email"
-              label="Email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <Input
-              type="password"
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            {error && (
-              <p className="text-sm text-red-400 text-center">{error}</p>
-            )}
-            <Button type="submit" loading={loading} className="w-full" size="lg">
-              Sign in
-            </Button>
-            <p className="text-xs text-brand-muted text-center">
-              Access is by invitation only. Contact your Influunt representative if you need an invite.
-            </p>
-          </form>
+            </form>
+          )}
         </Card>
 
         <p className="text-xs text-brand-muted text-center mt-6">
