@@ -16,9 +16,11 @@ export async function GET() {
     .select('*')
     .order('sort_order')
 
+  // Documents joined with their folder name, newest first
   const { data: documents, error: docsError } = await admin
     .from('documents')
-    .select('*')
+    .select('*, document_folders(name, parent_id)')
+    .order('created_at', { ascending: false })
 
   console.log('[Admin Documents GET] Folders:', folders?.length, 'error:', foldersError?.message)
   console.log('[Admin Documents GET] Documents:', documents?.length, 'error:', docsError?.message)

@@ -1,21 +1,43 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
-import { Upload, FileText, Eye, Download, Lock, Folder, Trash2, UploadCloud } from 'lucide-react'
-import type { DocumentFolder, FolderWithDocuments } from '@/lib/types'
+import { Upload, FileText, Eye, Download, Lock, Trash2, UploadCloud } from 'lucide-react'
+
+interface Folder {
+  id: string
+  name: string
+  parent_id: string | null
+  sort_order: number
+}
+
+interface Document {
+  id: string
+  title: string
+  description: string | null
+  file_path: string
+  file_type: string
+  file_size: number | null
+  folder_id: string
+  is_viewable: boolean
+  is_downloadable: boolean
+  is_watermarked: boolean
+  created_at: string
+  document_folders?: { name: string; parent_id: string | null } | null
+}
 
 export default function DocumentsPage() {
-  const [folders, setFolders] = useState<FolderWithDocuments[]>([])
-  const [allFlatFolders, setAllFlatFolders] = useState<DocumentFolder[]>([])
+  const [folders, setFolders] = useState<Folder[]>([])
+  const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
-  const [uploading, setUploading] = useState(false)
+  const [filterFolderId, setFilterFolderId] = useState<string>('all')
+
+  // Upload modal state
   const [showUpload, setShowUpload] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [uploadTitle, setUploadTitle] = useState('')
   const [uploadDescription, setUploadDescription] = useState('')
   const [uploadFolderId, setUploadFolderId] = useState('')
@@ -24,91 +46,38 @@ export default function DocumentsPage() {
   const [uploadWatermarked, setUploadWatermarked] = useState(true)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Delete state
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const supabase = createClient()
 
   const loadDocuments = async () => {
     try {
       const res = await fetch('/api/admin/documents')
       const data = await res.json()
-      console.log('[Admin Docs Page] API response:', { status: res.status, folderCount: data.folders?.length, docCount: data.documents?.length })
+      console.log('[Admin Docs] Raw API response:', data)
+      console.log('[Admin Docs] Folders:', data.folders?.length, 'Documents:', data.documents?.length)
 
       if (!res.ok) {
-        console.error('[Admin Docs Page] API error:', data.error)
+        console.error('[Admin Docs] API error:', data.error)
         setLoading(false)
         return
       }
 
-      const allFolders = data.folders || []
-      const allDocs = data.documents || []
+      setFolders(data.folders || [])
+      setDocuments(data.documents || [])
 
-      console.log('[Admin Docs Page] All folders:', allFolders.map((f: any) => ({ id: f.id, name: f.name, parent_id: f.parent_id })))
-      console.log('[Admin Docs Page] All docs:', allDocs.map((d: any) => ({ id: d.id, title: d.title, folder_id: d.folder_id })))
-
-      // Track which docs we've placed so we can find orphans
-      const placedDocIds = new Set<string>()
-
-      // Build tree: top-level folders with subfolders
-      // Top-level = no parent_id
-      const topLevel = allFolders
-        .filter((f: any) => !f.parent_id)
-        .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
-        .map((folder: any) => {
-          const directDocs = allDocs.filter((d: any) => d.folder_id === folder.id)
-          directDocs.forEach((d: any) => placedDocIds.add(d.id))
-
-          const subfolders = allFolders
-            .filter((sf: any) => sf.parent_id === folder.id)
-            .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
-            .map((sf: any) => {
-              const subDocs = allDocs.filter((d: any) => d.folder_id === sf.id)
-              subDocs.forEach((d: any) => placedDocIds.add(d.id))
-              return { ...sf, documents: subDocs }
-            })
-
-          return {
-            ...folder,
-            documents: directDocs,
-            subfolders,
-          }
-        })
-
-      // Find orphaned documents (folder_id doesn't match any folder, or null)
-      const orphanedDocs = allDocs.filter((d: any) => !placedDocIds.has(d.id))
-      if (orphanedDocs.length > 0) {
-        console.warn('[Admin Docs Page] Orphaned documents (folder_id does not match any folder):', orphanedDocs)
-        // Add an "Uncategorised" pseudo-folder to display them
-        topLevel.push({
-          id: '__orphans__',
-          name: 'Uncategorised',
-          description: 'Documents with no matching folder',
-          parent_id: null,
-          sort_order: 9999,
-          documents: orphanedDocs,
-          subfolders: [],
-        })
-      }
-
-      console.log('[Admin Docs Page] Final tree:', topLevel.map((f: any) => ({
-        name: f.name,
-        directDocs: f.documents.length,
-        subfolders: f.subfolders?.map((sf: any) => ({ name: sf.name, docs: sf.documents.length })),
-      })))
-
-      setFolders(topLevel)
-      setAllFlatFolders(allFolders)
-      if (topLevel.length > 0 && !uploadFolderId) {
-        const firstWithSubs = topLevel.find((f: any) => f.subfolders?.length > 0)
-        if (firstWithSubs?.subfolders?.[0]) {
-          setUploadFolderId(firstWithSubs.subfolders[0].id)
-        } else if (topLevel[0]) {
-          setUploadFolderId(topLevel[0].id)
-        }
+      // Set default upload folder to first leaf folder (no children)
+      if ((data.folders || []).length > 0 && !uploadFolderId) {
+        const allFolders: Folder[] = data.folders
+        const leafFolder = allFolders.find((f) =>
+          !allFolders.some((other) => other.parent_id === f.id)
+        )
+        if (leafFolder) setUploadFolderId(leafFolder.id)
       }
     } catch (err) {
-      console.error('[Admin Docs Page] Fetch failed:', err)
+      console.error('[Admin Docs] Fetch failed:', err)
     }
     setLoading(false)
   }
@@ -116,6 +85,37 @@ export default function DocumentsPage() {
   useEffect(() => {
     loadDocuments()
   }, [])
+
+  // Build display path for a folder ("Parent > Child")
+  const folderPath = (folderId: string | null | undefined): string => {
+    if (!folderId) return '—'
+    const folder = folders.find((f) => f.id === folderId)
+    if (!folder) return 'Unknown'
+    if (folder.parent_id) {
+      const parent = folders.find((f) => f.id === folder.parent_id)
+      if (parent) return `${parent.name} > ${folder.name}`
+    }
+    return folder.name
+  }
+
+  // Filtered documents based on selected folder
+  const filteredDocs = useMemo(() => {
+    if (filterFolderId === 'all') return documents
+    return documents.filter((d) => d.folder_id === filterFolderId)
+  }, [documents, filterFolderId])
+
+  // Build folder options grouped by parent for the upload dropdown and filter
+  const folderOptions = useMemo(() => {
+    const topLevel = folders
+      .filter((f) => !f.parent_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+    return topLevel.map((parent) => {
+      const children = folders
+        .filter((f) => f.parent_id === parent.id)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      return { parent, children }
+    })
+  }, [folders])
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
@@ -173,21 +173,20 @@ export default function DocumentsPage() {
   const handleDelete = async () => {
     if (!deleteId) return
     setDeleting(true)
-
     await fetch(`/api/documents?id=${deleteId}`, { method: 'DELETE' })
-
     setDeleteId(null)
     setDeleting(false)
     loadDocuments()
   }
 
   const toggleDocProp = async (docId: string, prop: 'is_viewable' | 'is_downloadable' | 'is_watermarked', value: boolean) => {
+    // Optimistic update
+    setDocuments((docs) => docs.map((d) => d.id === docId ? { ...d, [prop]: value } : d))
     await fetch('/api/admin/documents', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: docId, [prop]: value }),
     })
-    loadDocuments()
   }
 
   function formatSize(bytes: number | null): string {
@@ -196,8 +195,12 @@ export default function DocumentsPage() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
+  function formatDate(d: string): string {
+    return new Date(d).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
   return (
-    <div className="p-8">
+    <div className="px-4 md:px-8 py-4 md:py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-brand-text">Documents</h1>
@@ -209,116 +212,115 @@ export default function DocumentsPage() {
         </Button>
       </div>
 
-      {loading ? (
-        <div className="py-12 text-center text-brand-muted text-sm">Loading...</div>
-      ) : (
-        <div className="space-y-4">
-          {folders.map((folder) => {
-            const allDocs = [...folder.documents, ...(folder.subfolders || []).flatMap((sf) => sf.documents)]
-            return (
-            <Card key={folder.id} padding="sm">
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-brand-border">
-                <Folder size={16} className="text-brand-gold" />
-                <h3 className="text-sm font-semibold text-brand-text">{folder.name}</h3>
-                <Badge variant="gray">{allDocs.length}</Badge>
-              </div>
+      {/* Filter */}
+      <div className="mb-4 flex items-center gap-3">
+        <label className="text-xs text-brand-muted">Filter:</label>
+        <select
+          value={filterFolderId}
+          onChange={(e) => setFilterFolderId(e.target.value)}
+          className="text-sm min-w-[220px]"
+        >
+          <option value="all">All folders</option>
+          {folderOptions.map(({ parent, children }) => (
+            <optgroup key={parent.id} label={parent.name}>
+              {children.length === 0 && <option value={parent.id}>{parent.name}</option>}
+              {children.map((c) => (
+                <option key={c.id} value={c.id}>{parent.name} &gt; {c.name}</option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        <span className="text-xs text-brand-muted ml-auto">
+          {filteredDocs.length} {filteredDocs.length === 1 ? 'document' : 'documents'}
+        </span>
+      </div>
 
-              {/* Direct documents */}
-              {folder.documents.length > 0 && (
-                <div className="divide-y divide-brand-border">
-                  {folder.documents.map((doc) => (
-                    <div key={doc.id} className="flex items-center gap-4 px-4 py-3">
-                      <FileText size={16} className="text-brand-gold flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-brand-text truncate">{doc.title}</p>
-                        <p className="text-xs text-brand-muted">
-                          {doc.file_type.toUpperCase()} &middot; {formatSize(doc.file_size)} &middot; {new Date(doc.created_at).toLocaleDateString()}
-                        </p>
+      {/* Flat table */}
+      <Card padding="sm">
+        {loading ? (
+          <div className="py-12 text-center text-brand-muted text-sm">Loading...</div>
+        ) : filteredDocs.length === 0 ? (
+          <div className="py-12 text-center text-brand-muted text-sm">
+            No documents {filterFolderId !== 'all' ? 'in this folder' : 'uploaded yet'}.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-brand-border">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Title</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Folder</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Type</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Size</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Uploaded</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDocs.map((doc) => (
+                  <tr key={doc.id} className="border-b border-brand-border hover:bg-brand-card/50 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <FileText size={16} className="text-brand-gold flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-brand-text truncate">{doc.title}</p>
+                          {doc.description && (
+                            <p className="text-xs text-brand-muted truncate">{doc.description}</p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                    </td>
+                    <td className="px-4 py-3 text-xs text-brand-muted">
+                      {folderPath(doc.folder_id)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs font-medium text-brand-gold uppercase">{doc.file_type}</span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-brand-muted">{formatSize(doc.file_size)}</td>
+                    <td className="px-4 py-3 text-xs text-brand-muted">{formatDate(doc.created_at)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_viewable', !doc.is_viewable)}
                           className={`p-1.5 rounded transition-colors ${doc.is_viewable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
-                          title="Viewable"
+                          title={doc.is_viewable ? 'Viewable (click to hide)' : 'Hidden (click to show)'}
                         >
                           <Eye size={14} />
                         </button>
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_downloadable', !doc.is_downloadable)}
                           className={`p-1.5 rounded transition-colors ${doc.is_downloadable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
-                          title="Downloadable"
+                          title={doc.is_downloadable ? 'Downloadable (click to disable)' : 'View only (click to allow downloads)'}
                         >
                           <Download size={14} />
                         </button>
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_watermarked', !doc.is_watermarked)}
                           className={`p-1.5 rounded transition-colors ${doc.is_watermarked ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
-                          title="Watermarked"
+                          title={doc.is_watermarked ? 'Watermarked (click to remove)' : 'No watermark (click to add)'}
                         >
                           <Lock size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteId(doc.id)}
-                          className="p-1.5 rounded text-brand-muted hover:text-red-400 transition-colors"
-                          title="Delete"
+                          className="p-1.5 rounded text-[#666] hover:text-red-500 transition-colors"
+                          title="Delete document"
                         >
                           <Trash2 size={14} />
                         </button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Subfolders */}
-              {(folder.subfolders || []).map((sf) => (
-                <div key={sf.id}>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-brand-dark/30 border-t border-brand-border">
-                    <Folder size={13} className="text-brand-muted" />
-                    <span className="text-xs font-semibold text-brand-muted">{sf.name}</span>
-                    <Badge variant="gray">{sf.documents.length}</Badge>
-                  </div>
-                  {sf.documents.length > 0 ? (
-                    <div className="divide-y divide-brand-border">
-                      {sf.documents.map((doc) => (
-                        <div key={doc.id} className="flex items-center gap-4 px-4 py-3 pl-8">
-                          <FileText size={16} className="text-brand-gold flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-brand-text truncate">{doc.title}</p>
-                            <p className="text-xs text-brand-muted">
-                              {doc.file_type.toUpperCase()} &middot; {formatSize(doc.file_size)} &middot; {new Date(doc.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <button onClick={() => toggleDocProp(doc.id, 'is_viewable', !doc.is_viewable)} className={`p-1.5 rounded transition-colors ${doc.is_viewable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Viewable"><Eye size={14} /></button>
-                            <button onClick={() => toggleDocProp(doc.id, 'is_downloadable', !doc.is_downloadable)} className={`p-1.5 rounded transition-colors ${doc.is_downloadable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Downloadable"><Download size={14} /></button>
-                            <button onClick={() => toggleDocProp(doc.id, 'is_watermarked', !doc.is_watermarked)} className={`p-1.5 rounded transition-colors ${doc.is_watermarked ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`} title="Watermarked"><Lock size={14} /></button>
-                            <button onClick={() => setDeleteId(doc.id)} className="p-1.5 rounded text-brand-muted hover:text-red-400 transition-colors" title="Delete"><Trash2 size={14} /></button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="px-8 py-3 text-xs text-brand-muted italic">No documents</div>
-                  )}
-                </div>
-              ))}
-
-              {/* Empty state for folders with no docs and no subfolders */}
-              {allDocs.length === 0 && (folder.subfolders || []).length === 0 && (
-                <div className="px-4 py-6 text-center text-sm text-brand-muted">
-                  No documents in this folder
-                </div>
-              )}
-            </Card>
-          )})}
-        </div>
-      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
       {/* Upload modal */}
       <Modal open={showUpload} onClose={() => setShowUpload(false)} title="Upload document">
         <form onSubmit={handleUpload} className="space-y-4">
-          {/* Drag and drop zone */}
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
             onDragLeave={() => setDragOver(false)}
@@ -368,18 +370,16 @@ export default function DocumentsPage() {
               onChange={(e) => setUploadFolderId(e.target.value)}
               className="w-full text-sm"
             >
-              {folders.map((f) => {
-                const hasSubs = (f.subfolders || []).length > 0
-                return (
-                <optgroup key={f.id} label={f.name}>
-                  {!hasSubs && (
-                    <option value={f.id}>{f.name}</option>
+              {folderOptions.map(({ parent, children }) => (
+                <optgroup key={parent.id} label={parent.name}>
+                  {children.length === 0 && (
+                    <option value={parent.id}>{parent.name}</option>
                   )}
-                  {(f.subfolders || []).map((sf) => (
-                    <option key={sf.id} value={sf.id}>&nbsp;&nbsp;{sf.name}</option>
+                  {children.map((c) => (
+                    <option key={c.id} value={c.id}>{parent.name} &gt; {c.name}</option>
                   ))}
                 </optgroup>
-              )})}
+              ))}
             </select>
           </div>
           <div className="flex gap-6">
