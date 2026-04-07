@@ -2,23 +2,13 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/Card'
+import { ActivityRow } from '@/components/admin/ActivityRow'
 import { Users, FileText, Eye, Clock } from 'lucide-react'
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${seconds}s`
   if (seconds < 3600) return `${Math.round(seconds / 60)}m`
   return `${(seconds / 3600).toFixed(1)}h`
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
 }
 
 export default async function AdminDashboard() {
@@ -200,30 +190,14 @@ export default async function AdminDashboard() {
         ) : (
           <div className="flex-1 overflow-y-auto min-h-0 space-y-1">
             {recentActivity.map((activity: any) => (
-              <div
+              <ActivityRow
                 key={activity.id}
-                className="flex items-center justify-between py-1.5 border-b border-brand-border last:border-0"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-6 h-6 bg-brand-card rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-[10px] font-bold text-brand-gold">
-                      {activity.investors?.name?.[0] || '?'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-brand-text truncate">
-                    <span className="font-medium">{activity.investors?.name || 'Unknown'}</span>{' '}
-                    <span className="text-brand-muted">
-                      {actionLabels[activity.action] || activity.action}
-                    </span>
-                    {activity.documents?.title && (
-                      <span className="text-brand-muted"> &ldquo;{activity.documents.title}&rdquo;</span>
-                    )}
-                  </p>
-                </div>
-                <span className="text-[10px] text-brand-muted flex-shrink-0 ml-3">
-                  {timeAgo(activity.created_at)}
-                </span>
-              </div>
+                initial={activity.investors?.name?.[0] || '?'}
+                name={activity.investors?.name || 'Unknown'}
+                actionLabel={actionLabels[activity.action] || activity.action}
+                documentTitle={activity.documents?.title}
+                createdAt={activity.created_at}
+              />
             ))}
           </div>
         )}

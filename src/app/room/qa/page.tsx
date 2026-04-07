@@ -7,6 +7,17 @@ import { Badge } from '@/components/ui/Badge'
 import { MessageSquare, Send, CheckCircle } from 'lucide-react'
 import type { Question } from '@/lib/types'
 
+function formatDateTime(timestamp: string): string {
+  return new Date(timestamp).toLocaleString(undefined, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  })
+}
+
 export default function QAPage() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [newQuestion, setNewQuestion] = useState('')
@@ -118,14 +129,14 @@ export default function QAPage() {
                   <p className="text-xs font-medium text-brand-gold mb-1">Influunt team:</p>
                   <p className="text-sm text-brand-text/80 whitespace-pre-wrap">{q.answer}</p>
                   <p className="text-xs text-brand-muted mt-2">
-                    Answered on {q.answered_at ? new Date(q.answered_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+                    Answered on {q.answered_at ? formatDateTime(q.answered_at) : ''}
                   </p>
                 </div>
               ) : (
                 <p className="text-xs text-brand-muted mt-2 italic">Awaiting response</p>
               )}
               <p className="text-xs text-brand-muted mt-1">
-                Asked {new Date(q.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                Asked on {formatDateTime(q.created_at)}
               </p>
             </Card>
           ))}

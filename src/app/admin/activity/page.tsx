@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { TimeCell } from '@/components/admin/TimeCell'
 
 const actionLabels: Record<string, string> = {
   login: 'Logged in',
@@ -79,8 +80,8 @@ export default async function ActivityPage() {
                     <td className="px-4 py-3 text-sm text-brand-muted">
                       {a.documents?.title || '—'}
                     </td>
-                    <td className="px-4 py-3 text-xs text-brand-muted">
-                      {new Date(a.created_at).toLocaleString()}
+                    <td className="px-4 py-3">
+                      <TimeCell timestamp={a.created_at} className="text-xs text-brand-muted" />
                     </td>
                   </tr>
                 ))}

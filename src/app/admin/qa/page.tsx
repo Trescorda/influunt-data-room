@@ -6,6 +6,17 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { MessageSquare, Send, CheckCircle } from 'lucide-react'
 
+function formatDateTime(timestamp: string): string {
+  return new Date(timestamp).toLocaleString(undefined, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  })
+}
+
 interface QuestionWithInvestor {
   id: string
   question: string
@@ -201,11 +212,11 @@ export default function AdminQAPage() {
 
                 {/* Metadata footer */}
                 <p className="text-xs text-brand-muted mt-3">
-                  Asked {new Date(q.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  Asked on {formatDateTime(q.created_at)}
                   {q.answered_at && (
                     <>
                       {' · '}
-                      Answered {new Date(q.answered_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      Answered on {formatDateTime(q.answered_at)}
                     </>
                   )}
                 </p>
