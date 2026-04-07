@@ -1,20 +1,17 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { GuidedJourney } from '@/components/GuidedJourney'
-import { CapitalTimeline } from '@/components/CapitalTimeline'
+import { CapitalRoadmap } from '@/components/CapitalRoadmap'
 import { FolderSection } from '@/components/documents/FolderSection'
 import type { FolderWithDocuments, DocumentFolder, Document } from '@/lib/types'
 
 function buildFolderTree(folders: DocumentFolder[], documents: Document[]): FolderWithDocuments[] {
-  // Top-level folders (no parent)
   const topLevel = folders
     .filter((f) => !f.parent_id)
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
 
   return topLevel
     .map((folder) => {
-      // Build subfolders, but only keep those that contain at least one document
       const subs = folders
         .filter((f) => f.parent_id === folder.id)
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
@@ -33,7 +30,6 @@ function buildFolderTree(folders: DocumentFolder[], documents: Document[]): Fold
         subfolders: subs,
       }
     })
-    // Hide top-level folders that have no direct documents AND no non-empty subfolders
     .filter((f) => f.documents.length > 0 || (f.subfolders && f.subfolders.length > 0))
 }
 
@@ -58,41 +54,12 @@ export default async function RoomPage() {
 
   const folderTree = buildFolderTree(folders || [], documents || [])
 
-  // Flatten all folders for journey step matching (includes subfolders)
-  const allFoldersWithDocs: FolderWithDocuments[] = (folders || []).map((folder) => ({
-    ...folder,
-    documents: (documents || []).filter((doc) => doc.folder_id === folder.id),
-  }))
-
-  const findFolder = (...keywords: string[]) =>
-    allFoldersWithDocs.find((f) => {
-      const name = f.name.toLowerCase()
-      return keywords.some((k) => name.includes(k))
-    })
-
-  const opportunityFolder = findFolder('opportunity')
-  const technicalFolder = findFolder('technical', 'architecture', 'presentation')
-  const financialsFolder = findFolder('financial', 'numbers', 'traction')
-
-  const journeyDocs = [
-    opportunityFolder?.documents[0] || null,
-    opportunityFolder?.documents[1] || null,
-    technicalFolder?.documents[0] || null,
-    financialsFolder?.documents[0] || null,
-    null,
-  ]
-
   return (
     <div className="px-4 md:px-8 py-4 md:py-6 space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2">
-          <GuidedJourney documents={journeyDocs} />
-        </div>
-        <div>
-          <CapitalTimeline />
-        </div>
-      </div>
+      {/* Capital raise roadmap — full width */}
+      <CapitalRoadmap />
 
+      {/* All documents */}
       <div className="mt-8">
         <h2 className="text-xl font-bold text-brand-text mb-1">All documents</h2>
         <p className="text-sm text-[#999] mb-4">
