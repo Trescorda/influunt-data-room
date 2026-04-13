@@ -112,8 +112,8 @@ export default function InvestPage() {
                   <p className="text-sm font-semibold text-brand-text">Express Interest</p>
                 </div>
                 <p className="text-xs text-brand-muted mb-2">Notify us of your intended investment amount. We&apos;ll send you a Subscription Agreement and onboard you to our equity platform.</p>
-                <a href="mailto:kayde@influunt.global" className="inline-flex items-center gap-1.5 text-xs text-brand-gold border border-brand-gold rounded-lg px-3 py-1.5 hover:bg-brand-gold/10 transition-colors">
-                  Email kayde@influunt.global
+                <a href="mailto:brad@influunt.global" className="inline-flex items-center gap-1.5 text-xs text-brand-gold border border-brand-gold rounded-lg px-3 py-1.5 hover:bg-brand-gold/10 transition-colors">
+                  Email brad@influunt.global
                 </a>
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function InvestPage() {
         >
           Proceed to Cake Equity <ArrowRight size={14} />
         </a>
-        <p className="text-xs text-brand-muted mt-3">or contact <a href="mailto:kayde@influunt.global" className="text-brand-gold hover:text-brand-gold/80">kayde@influunt.global</a> for assistance</p>
+        <p className="text-xs text-brand-muted mt-3">or contact <a href="mailto:brad@influunt.global" className="text-brand-gold hover:text-brand-gold/80">brad@influunt.global</a> for assistance</p>
       </div>
 
       {/* F. Why Cake Equity? Trust Section */}
@@ -210,7 +210,7 @@ export default function InvestPage() {
       {/* G. Contact */}
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-3">For investment enquiries</h2>
-        <p className="text-sm text-brand-muted mb-4">kayde@influunt.global</p>
+        <p className="text-sm text-brand-muted mb-4">brad@influunt.global</p>
         <div className="flex flex-wrap gap-3">
           <Link href="/room/book-a-call" className="inline-flex items-center gap-2 px-4 py-2 border border-brand-gold text-brand-gold text-sm font-semibold rounded-lg hover:bg-brand-gold/10 transition-colors">
             Book a Call <ArrowRight size={14} />
