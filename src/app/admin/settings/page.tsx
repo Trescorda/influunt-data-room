@@ -41,6 +41,7 @@ export default function SettingsPage() {
         require_nda: settings.require_nda,
         allow_downloads: settings.allow_downloads,
         calendly_url: settings.calendly_url,
+        cake_equity_url: settings.cake_equity_url,
       }),
     })
 
@@ -138,6 +139,15 @@ export default function SettingsPage() {
               onChange={(e) => setSettings({ ...settings, calendly_url: e.target.value })}
               placeholder="https://calendly.com/your-link"
             />
+            <div>
+              <Input
+                label="Cake Equity URL"
+                value={settings.cake_equity_url || ''}
+                onChange={(e) => setSettings({ ...settings, cake_equity_url: e.target.value })}
+                placeholder="https://app.cakeequity.com"
+              />
+              <p className="text-xs text-brand-muted mt-1">The URL investors are redirected to when clicking &ldquo;Proceed to Invest&rdquo;. Update this once your Cake Equity raise is configured.</p>
+            </div>
           </div>
         </Card>
 

@@ -96,6 +96,7 @@ export interface Settings {
   brand_primary_color: string
   brand_accent_color: string
   calendly_url: string
+  cake_equity_url: string
   created_at: string
   updated_at: string
 }

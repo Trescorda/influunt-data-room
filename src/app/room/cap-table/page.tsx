@@ -162,6 +162,7 @@ export default function CapTablePage() {
       <div className="space-y-1">
         <p className="text-xs text-brand-muted">Cap table is indicative and subject to change. Final allocation confirmed upon close of each funding round.</p>
         <p className="text-xs text-brand-muted">Pro forma cap table reflecting post-round ownership is available upon request.</p>
+        <p className="text-xs text-brand-muted italic mt-2">Influunt&apos;s cap table is managed and verified through Cake Equity. Investors receive access to the Cake Equity portal upon completion of their investment to view their holdings in real time.</p>
       </div>
     </div>
   )
