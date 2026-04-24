@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendEmail, newDocumentEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -30,6 +31,8 @@ export async function POST(request: Request) {
   const isViewable = formData.get('is_viewable') !== 'false' // default true
   const isDownloadable = formData.get('is_downloadable') === 'true' // default false
   const isWatermarked = formData.get('is_watermarked') !== 'false' // default true
+  // Admin can opt out via form field; defaults to true (notify investors)
+  const notifyInvestors = formData.get('notify_investors') !== 'false'
 
   if (!file || !title || !folderId) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -70,5 +73,41 @@ export async function POST(request: Request) {
   }
 
   console.log('[Upload] Success, inserted doc:', insertedDoc)
-  return NextResponse.json({ success: true })
+
+  // Notify active NDA-signed investors — only if the document is viewable
+  // and the admin didn't opt out. Runs async; never blocks the upload response.
+  let notifiedCount = 0
+  if (notifyInvestors && isViewable) {
+    try {
+      const { data: investors } = await admin
+        .from('investors')
+        .select('email, name')
+        .eq('is_admin', false)
+        .eq('status', 'active')
+        .eq('nda_signed', true)
+
+      if (investors && investors.length > 0) {
+        // Send personalised email to each (name appears in greeting) — run in parallel
+        const results = await Promise.allSettled(
+          investors.map((inv) =>
+            sendEmail(
+              inv.email,
+              `New document in the Influunt data room: ${title}`,
+              newDocumentEmail(title, inv.name || undefined),
+            ),
+          ),
+        )
+        notifiedCount = results.filter((r) => r.status === 'fulfilled' && r.value.success).length
+        console.log(`[Upload] Notified ${notifiedCount} / ${investors.length} investors about "${title}"`)
+      } else {
+        console.log('[Upload] No active NDA-signed investors to notify')
+      }
+    } catch (emailErr) {
+      console.error('[Upload] Notification failed:', emailErr)
+    }
+  } else {
+    console.log('[Upload] Notifications skipped:', { notifyInvestors, isViewable })
+  }
+
+  return NextResponse.json({ success: true, notified: notifiedCount })
 }

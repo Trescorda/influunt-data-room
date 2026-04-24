@@ -72,6 +72,24 @@ export function answerEmail(questionText: string, answerText: string): string {
 </div>`
 }
 
+export function newDocumentEmail(documentTitle: string, investorName?: string): string {
+  const greeting = investorName ? `Hi ${escapeHtml(investorName)},` : 'Hello,'
+  return `<div style="background-color:#1a1a1a;padding:40px 20px;font-family:Arial,sans-serif;">
+  <div style="max-width:500px;margin:0 auto;background-color:#2a2a2a;border-radius:12px;padding:40px;text-align:center;">
+    <img src="https://invest.influunt.global/influunt-logo.png" alt="Influunt" style="width:120px;margin-bottom:24px;" />
+    <h2 style="color:#C8A85C;margin-bottom:8px;">New Document Added</h2>
+    <p style="color:#9a9a9a;font-size:14px;margin-bottom:16px;">${greeting}<br/>A new document has been added to the Influunt data room.</p>
+    <div style="background-color:#1a1a1a;border-radius:8px;padding:16px;margin-bottom:24px;text-align:left;">
+      <p style="color:#666;font-size:12px;margin:0 0 4px;">Document:</p>
+      <p style="color:#f5f5f5;font-size:14px;margin:0;font-weight:600;">${escapeHtml(documentTitle)}</p>
+    </div>
+    <a href="https://invest.influunt.global/room" style="display:inline-block;background-color:#C8A85C;color:#1a1a1a;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">View in Data Room</a>
+    <hr style="border:none;border-top:1px solid #333;margin:24px 0;" />
+    <p style="color:#666;font-size:11px;">Influunt Pty Ltd — Confidential</p>
+  </div>
+</div>`
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')

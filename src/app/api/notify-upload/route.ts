@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendEmail, newDocumentEmail } from '@/lib/email'
 
+// Manually trigger new-document notifications to all active NDA-signed investors.
+// Normally the /api/admin/upload route sends these automatically — this endpoint
+// is kept for re-sending or for uploads that happen outside the admin UI.
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -9,7 +13,6 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient()
 
-  // Verify admin
   const { data: currentInvestor } = await admin
     .from('investors')
     .select('is_admin')
@@ -21,8 +24,10 @@ export async function POST(request: Request) {
   }
 
   const { documentTitle } = await request.json()
+  if (!documentTitle || typeof documentTitle !== 'string') {
+    return NextResponse.json({ error: 'documentTitle required' }, { status: 400 })
+  }
 
-  // Get active investors who have signed NDA
   const { data: investors } = await admin
     .from('investors')
     .select('email, name')
@@ -34,30 +39,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ notified: 0, message: 'No active investors to notify' })
   }
 
-  // Try to send emails via Supabase (will fail gracefully if SMTP not configured)
-  let notified = 0
-  for (const inv of investors) {
-    try {
-      await admin.auth.admin.generateLink({
-        type: 'magiclink',
-        email: inv.email,
-        options: {
-          redirectTo: 'https://invest.influunt.global/room',
-        },
-      })
-      notified++
-    } catch (err) {
-      console.log(`[Notify] Could not send to ${inv.email}:`, err)
-    }
-  }
+  const results = await Promise.allSettled(
+    investors.map((inv) =>
+      sendEmail(
+        inv.email,
+        `New document in the Influunt data room: ${documentTitle}`,
+        newDocumentEmail(documentTitle, inv.name || undefined),
+      ),
+    ),
+  )
+  const notified = results.filter((r) => r.status === 'fulfilled' && r.value.success).length
 
-  if (notified === 0) {
-    return NextResponse.json({
-      notified: 0,
-      message: 'Email notifications require SMTP setup',
-      investorCount: investors.length,
-    })
-  }
-
-  return NextResponse.json({ notified, message: `${notified} investors notified` })
+  return NextResponse.json({
+    notified,
+    total: investors.length,
+    message: `${notified} of ${investors.length} investors notified`,
+  })
 }
