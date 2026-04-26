@@ -68,13 +68,14 @@ export default function DocumentsPage() {
       setFolders(data.folders || [])
       setDocuments(data.documents || [])
 
-      // Set default upload folder to first leaf folder (no children)
+      // Set default upload folder to the first top-level folder
+      // (Subcategories temporarily hidden from upload UI — only macro categories used)
       if ((data.folders || []).length > 0 && !uploadFolderId) {
         const allFolders: Folder[] = data.folders
-        const leafFolder = allFolders.find((f) =>
-          !allFolders.some((other) => other.parent_id === f.id)
-        )
-        if (leafFolder) setUploadFolderId(leafFolder.id)
+        const topLevel = allFolders
+          .filter((f) => !f.parent_id)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+        if (topLevel[0]) setUploadFolderId(topLevel[0].id)
       }
     } catch (err) {
       console.error('[Admin Docs] Fetch failed:', err)
@@ -364,21 +365,14 @@ export default function DocumentsPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Folder</label>
+            <label className="block text-sm font-medium text-brand-text">Category</label>
             <select
               value={uploadFolderId}
               onChange={(e) => setUploadFolderId(e.target.value)}
               className="w-full text-sm"
             >
-              {folderOptions.map(({ parent, children }) => (
-                <optgroup key={parent.id} label={parent.name}>
-                  {children.length === 0 && (
-                    <option value={parent.id}>{parent.name}</option>
-                  )}
-                  {children.map((c) => (
-                    <option key={c.id} value={c.id}>{parent.name} &gt; {c.name}</option>
-                  ))}
-                </optgroup>
+              {folderOptions.map(({ parent }) => (
+                <option key={parent.id} value={parent.id}>{parent.name}</option>
               ))}
             </select>
           </div>
