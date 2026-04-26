@@ -99,11 +99,16 @@ export default function DocumentsPage() {
     return folder.name
   }
 
-  // Filtered documents based on selected folder
+  // Filtered documents based on selected category.
+  // If the selected folder has subfolders (legacy structure), include documents
+  // assigned to those subfolders too — so filtering by "Financials" surfaces
+  // docs sitting in "Financials > Financial Model" etc.
   const filteredDocs = useMemo(() => {
     if (filterFolderId === 'all') return documents
-    return documents.filter((d) => d.folder_id === filterFolderId)
-  }, [documents, filterFolderId])
+    const childIds = folders.filter((f) => f.parent_id === filterFolderId).map((f) => f.id)
+    const allowed = new Set([filterFolderId, ...childIds])
+    return documents.filter((d) => allowed.has(d.folder_id))
+  }, [documents, filterFolderId, folders])
 
   // Build folder options grouped by parent for the upload dropdown and filter
   const folderOptions = useMemo(() => {
@@ -221,14 +226,9 @@ export default function DocumentsPage() {
           onChange={(e) => setFilterFolderId(e.target.value)}
           className="text-sm min-w-[220px]"
         >
-          <option value="all">All folders</option>
-          {folderOptions.map(({ parent, children }) => (
-            <optgroup key={parent.id} label={parent.name}>
-              {children.length === 0 && <option value={parent.id}>{parent.name}</option>}
-              {children.map((c) => (
-                <option key={c.id} value={c.id}>{parent.name} &gt; {c.name}</option>
-              ))}
-            </optgroup>
+          <option value="all">All categories</option>
+          {folderOptions.map(({ parent }) => (
+            <option key={parent.id} value={parent.id}>{parent.name}</option>
           ))}
         </select>
         <span className="text-xs text-brand-muted ml-auto">
