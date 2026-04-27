@@ -8,7 +8,7 @@ import { FileText, Calendar, Mail, Shield, CheckCircle, ArrowRight, FileCheck, E
 
 const stages = [
   { name: 'Stage 1 — Seed', amount: 'A$5M', timing: 'Immediate', current: true },
-  { name: 'Stage 2 — Round A', amount: 'A$35M', timing: 'Q2 2026', current: false },
+  { name: 'Stage 2 — Round A', amount: 'A$35M', timing: 'Q3 2026', current: false },
   { name: 'Stage 3 — Round B', amount: 'A$250M', timing: 'FY2028', current: false },
 ]
 
