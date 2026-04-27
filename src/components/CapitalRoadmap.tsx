@@ -106,46 +106,64 @@ function BarsIcon({ active }: { active: boolean }) {
   )
 }
 
-// Stage 3 — Server rack filled with gold bars (data centre + gold storage)
-function RackIcon({ active }: { active: boolean }) {
+// Stage 3 — Expansion: growing stacks of gold bars + upward growth arrow
+function ExpansionIcon({ active }: { active: boolean }) {
   const stroke = '#C8A85C'
   const op = active ? 1 : 0.5
-  const barFill = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
+  const fillSoft = active ? 'rgba(200,168,92,0.2)' : 'rgba(200,168,92,0.1)'
+  const fillStrong = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
 
-  // Single gold bar inside a rack shelf
-  const shelfBar = (y: number, key: string) => (
+  // Reusable gold-bar trapezoid centred at (cx, cy)
+  const bar = (cx: number, cy: number, key: string, fill: string) => (
     <g key={key}>
-      {/* Shelf divider */}
-      <line x1="18" y1={y - 4} x2="50" y2={y - 4} stroke={stroke} strokeWidth="0.8" opacity={op * 0.5} />
-      {/* Gold bar inside the shelf — a trapezoid lying flat */}
       <path
-        d={`M 22 ${y + 3} L 46 ${y + 3} L 44 ${y - 2} L 24 ${y - 2} Z`}
+        d={`M ${cx - 6} ${cy + 2.5} L ${cx + 6} ${cy + 2.5} L ${cx + 4.5} ${cy - 2.5} L ${cx - 4.5} ${cy - 2.5} Z`}
         stroke={stroke}
-        strokeWidth="1.1"
+        strokeWidth="1.2"
         strokeLinejoin="round"
         opacity={op}
-        fill={barFill}
+        fill={fill}
       />
-      <line x1="24" y1={y - 2} x2="44" y2={y - 2} stroke={stroke} strokeWidth="0.6" opacity={op * 0.6} />
+      <line x1={cx - 4.5} y1={cy - 2.5} x2={cx + 4.5} y2={cy - 2.5} stroke={stroke} strokeWidth="0.6" opacity={op * 0.6} />
     </g>
   )
 
   return (
     <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
-      {/* Server-rack frame */}
-      <rect x="14" y="4" width="40" height="48" rx="2" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.05)' : 'transparent'} />
-      {/* Top-of-rack indicator strip */}
-      <rect x="16" y="6" width="36" height="3" rx="1" stroke={stroke} strokeWidth="0.8" opacity={op * 0.7} fill="transparent" />
-      <circle cx="48" cy="7.5" r="0.8" fill={stroke} opacity={op} />
-      <circle cx="50" cy="7.5" r="0.8" fill={stroke} opacity={op * 0.6} />
-      {/* Four shelves with gold bars */}
-      {shelfBar(16, 's1')}
-      {shelfBar(26, 's2')}
-      {shelfBar(36, 's3')}
-      {shelfBar(46, 's4')}
-      {/* Bottom feet */}
-      <line x1="18" y1="52" x2="18" y2="55" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
-      <line x1="50" y1="52" x2="50" y2="55" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
+      {/* Subtle ground line */}
+      <line x1="4" y1="50" x2="56" y2="50" stroke={stroke} strokeWidth="1" opacity={op * 0.4} />
+
+      {/* Stack 1 — small (1 bar) */}
+      {bar(11, 47, 's1-a', fillSoft)}
+
+      {/* Stack 2 — medium (2 bars) */}
+      {bar(28, 47, 's2-a', fillSoft)}
+      {bar(28, 41, 's2-b', fillStrong)}
+
+      {/* Stack 3 — large (3 bars) */}
+      {bar(45, 47, 's3-a', fillSoft)}
+      {bar(45, 41, 's3-b', fillStrong)}
+      {bar(45, 35, 's3-c', fillStrong)}
+
+      {/* Upward growth arrow tracking the top of each stack */}
+      <path
+        d="M 11 38 L 28 32 L 45 26 L 60 14"
+        stroke={stroke}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={op * 0.85}
+        fill="none"
+        strokeDasharray="3 2"
+      />
+      {/* Arrow head */}
+      <path
+        d="M 60 14 L 55 14 M 60 14 L 60 19"
+        stroke={stroke}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity={op}
+      />
     </svg>
   )
 }
@@ -153,7 +171,7 @@ function RackIcon({ active }: { active: boolean }) {
 function StageInfographic({ icon, active }: { icon: Stage['icon']; active: boolean }) {
   if (icon === 'foundation') return <FoundationIcon active={active} />
   if (icon === 'bars') return <BarsIcon active={active} />
-  return <RackIcon active={active} />
+  return <ExpansionIcon active={active} />
 }
 
 function ConnectorSegment() {
