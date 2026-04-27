@@ -196,7 +196,7 @@ function StageNode({ stage }: { stage: Stage }) {
       <StageInfographic icon={stage.icon} active={isActive} />
 
       {/* Node / circle */}
-      <div className="relative -mt-1 mb-3">
+      <div className="relative mt-4 mb-3">
         {isActive && (
           <div className="absolute inset-0 rounded-full bg-brand-gold/30 blur-md animate-pulse" />
         )}
