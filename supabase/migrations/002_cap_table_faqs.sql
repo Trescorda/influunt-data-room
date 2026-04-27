@@ -4,7 +4,7 @@
 create table public.cap_table_entries (
   id uuid primary key default uuid_generate_v4(),
   shareholder_name text not null,
-  entity_type text not null check (entity_type in ('founder', 'investor', 'advisor', 'esop', 'reserved')),
+  entity_type text not null check (entity_type in ('founder', 'investor', 'advisor', 'esop', 'reserved', 'gifted')),
   share_class text default 'Ordinary',
   shares_held bigint not null default 0,
   ownership_percentage numeric(7,4) default 0,
