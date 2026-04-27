@@ -101,7 +101,7 @@ export interface Settings {
   updated_at: string
 }
 
-export type CapTableEntityType = 'founder' | 'investor' | 'advisor' | 'esop' | 'reserved' | 'gifted'
+export type CapTableEntityType = 'founder' | 'investor' | 'advisor' | 'esop' | 'reserved' | 'gifted' | 'sweat_equity'
 
 export interface CapTableEntry {
   id: string

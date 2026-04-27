@@ -17,6 +17,7 @@ const entityTypes: { value: CapTableEntityType; label: string }[] = [
   { value: 'investor', label: 'Investor' },
   { value: 'advisor', label: 'Advisor' },
   { value: 'esop', label: 'ESOP' },
+  { value: 'sweat_equity', label: 'Sweat Equity' },
   { value: 'gifted', label: 'Gifted' },
   { value: 'reserved', label: 'Reserved' },
 ]
@@ -26,6 +27,7 @@ const typeLabels: Record<string, string> = {
   investor: 'Investor',
   advisor: 'Advisor',
   esop: 'ESOP',
+  sweat_equity: 'Sweat Equity',
   gifted: 'Gifted',
   reserved: 'Reserved',
 }

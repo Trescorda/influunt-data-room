@@ -9,6 +9,7 @@ const typeColors: Record<string, string> = {
   investor: '#2ECC71',
   advisor: '#9B59B6',
   esop: '#4A90D9',
+  sweat_equity: '#1ABC9C',
   gifted: '#E67E22',
   reserved: '#666666',
 }
@@ -18,6 +19,7 @@ const typeLabels: Record<string, string> = {
   investor: 'Investor',
   advisor: 'Advisor',
   esop: 'ESOP',
+  sweat_equity: 'Sweat Equity',
   gifted: 'Gifted',
   reserved: 'Reserved',
 }
