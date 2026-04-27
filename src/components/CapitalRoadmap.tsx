@@ -10,7 +10,7 @@ interface Stage {
   timing: string
   status: 'active' | 'upcoming' | 'planned'
   milestones: string[]
-  icon: 'foundation' | 'mining' | 'globe'
+  icon: 'foundation' | 'bars' | 'rack'
 }
 
 const stages: Stage[] = [
@@ -32,7 +32,7 @@ const stages: Stage[] = [
     timing: 'Q3 2026',
     status: 'upcoming',
     milestones: ['Urban mining licences', 'Gold extraction pilots', 'Regulatory approvals'],
-    icon: 'mining',
+    icon: 'bars',
   },
   {
     number: 3,
@@ -42,7 +42,7 @@ const stages: Stage[] = [
     timing: 'FY2028',
     status: 'planned',
     milestones: ['BioGold deployment at scale', 'Global expansion', 'Sovereign infrastructure'],
-    icon: 'globe',
+    icon: 'rack',
   },
 ]
 
@@ -68,63 +68,92 @@ function FoundationIcon({ active }: { active: boolean }) {
   )
 }
 
-// Stage 2 — Mining: pickaxe + gold nugget + licence document
-function MiningIcon({ active }: { active: boolean }) {
+// Stage 2 — Pyramid stack of gold bars
+function BarsIcon({ active }: { active: boolean }) {
   const stroke = '#C8A85C'
   const op = active ? 1 : 0.5
+  const fillStrong = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
+  const fillSoft = active ? 'rgba(200,168,92,0.25)' : 'rgba(200,168,92,0.1)'
+
+  // Each bar is a small trapezoid (wider at bottom, narrower at top — classic gold bar profile)
+  const bar = (cx: number, cy: number, key: string, fill: string) => (
+    <g key={key}>
+      <path
+        d={`M ${cx - 7} ${cy + 4} L ${cx + 7} ${cy + 4} L ${cx + 5} ${cy - 4} L ${cx - 5} ${cy - 4} Z`}
+        stroke={stroke}
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        opacity={op}
+        fill={fill}
+      />
+      {/* Top highlight line for shine */}
+      <line x1={cx - 5} y1={cy - 4} x2={cx + 5} y2={cy - 4} stroke={stroke} strokeWidth="0.8" opacity={op * 0.6} />
+    </g>
+  )
+
   return (
     <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
-      {/* Pickaxe handle */}
-      <line x1="14" y1="46" x2="38" y2="20" stroke={stroke} strokeWidth="2" strokeLinecap="round" opacity={op} />
-      {/* Pickaxe head */}
-      <path d="M30 12 Q 38 14 46 18 Q 42 24 38 22 Q 34 20 32 16 Z" stroke={stroke} strokeWidth="1.6" strokeLinejoin="round" opacity={op} fill={active ? 'rgba(200,168,92,0.15)' : 'transparent'} />
-      <path d="M30 12 L 46 18" stroke={stroke} strokeWidth="1.4" opacity={op} />
-      {/* Gold nugget / bar */}
-      <path d="M44 38 L 60 38 L 56 48 L 40 48 Z" stroke={stroke} strokeWidth="1.6" strokeLinejoin="round" opacity={op} fill={active ? 'rgba(200,168,92,0.25)' : 'rgba(200,168,92,0.1)'} />
-      <line x1="44" y1="38" x2="60" y2="38" stroke={stroke} strokeWidth="1.2" opacity={op * 0.7} />
-      <line x1="48" y1="38" x2="46" y2="48" stroke={stroke} strokeWidth="0.8" opacity={op * 0.5} />
-      <line x1="56" y1="38" x2="54" y2="48" stroke={stroke} strokeWidth="0.8" opacity={op * 0.5} />
-      {/* Licence document badge in top-right */}
-      <rect x="50" y="6" width="12" height="14" stroke={stroke} strokeWidth="1.3" opacity={op} fill={active ? 'rgba(200,168,92,0.1)' : 'transparent'} rx="1" />
-      <line x1="53" y1="10" x2="59" y2="10" stroke={stroke} strokeWidth="0.8" opacity={op * 0.7} />
-      <line x1="53" y1="13" x2="59" y2="13" stroke={stroke} strokeWidth="0.8" opacity={op * 0.7} />
-      {/* Tiny seal */}
-      <circle cx="56" cy="17" r="1.3" fill={stroke} opacity={op} />
+      {/* Bottom row: 3 bars */}
+      {bar(15, 46, 'b1', fillSoft)}
+      {bar(34, 46, 'b2', fillSoft)}
+      {bar(53, 46, 'b3', fillSoft)}
+      {/* Middle row: 2 bars (nestled in the valleys) */}
+      {bar(24, 35, 'm1', fillStrong)}
+      {bar(44, 35, 'm2', fillStrong)}
+      {/* Top row: 1 bar */}
+      {bar(34, 24, 't1', fillStrong)}
     </svg>
   )
 }
 
-// Stage 3 — Global expansion: globe with surrounding mining nodes
-function GlobeIcon({ active }: { active: boolean }) {
+// Stage 3 — Server rack filled with gold bars (data centre + gold storage)
+function RackIcon({ active }: { active: boolean }) {
   const stroke = '#C8A85C'
   const op = active ? 1 : 0.5
+  const barFill = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
+
+  // Single gold bar inside a rack shelf
+  const shelfBar = (y: number, key: string) => (
+    <g key={key}>
+      {/* Shelf divider */}
+      <line x1="18" y1={y - 4} x2="50" y2={y - 4} stroke={stroke} strokeWidth="0.8" opacity={op * 0.5} />
+      {/* Gold bar inside the shelf — a trapezoid lying flat */}
+      <path
+        d={`M 22 ${y + 3} L 46 ${y + 3} L 44 ${y - 2} L 24 ${y - 2} Z`}
+        stroke={stroke}
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+        opacity={op}
+        fill={barFill}
+      />
+      <line x1="24" y1={y - 2} x2="44" y2={y - 2} stroke={stroke} strokeWidth="0.6" opacity={op * 0.6} />
+    </g>
+  )
+
   return (
     <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
-      {/* Globe */}
-      <circle cx="34" cy="28" r="14" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.08)' : 'transparent'} />
-      {/* Latitude lines */}
-      <ellipse cx="34" cy="28" rx="14" ry="5" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
-      <line x1="20" y1="28" x2="48" y2="28" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
-      {/* Meridian (vertical) */}
-      <ellipse cx="34" cy="28" rx="5" ry="14" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
-      {/* Connecting nodes around the globe (representing global mining sites) */}
-      <line x1="34" y1="28" x2="10" y2="14" stroke={stroke} strokeWidth="1" opacity={op * 0.5} strokeDasharray="2 2" />
-      <line x1="34" y1="28" x2="58" y2="12" stroke={stroke} strokeWidth="1" opacity={op * 0.5} strokeDasharray="2 2" />
-      <line x1="34" y1="28" x2="58" y2="46" stroke={stroke} strokeWidth="1" opacity={op * 0.5} strokeDasharray="2 2" />
-      <line x1="34" y1="28" x2="10" y2="46" stroke={stroke} strokeWidth="1" opacity={op * 0.5} strokeDasharray="2 2" />
-      {/* Outer mining-site dots */}
-      <circle cx="10" cy="14" r="2" fill={stroke} opacity={op} />
-      <circle cx="58" cy="12" r="2" fill={stroke} opacity={op} />
-      <circle cx="58" cy="46" r="2" fill={stroke} opacity={op} />
-      <circle cx="10" cy="46" r="2" fill={stroke} opacity={op} />
+      {/* Server-rack frame */}
+      <rect x="14" y="4" width="40" height="48" rx="2" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.05)' : 'transparent'} />
+      {/* Top-of-rack indicator strip */}
+      <rect x="16" y="6" width="36" height="3" rx="1" stroke={stroke} strokeWidth="0.8" opacity={op * 0.7} fill="transparent" />
+      <circle cx="48" cy="7.5" r="0.8" fill={stroke} opacity={op} />
+      <circle cx="50" cy="7.5" r="0.8" fill={stroke} opacity={op * 0.6} />
+      {/* Four shelves with gold bars */}
+      {shelfBar(16, 's1')}
+      {shelfBar(26, 's2')}
+      {shelfBar(36, 's3')}
+      {shelfBar(46, 's4')}
+      {/* Bottom feet */}
+      <line x1="18" y1="52" x2="18" y2="55" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
+      <line x1="50" y1="52" x2="50" y2="55" stroke={stroke} strokeWidth="1" opacity={op * 0.7} />
     </svg>
   )
 }
 
 function StageInfographic({ icon, active }: { icon: Stage['icon']; active: boolean }) {
   if (icon === 'foundation') return <FoundationIcon active={active} />
-  if (icon === 'mining') return <MiningIcon active={active} />
-  return <GlobeIcon active={active} />
+  if (icon === 'bars') return <BarsIcon active={active} />
+  return <RackIcon active={active} />
 }
 
 function ConnectorSegment() {
