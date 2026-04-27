@@ -29,7 +29,7 @@ const stages: Stage[] = [
     label: 'Round A',
     amount: 'A$35M',
     description: 'Urban mining licences, gold extraction pilots, regulatory approvals',
-    timing: 'Q3 2026',
+    timing: 'Q1 2027',
     status: 'upcoming',
     milestones: ['Urban mining licences', 'Gold extraction pilots', 'Regulatory approvals'],
     icon: 'bars',
