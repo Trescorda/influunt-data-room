@@ -39,7 +39,7 @@ export default function InvestPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Seed (Stage 1 of 3)</span></div>
           <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$5,000,000</span></div>
-          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$500,000</span></div>
+          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000</span></div>
           <div><span className="text-brand-muted">Share Class:</span> <span className="text-brand-text ml-2">Ordinary</span></div>
           <div><span className="text-brand-muted">Total Capital Strategy:</span> <span className="text-brand-text ml-2">A$290,000,000 across three stages</span></div>
           <div><span className="text-brand-muted">Valuation:</span> <span className="text-brand-gold ml-2">Contact us for current term sheet</span></div>
