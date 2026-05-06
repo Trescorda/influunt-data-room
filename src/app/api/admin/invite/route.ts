@@ -72,8 +72,11 @@ export async function PATCH(request: Request) {
   const { email, password } = await request.json()
   const normalizedEmail = email.toLowerCase().trim()
 
-  if (!password || password.length < 6) {
-    return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+  if (!password || password.length < 12) {
+    return NextResponse.json({ error: 'Password must be at least 12 characters' }, { status: 400 })
+  }
+  if (!/\d/.test(password)) {
+    return NextResponse.json({ error: 'Password must contain at least one number' }, { status: 400 })
   }
 
   // Try to create user first (in case they don't have an auth account yet)

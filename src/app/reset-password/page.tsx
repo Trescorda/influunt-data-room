@@ -22,8 +22,12 @@ function ResetPasswordForm() {
     e.preventDefault()
     setError('')
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (password.length < 12) {
+      setError('Password must be at least 12 characters')
+      return
+    }
+    if (!/\d/.test(password)) {
+      setError('Password must contain at least one number')
       return
     }
     if (password !== confirmPassword) {
@@ -92,7 +96,7 @@ function ResetPasswordForm() {
         <Input
           type="password"
           label="Password"
-          placeholder="Minimum 6 characters"
+          placeholder="Minimum 12 characters, must include a number"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required

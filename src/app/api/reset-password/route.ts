@@ -7,8 +7,11 @@ export async function POST(request: Request) {
   if (!email || !token || !password) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
-  if (password.length < 6) {
-    return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+  if (password.length < 12) {
+    return NextResponse.json({ error: 'Password must be at least 12 characters' }, { status: 400 })
+  }
+  if (!/\d/.test(password)) {
+    return NextResponse.json({ error: 'Password must contain at least one number' }, { status: 400 })
   }
 
   const admin = createAdminClient()
