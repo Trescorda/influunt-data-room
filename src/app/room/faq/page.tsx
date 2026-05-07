@@ -77,7 +77,7 @@ export default function FAQPage() {
                       </button>
                       {isOpen && (
                         <div className="px-4 pb-4 border-l-[3px] border-brand-gold ml-0">
-                          <p className="text-sm text-[#A0A0A0] pl-2 leading-relaxed">{faq.answer}</p>
+                          <p className="text-sm text-[#A0A0A0] pl-2 leading-relaxed whitespace-pre-wrap">{faq.answer}</p>
                         </div>
                       )}
                     </div>
