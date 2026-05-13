@@ -18,10 +18,10 @@ const stages: Stage[] = [
     number: 1,
     label: 'Stage 1 · Pre-Seed',
     amount: 'A$1.6M',
-    description: 'Bridge — proof, partners, pre-Seed runway at A$25M pre-money',
+    description: 'Bridge — proof, partners, pre-Seed runway at A$20M pre-money',
     timing: 'May 2026 — Oct 2026 · 6 months',
     status: 'active',
-    milestones: ['Validation & beta users', 'Founding team build', 'A$25M pre-money close'],
+    milestones: ['Validation & beta users', 'Founding team build', 'A$20M pre-money close'],
     icon: 'sprout',
   },
   {
@@ -305,7 +305,7 @@ export function CapitalRoadmap() {
       <div className="mb-6">
         <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital Raise Timeline</h2>
         <p className="text-sm text-brand-muted mt-1 max-w-3xl leading-relaxed">
-          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$25M pre-money (A$250K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
+          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money (A$200K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
         </p>
       </div>
 

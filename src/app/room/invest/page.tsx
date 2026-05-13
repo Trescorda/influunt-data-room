@@ -40,9 +40,9 @@ export default function InvestPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Pre-Seed (Stage 1 of 4)</span></div>
           <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$1,600,000</span></div>
-          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000 (1% at pre-money)</span></div>
+          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$200,000 (1% at pre-money)</span></div>
           <div><span className="text-brand-muted">Share Class:</span> <span className="text-brand-text ml-2">Ordinary</span></div>
-          <div><span className="text-brand-muted">Pre-Money Valuation:</span> <span className="text-brand-gold ml-2">A$25,000,000</span></div>
+          <div><span className="text-brand-muted">Pre-Money Valuation:</span> <span className="text-brand-gold ml-2">A$20,000,000</span></div>
           <div><span className="text-brand-muted">Total Capital Strategy:</span> <span className="text-brand-text ml-2">A$291,600,000 across four stages</span></div>
         </div>
       </div>
@@ -51,7 +51,7 @@ export default function InvestPage() {
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-2">Capital Raise Timeline</h2>
         <p className="text-xs text-brand-muted mb-6 max-w-3xl leading-relaxed">
-          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$25M pre-money (A$250K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
+          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money (A$200K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
         </p>
 
         {/* Desktop: horizontal numbered-circle timeline */}
