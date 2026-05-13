@@ -7,10 +7,10 @@ import Link from 'next/link'
 import { FileText, Calendar, Mail, Shield, CheckCircle, ArrowRight, FileCheck, Eye } from 'lucide-react'
 
 const stages = [
-  { name: 'Stage 1 — Pre-Seed', amount: 'A$1.6M', timing: 'Now — Q4 2026', current: true },
-  { name: 'Stage 2 — Seed', amount: 'A$5M', timing: 'Q4 2026', current: false },
-  { name: 'Stage 3 — Round A', amount: 'A$35M', timing: 'FY2028', current: false },
-  { name: 'Stage 4 — Round B', amount: 'A$250M', timing: 'FY2028', current: false },
+  { name: 'Stage 1 — Pre-Seed', amount: 'A$1.6M', timing: 'May 2026 – Oct 2026 · 6 months', current: true },
+  { name: 'Stage 2 — Seed', amount: 'A$5M', timing: 'Q4 2026 close · deploys through FY27', current: false },
+  { name: 'Stage 3 — Round A', amount: 'A$35M', timing: 'Q1 2028 · FY28 deployment', current: false },
+  { name: 'Stage 4 — Round B', amount: 'A$250M', timing: 'FY2028+', current: false },
 ]
 
 export default function InvestPage() {
@@ -40,23 +40,73 @@ export default function InvestPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Pre-Seed (Stage 1 of 4)</span></div>
           <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$1,600,000</span></div>
-          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000 (1% at pre-money)</span></div>
+          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000 (1.25% at pre-money)</span></div>
           <div><span className="text-brand-muted">Share Class:</span> <span className="text-brand-text ml-2">Ordinary</span></div>
-          <div><span className="text-brand-muted">Pre-Money Valuation:</span> <span className="text-brand-gold ml-2">A$25,000,000</span></div>
+          <div><span className="text-brand-muted">Pre-Money Valuation:</span> <span className="text-brand-gold ml-2">A$20,000,000</span></div>
           <div><span className="text-brand-muted">Total Capital Strategy:</span> <span className="text-brand-text ml-2">A$291,600,000 across four stages</span></div>
         </div>
       </div>
 
       {/* C. Capital Raise Timeline */}
       <Card padding="md">
-        <h2 className="text-sm font-semibold text-brand-text mb-4">Capital Raise Timeline</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {stages.map((s) => (
-            <div key={s.name} className={`rounded-lg p-4 border ${s.current ? 'border-brand-gold bg-brand-gold/5' : 'border-brand-border'}`}>
-              <p className={`text-sm font-semibold ${s.current ? 'text-brand-gold' : 'text-brand-text'}`}>{s.name}</p>
-              <p className="text-lg font-bold text-brand-text mt-1">{s.amount}</p>
-              <p className="text-xs text-brand-muted mt-1">{s.timing}</p>
-              {s.current && <Badge variant="gold" className="mt-2">Current Round</Badge>}
+        <h2 className="text-sm font-semibold text-brand-text mb-2">Capital Raise Timeline</h2>
+        <p className="text-xs text-brand-muted mb-6 max-w-3xl leading-relaxed">
+          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money. Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
+        </p>
+
+        {/* Desktop: horizontal numbered-circle timeline */}
+        <div className="hidden md:block">
+          <div className="relative">
+            {/* Connecting line */}
+            <div className="absolute left-0 right-0 top-6 h-px bg-brand-border" />
+            <div className="relative grid grid-cols-4 gap-4">
+              {stages.map((s, i) => (
+                <div key={s.name} className="flex flex-col items-center text-center">
+                  <div
+                    className={`relative w-12 h-12 rounded-full flex items-center justify-center border-2 ${
+                      s.current
+                        ? 'bg-brand-gold border-brand-gold shadow-lg shadow-brand-gold/40'
+                        : 'bg-brand-darker border-brand-border'
+                    }`}
+                  >
+                    {s.current && <div className="absolute inset-0 rounded-full bg-brand-gold/30 blur-md animate-pulse" />}
+                    <span className={`relative text-sm font-bold ${s.current ? 'text-brand-darker' : 'text-brand-muted'}`}>
+                      {i + 1}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-semibold uppercase tracking-wider mt-3 ${s.current ? 'text-brand-gold' : 'text-brand-muted'}`}>
+                    {s.name}
+                  </p>
+                  <p className={`text-2xl font-bold mt-2 ${s.current ? 'text-brand-gold' : 'text-brand-text'}`}>
+                    {s.amount}
+                  </p>
+                  <p className="text-xs text-brand-muted mt-1 max-w-[200px] leading-relaxed">{s.timing}</p>
+                  {s.current && <Badge variant="gold" className="mt-3">Current Round</Badge>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile: stacked vertical list */}
+        <div className="md:hidden space-y-4">
+          {stages.map((s, i) => (
+            <div key={s.name} className="flex items-start gap-3">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 flex-shrink-0 ${
+                  s.current ? 'bg-brand-gold border-brand-gold' : 'bg-brand-darker border-brand-border'
+                }`}
+              >
+                <span className={`text-sm font-bold ${s.current ? 'text-brand-darker' : 'text-brand-muted'}`}>{i + 1}</span>
+              </div>
+              <div className="flex-1">
+                <p className={`text-xs font-semibold uppercase tracking-wider ${s.current ? 'text-brand-gold' : 'text-brand-muted'}`}>
+                  {s.name}
+                </p>
+                <p className={`text-xl font-bold ${s.current ? 'text-brand-gold' : 'text-brand-text'}`}>{s.amount}</p>
+                <p className="text-xs text-brand-muted mt-0.5">{s.timing}</p>
+                {s.current && <Badge variant="gold" className="mt-2">Current Round</Badge>}
+              </div>
             </div>
           ))}
         </div>

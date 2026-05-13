@@ -16,40 +16,40 @@ interface Stage {
 const stages: Stage[] = [
   {
     number: 1,
-    label: 'Pre-Seed',
+    label: 'Stage 1 · Pre-Seed',
     amount: 'A$1.6M',
-    description: 'Founding team, validation, early traction, runway to Seed',
-    timing: 'Now — Q4 2026',
+    description: 'Bridge — proof, partners, pre-Seed runway at A$20M pre-money',
+    timing: 'May 2026 — Oct 2026 · 6 months',
     status: 'active',
-    milestones: ['Validation & beta users', 'Founding team build', 'Pre-Seed close at A$25M valuation'],
+    milestones: ['Validation & beta users', 'Founding team build', 'A$20M pre-money close'],
     icon: 'sprout',
   },
   {
     number: 2,
-    label: 'Seed Round',
+    label: 'Stage 2 · Seed',
     amount: 'A$5M',
-    description: 'Platform build, licensing, team, go-to-market',
-    timing: 'Q4 2026',
+    description: 'Foundation — regulatory, team, pilot activation',
+    timing: 'Q4 2026 close · deploys through FY27',
     status: 'upcoming',
     milestones: ['Platform MVP launch', 'AFSL enhancement', 'Team hiring'],
     icon: 'foundation',
   },
   {
     number: 3,
-    label: 'Round A',
+    label: 'Stage 3 · Round A',
     amount: 'A$35M',
-    description: 'Urban mining licences, gold extraction pilots, regulatory approvals',
-    timing: 'FY2028',
+    description: 'Acquisitions + structural embedment for urban mining',
+    timing: 'Q1 2028 · FY28 deployment',
     status: 'upcoming',
     milestones: ['Urban mining licences', 'Gold extraction pilots', 'Regulatory approvals'],
     icon: 'bars',
   },
   {
     number: 4,
-    label: 'Round B',
+    label: 'Stage 4 · Round B',
     amount: 'A$250M',
-    description: 'Scale urban mining, sovereign asset infrastructure, global expansion',
-    timing: 'FY2028',
+    description: 'BioGold urban mining — full-scale sovereign asset infrastructure',
+    timing: 'FY2028+',
     status: 'planned',
     milestones: ['BioGold deployment at scale', 'Global expansion', 'Sovereign infrastructure'],
     icon: 'rack',
@@ -303,9 +303,9 @@ export function CapitalRoadmap() {
   return (
     <section className="bg-[#222] border border-brand-border rounded-2xl p-6 md:p-8">
       <div className="mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital raise roadmap</h2>
-        <p className="text-sm text-brand-muted mt-1">
-          A$291.6M across four stages — from pre-seed validation to sovereign infrastructure
+        <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital Raise Timeline</h2>
+        <p className="text-sm text-brand-muted mt-1 max-w-3xl leading-relaxed">
+          Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money. Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
         </p>
       </div>
 
