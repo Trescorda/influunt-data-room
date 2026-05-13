@@ -10,32 +10,42 @@ interface Stage {
   timing: string
   status: 'active' | 'upcoming' | 'planned'
   milestones: string[]
-  icon: 'foundation' | 'bars' | 'rack'
+  icon: 'sprout' | 'foundation' | 'bars' | 'rack'
 }
 
 const stages: Stage[] = [
   {
     number: 1,
+    label: 'Pre-Seed',
+    amount: 'A$1.6M',
+    description: 'Founding team, validation, early traction, runway to Seed',
+    timing: 'Now — Q4 2026',
+    status: 'active',
+    milestones: ['Validation & beta users', 'Founding team build', 'Pre-Seed close at A$25M valuation'],
+    icon: 'sprout',
+  },
+  {
+    number: 2,
     label: 'Seed Round',
     amount: 'A$5M',
     description: 'Platform build, licensing, team, go-to-market',
-    timing: 'Now — Q2 2026',
-    status: 'active',
+    timing: 'Q4 2026',
+    status: 'upcoming',
     milestones: ['Platform MVP launch', 'AFSL enhancement', 'Team hiring'],
     icon: 'foundation',
   },
   {
-    number: 2,
+    number: 3,
     label: 'Round A',
     amount: 'A$35M',
     description: 'Urban mining licences, gold extraction pilots, regulatory approvals',
-    timing: 'Q1 2027',
+    timing: 'FY2028',
     status: 'upcoming',
     milestones: ['Urban mining licences', 'Gold extraction pilots', 'Regulatory approvals'],
     icon: 'bars',
   },
   {
-    number: 3,
+    number: 4,
     label: 'Round B',
     amount: 'A$250M',
     description: 'Scale urban mining, sovereign asset infrastructure, global expansion',
@@ -64,6 +74,43 @@ function FoundationIcon({ active }: { active: boolean }) {
       <circle cx="51" cy="28" r="1.6" fill={stroke} opacity={op} />
       {/* Connecting cap (suggests platform / shared foundation) */}
       <path d="M10 14 L 58 14" stroke={stroke} strokeWidth="1.2" opacity={op * 0.6} strokeDasharray="2 3" />
+    </svg>
+  )
+}
+
+// Stage 1 — Pre-Seed: a sprout / seedling (the very first growth from the ground)
+function SproutIcon({ active }: { active: boolean }) {
+  const stroke = '#C8A85C'
+  const op = active ? 1 : 0.5
+  const leafFill = active ? 'rgba(200,168,92,0.25)' : 'rgba(200,168,92,0.1)'
+  return (
+    <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
+      {/* Ground line */}
+      <line x1="14" y1="46" x2="54" y2="46" stroke={stroke} strokeWidth="1.5" opacity={op * 0.7} />
+      {/* Small soil mound */}
+      <path d="M22 46 Q 34 42 46 46" stroke={stroke} strokeWidth="1.2" opacity={op * 0.6} fill="none" />
+      {/* Central stem */}
+      <path d="M34 46 Q 34 32 34 18" stroke={stroke} strokeWidth="2" strokeLinecap="round" opacity={op} />
+      {/* Left leaf */}
+      <path
+        d="M34 30 Q 24 26 20 18 Q 28 22 34 28"
+        stroke={stroke}
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        opacity={op}
+        fill={leafFill}
+      />
+      {/* Right leaf */}
+      <path
+        d="M34 24 Q 44 20 48 12 Q 40 16 34 22"
+        stroke={stroke}
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        opacity={op}
+        fill={leafFill}
+      />
+      {/* Tip bud */}
+      <circle cx="34" cy="16" r="2" fill={stroke} opacity={op} />
     </svg>
   )
 }
@@ -169,6 +216,7 @@ function ExpansionIcon({ active }: { active: boolean }) {
 }
 
 function StageInfographic({ icon, active }: { icon: Stage['icon']; active: boolean }) {
+  if (icon === 'sprout') return <SproutIcon active={active} />
   if (icon === 'foundation') return <FoundationIcon active={active} />
   if (icon === 'bars') return <BarsIcon active={active} />
   return <ExpansionIcon active={active} />
@@ -257,22 +305,23 @@ export function CapitalRoadmap() {
       <div className="mb-6">
         <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital raise roadmap</h2>
         <p className="text-sm text-brand-muted mt-1">
-          A$290M across three stages — from seed to sovereign infrastructure
+          A$291.6M across four stages — from pre-seed validation to sovereign infrastructure
         </p>
       </div>
 
       {/* Desktop: horizontal infographic timeline */}
       <div className="hidden md:block">
         <div className="flex items-start">
-          <StageNode stage={stages[0]} />
-          <div className="flex-1 pt-[88px]">
-            <ConnectorSegment />
-          </div>
-          <StageNode stage={stages[1]} />
-          <div className="flex-1 pt-[88px]">
-            <ConnectorSegment />
-          </div>
-          <StageNode stage={stages[2]} />
+          {stages.map((stage, i) => (
+            <div key={stage.number} className="contents">
+              <StageNode stage={stage} />
+              {i < stages.length - 1 && (
+                <div className="flex-1 pt-[88px]">
+                  <ConnectorSegment />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -287,7 +336,7 @@ export function CapitalRoadmap() {
 
       <div className="mt-8 pt-6 border-t border-brand-border text-center">
         <p className="text-sm text-brand-muted">
-          Total raise: <span className="text-brand-gold font-bold text-base">A$290M</span> across three stages
+          Total raise: <span className="text-brand-gold font-bold text-base">A$291.6M</span> across four stages
         </p>
       </div>
     </section>

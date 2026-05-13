@@ -7,9 +7,10 @@ import Link from 'next/link'
 import { FileText, Calendar, Mail, Shield, CheckCircle, ArrowRight, FileCheck, Eye } from 'lucide-react'
 
 const stages = [
-  { name: 'Stage 1 — Seed', amount: 'A$5M', timing: 'Immediate', current: true },
-  { name: 'Stage 2 — Round A', amount: 'A$35M', timing: 'Q1 2027', current: false },
-  { name: 'Stage 3 — Round B', amount: 'A$250M', timing: 'FY2028', current: false },
+  { name: 'Stage 1 — Pre-Seed', amount: 'A$1.6M', timing: 'Now — Q4 2026', current: true },
+  { name: 'Stage 2 — Seed', amount: 'A$5M', timing: 'Q4 2026', current: false },
+  { name: 'Stage 3 — Round A', amount: 'A$35M', timing: 'FY2028', current: false },
+  { name: 'Stage 4 — Round B', amount: 'A$250M', timing: 'FY2028', current: false },
 ]
 
 export default function InvestPage() {
@@ -29,7 +30,7 @@ export default function InvestPage() {
       {/* A. Header */}
       <div>
         <h1 className="text-2xl font-semibold text-brand-text">Invest in Influunt</h1>
-        <p className="text-lg text-brand-gold mt-1">Seed Round — A$5,000,000</p>
+        <p className="text-lg text-brand-gold mt-1">Pre-Seed — A$1,600,000</p>
         <p className="text-sm text-brand-muted mt-1">Verified cap table and compliant share issuance powered by Cake Equity</p>
       </div>
 
@@ -37,19 +38,19 @@ export default function InvestPage() {
       <div className="bg-[#242424] border-l-2 border-brand-gold rounded-xl p-5 md:p-6">
         <h2 className="text-sm font-semibold text-brand-text mb-3">Investment Overview</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
-          <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Seed (Stage 1 of 3)</span></div>
-          <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$5,000,000</span></div>
-          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000</span></div>
+          <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Pre-Seed (Stage 1 of 4)</span></div>
+          <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$1,600,000</span></div>
+          <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$250,000 (1% at pre-money)</span></div>
           <div><span className="text-brand-muted">Share Class:</span> <span className="text-brand-text ml-2">Ordinary</span></div>
-          <div><span className="text-brand-muted">Total Capital Strategy:</span> <span className="text-brand-text ml-2">A$290,000,000 across three stages</span></div>
-          <div><span className="text-brand-muted">Valuation:</span> <span className="text-brand-gold ml-2">Contact us for current term sheet</span></div>
+          <div><span className="text-brand-muted">Pre-Money Valuation:</span> <span className="text-brand-gold ml-2">A$25,000,000</span></div>
+          <div><span className="text-brand-muted">Total Capital Strategy:</span> <span className="text-brand-text ml-2">A$291,600,000 across four stages</span></div>
         </div>
       </div>
 
       {/* C. Capital Raise Timeline */}
       <Card padding="md">
         <h2 className="text-sm font-semibold text-brand-text mb-4">Capital Raise Timeline</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {stages.map((s) => (
             <div key={s.name} className={`rounded-lg p-4 border ${s.current ? 'border-brand-gold bg-brand-gold/5' : 'border-brand-border'}`}>
               <p className={`text-sm font-semibold ${s.current ? 'text-brand-gold' : 'text-brand-text'}`}>{s.name}</p>
