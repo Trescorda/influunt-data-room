@@ -16,9 +16,9 @@ export function DocumentCard({ doc }: { doc: Document }) {
   return (
     <Link
       href={`/room/documents/${doc.id}`}
-      className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-brand-dark/50 transition-colors group"
+      className="flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/[0.03] hover:border-brand-border hover:translate-x-0.5 transition-all duration-200 group"
     >
-      <div className="flex-shrink-0 w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
+      <div className="flex-shrink-0 w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center transition-colors group-hover:bg-brand-gold/15">
         <FileText size={18} className="text-brand-gold" />
       </div>
       <div className="flex-1 min-w-0">

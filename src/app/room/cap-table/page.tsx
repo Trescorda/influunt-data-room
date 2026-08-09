@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
+import { Loading } from '@/components/ui/Loading'
 import type { CapTableEntry } from '@/lib/types'
 
 const typeColors: Record<string, string> = {
@@ -32,41 +33,50 @@ function formatCurrency(n: number) {
   return `A$${n.toLocaleString('en-AU', { minimumFractionDigits: 0 })}`
 }
 
-function DonutChart({ data }: { data: { type: string; pct: number }[] }) {
+function DonutChart({ data, totalShares }: { data: { type: string; pct: number }[]; totalShares: number }) {
   const size = 220
-  const strokeWidth = 40
+  const strokeWidth = 28
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
+  const gap = data.length > 1 ? 2.5 : 0 // px breathing room between segments
   let offset = 0
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {data.map((seg, i) => {
-          const dashLength = (seg.pct / 100) * circumference
-          const dashOffset = -offset
-          offset += dashLength
-          return (
-            <circle
-              key={i}
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke={typeColors[seg.type] || '#666'}
-              strokeWidth={strokeWidth}
-              strokeDasharray={`${dashLength} ${circumference - dashLength}`}
-              strokeDashoffset={dashOffset}
-              transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            />
-          )
-        })}
-      </svg>
-      <div className="flex flex-wrap justify-center gap-4">
+    <div className="flex flex-col items-center gap-5">
+      <div className="relative">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          {data.map((seg, i) => {
+            const dashLength = Math.max((seg.pct / 100) * circumference - gap, 0)
+            const dashOffset = -offset
+            offset += (seg.pct / 100) * circumference
+            return (
+              <circle
+                key={i}
+                cx={size / 2}
+                cy={size / 2}
+                r={radius}
+                fill="none"
+                stroke={typeColors[seg.type] || '#666'}
+                strokeWidth={strokeWidth}
+                strokeLinecap={gap ? 'round' : 'butt'}
+                strokeDasharray={`${dashLength} ${circumference - dashLength}`}
+                strokeDashoffset={dashOffset}
+                transform={`rotate(-90 ${size / 2} ${size / 2})`}
+              />
+            )
+          })}
+        </svg>
+        {/* Centre label */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <p className="text-2xl font-bold text-brand-text" data-numeric>{formatNumber(totalShares)}</p>
+          <p className="text-[11px] text-brand-muted uppercase tracking-[0.14em] mt-0.5">Total shares</p>
+        </div>
+      </div>
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         {data.map((seg) => (
           <div key={seg.type} className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: typeColors[seg.type] || '#666' }} />
-            <span className="text-xs text-brand-muted">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: typeColors[seg.type] || '#666' }} />
+            <span className="text-xs text-brand-muted" data-numeric>
               {typeLabels[seg.type] || seg.type} ({seg.pct.toFixed(1)}%)
             </span>
           </div>
@@ -99,7 +109,7 @@ export default function CapTablePage() {
   }))
 
   if (loading) {
-    return <div className="p-8 text-center text-brand-muted text-sm">Loading...</div>
+    return <Loading />
   }
 
   return (
@@ -120,17 +130,17 @@ export default function CapTablePage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-brand-border">
-                    <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase">Shareholder</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase">Type</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase">Share Class</th>
-                    <th className="text-right px-4 py-3 text-xs font-medium text-brand-muted uppercase">Shares</th>
-                    <th className="text-right px-4 py-3 text-xs font-medium text-brand-muted uppercase">Ownership %</th>
-                    <th className="text-right px-4 py-3 text-xs font-medium text-brand-muted uppercase">Investment</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Shareholder</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Type</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Share Class</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Shares</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Ownership %</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Investment</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entries.map((e) => (
-                    <tr key={e.id} className="border-b border-brand-border last:border-0 hover:bg-brand-card/50">
+                    <tr key={e.id} className="border-b border-brand-border last:border-0 hover:bg-white/[0.03] transition-colors">
                       <td className="px-4 py-3 text-sm text-brand-text font-medium">{e.shareholder_name}</td>
                       <td className="px-4 py-3">
                         <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: `${typeColors[e.entity_type]}20`, color: typeColors[e.entity_type] }}>
@@ -158,7 +168,7 @@ export default function CapTablePage() {
 
           <Card padding="lg">
             <h2 className="text-sm font-semibold text-brand-text mb-4 text-center">Ownership Breakdown</h2>
-            <DonutChart data={chartData} />
+            <DonutChart data={chartData} totalShares={totalShares} />
           </Card>
         </>
       )}

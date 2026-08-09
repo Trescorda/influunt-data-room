@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import {
-  ChevronDown, ChevronRight, Folder, Briefcase, Scale, Shield,
+  ChevronDown, Folder, Briefcase, Scale, Shield,
   BarChart3, Code, Handshake, TrendingUp, Users,
 } from 'lucide-react'
 import { DocumentCard } from './DocumentCard'
@@ -28,7 +28,7 @@ function SubfolderSection({ folder }: { folder: FolderWithDocuments }) {
     <div className="ml-5 border-l-2 border-brand-border/40">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-brand-card/40 transition-colors text-left"
+        className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-white/[0.03] transition-colors text-left"
       >
         <Folder size={13} className="text-brand-muted flex-shrink-0" />
         <div className="flex-1 min-w-0">
@@ -37,14 +37,13 @@ function SubfolderSection({ folder }: { folder: FolderWithDocuments }) {
             <p className="text-[11px] text-brand-muted mt-0.5 truncate">{folder.description}</p>
           )}
         </div>
-        <span className="text-[11px] text-brand-muted mr-1">
+        <span className="text-[11px] text-brand-muted mr-1" data-numeric>
           {docCount} {docCount === 1 ? 'doc' : 'docs'}
         </span>
-        {open ? (
-          <ChevronDown size={13} className="text-brand-muted" />
-        ) : (
-          <ChevronRight size={13} className="text-brand-muted" />
-        )}
+        <ChevronDown
+          size={13}
+          className={`text-brand-muted transition-transform duration-300 ${open ? 'rotate-0' : '-rotate-90'}`}
+        />
       </button>
       {open && docCount > 0 && (
         <div className="ml-4 px-2 py-1 space-y-0.5">
@@ -72,12 +71,12 @@ export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
   const hasSubfolders = (folder.subfolders || []).length > 0
 
   return (
-    <div className="border border-brand-border rounded-xl overflow-hidden">
+    <div className={`border rounded-xl overflow-hidden transition-all duration-200 ${open ? 'border-brand-gold/25 shadow-[0_4px_24px_rgba(0,0,0,0.25)]' : 'border-brand-border hover:border-brand-border-strong'}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-4 px-5 py-5 bg-brand-card hover:bg-[#222222] transition-colors text-left"
+        className="group w-full flex items-center gap-4 px-5 py-5 bg-brand-card hover:bg-brand-card-hover transition-colors text-left"
       >
-        <div className="flex-shrink-0 w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
+        <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 ${open ? 'bg-brand-gold/15 shadow-[0_0_16px_rgba(200,168,92,0.15)]' : 'bg-brand-gold/10 group-hover:bg-brand-gold/15'}`}>
           <FolderIcon size={20} className="text-brand-gold" />
         </div>
         <div className="flex-1 min-w-0">
@@ -86,14 +85,13 @@ export function FolderSection({ folder }: { folder: FolderWithDocuments }) {
             <p className="text-sm text-brand-muted mt-0.5 truncate">{folder.description}</p>
           )}
         </div>
-        <span className="text-sm text-brand-muted mr-2">
+        <span className="text-sm text-brand-muted mr-2" data-numeric>
           {totalDocs} {totalDocs === 1 ? 'document' : 'documents'}
         </span>
-        {open ? (
-          <ChevronDown size={16} className="text-brand-muted" />
-        ) : (
-          <ChevronRight size={16} className="text-brand-muted" />
-        )}
+        <ChevronDown
+          size={16}
+          className={`text-brand-muted transition-transform duration-300 ${open ? 'rotate-0' : '-rotate-90'}`}
+        />
       </button>
       {open && (
         <div className="bg-brand-darker">

@@ -35,9 +35,10 @@ export default function InvestPage() {
       </div>
 
       {/* B. Investment Overview */}
-      <div className="bg-[#242424] border-l-2 border-brand-gold rounded-xl p-5 md:p-6">
+      <div className="relative bg-brand-card border border-brand-border rounded-xl p-5 md:p-6 overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_1px_3px_rgba(0,0,0,0.3)]">
+        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-brand-gold-bright via-brand-gold to-brand-gold/40" />
         <h2 className="text-sm font-semibold text-brand-text mb-3">Investment Overview</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm" data-numeric>
           <div><span className="text-brand-muted">Round:</span> <span className="text-brand-text ml-2">Pre-Seed (Stage 1 of 4)</span></div>
           <div><span className="text-brand-muted">Target Raise:</span> <span className="text-brand-text ml-2">A$1,600,000</span></div>
           <div><span className="text-brand-muted">Minimum Investment:</span> <span className="text-brand-text ml-2">A$200,000 (1% at pre-money)</span></div>

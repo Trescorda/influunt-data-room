@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { MessageSquare, Send, CheckCircle } from 'lucide-react'
+import { Loading } from '@/components/ui/Loading'
 import type { Question } from '@/lib/types'
 
 function formatDateTime(timestamp: string): string {
@@ -84,7 +85,7 @@ export default function QAPage() {
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
             placeholder="Type your question here..."
-            className="w-full px-4 py-3 bg-brand-dark border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50 resize-none"
+            className="w-full px-4 py-3 bg-brand-darker/60 border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)] hover:border-brand-border-strong focus:outline-none focus:ring-[3px] focus:ring-brand-gold/15 focus:border-brand-gold/60 transition-[border-color,box-shadow] duration-200 resize-none"
             rows={3}
           />
           <div className="flex items-center justify-between mt-3">
@@ -107,7 +108,7 @@ export default function QAPage() {
       </Card>
 
       {pageLoading ? (
-        <div className="py-12 text-center text-brand-muted text-sm">Loading...</div>
+        <Loading />
       ) : (
         <div className="space-y-3">
           {questions.length === 0 && (

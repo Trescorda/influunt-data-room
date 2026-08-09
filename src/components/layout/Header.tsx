@@ -21,10 +21,10 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-brand-border bg-brand-dark">
+    <header className="sticky top-0 z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-brand-border bg-brand-dark/80 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         {onMenuClick && (
-          <button onClick={onMenuClick} className="md:hidden text-brand-muted hover:text-brand-text p-1">
+          <button onClick={onMenuClick} className="md:hidden text-brand-muted hover:text-brand-text p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors">
             <Menu size={22} />
           </button>
         )}
@@ -37,7 +37,7 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
         {actions}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-text transition-colors px-3 py-2 rounded-lg hover:bg-brand-card min-h-[44px]"
+          className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-text transition-colors px-3 py-2 rounded-lg hover:bg-white/[0.06] min-h-[44px]"
         >
           <LogOut size={16} />
           <span className="hidden sm:inline">Sign out</span>

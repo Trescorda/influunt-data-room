@@ -12,10 +12,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-gold text-brand-darker hover:bg-brand-gold/90 font-semibold',
-  secondary: 'bg-brand-card text-brand-text border border-brand-border hover:bg-brand-border',
+  primary:
+    'bg-gradient-to-b from-brand-gold-bright to-brand-gold text-brand-darker font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_1px_3px_rgba(0,0,0,0.4)] hover:brightness-105 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_2px_8px_rgba(200,168,92,0.35)]',
+  secondary:
+    'bg-brand-card text-brand-text border border-brand-border shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-brand-card-hover hover:border-brand-border-strong',
   ghost: 'text-brand-muted hover:text-brand-text hover:bg-brand-card',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+  danger:
+    'bg-gradient-to-b from-red-500 to-red-600 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] hover:brightness-105',
 }
 
 const sizes: Record<ButtonSize, string> = {
@@ -30,7 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={`inline-flex items-center justify-center rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+        className={`inline-flex items-center justify-center rounded-lg transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${variants[variant]} ${sizes[size]} ${className}`}
         {...props}
       >
         {loading && (

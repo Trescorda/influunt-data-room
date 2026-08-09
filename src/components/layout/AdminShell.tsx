@@ -12,7 +12,7 @@ export function AdminShell({ children }: AdminShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-brand-darker">
+    <div className="min-h-screen">
       <AdminSidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {/* Mobile header for hamburger */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 flex items-center px-4 py-3 bg-brand-dark border-b border-brand-border">

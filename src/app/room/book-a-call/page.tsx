@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Script from 'next/script'
 import { Card } from '@/components/ui/Card'
+import { Loading } from '@/components/ui/Loading'
 import { Calendar } from 'lucide-react'
 
 export default function BookACallPage() {
@@ -20,7 +21,7 @@ export default function BookACallPage() {
   }, [])
 
   if (loading) {
-    return <div className="p-8 text-center text-brand-muted text-sm">Loading...</div>
+    return <Loading />
   }
 
   return (

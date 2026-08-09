@@ -13,7 +13,7 @@ export function RoomShell({ isAdmin, children }: RoomShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-brand-darker">
+    <div className="min-h-screen">
       <InvestorSidebar isAdmin={isAdmin} mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="md:ml-60 flex flex-col min-h-screen">
         <Header

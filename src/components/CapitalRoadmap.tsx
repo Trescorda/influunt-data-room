@@ -301,8 +301,9 @@ function StageNode({ stage }: { stage: Stage }) {
 
 export function CapitalRoadmap() {
   return (
-    <section className="bg-[#222] border border-brand-border rounded-2xl p-6 md:p-8">
+    <section className="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_1px_3px_rgba(0,0,0,0.3)]">
       <div className="mb-6">
+        <p className="text-[11px] font-semibold text-brand-gold uppercase tracking-[0.14em] mb-1.5">The Raise</p>
         <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital Raise Timeline</h2>
         <p className="text-sm text-brand-muted mt-1 max-w-3xl leading-relaxed">
           Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money (A$200K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.

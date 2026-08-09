@@ -61,8 +61,9 @@ export default async function RoomPage() {
 
       {/* All documents */}
       <div className="mt-8">
+        <p className="text-[11px] font-semibold text-brand-gold uppercase tracking-[0.14em] mb-1.5">Due Diligence</p>
         <h2 className="text-xl font-bold text-brand-text mb-1">All documents</h2>
-        <p className="text-sm text-[#999] mb-4">
+        <p className="text-sm text-brand-muted mb-4">
           Explore detailed materials by category
         </p>
         <div className="space-y-3">

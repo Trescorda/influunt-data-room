@@ -80,11 +80,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-darker flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+      {/* Ambient gold glow behind the card */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="w-[600px] h-[600px] rounded-full bg-brand-gold/[0.05] blur-[120px]" />
+      </div>
+
+      <div className="relative w-full max-w-md animate-fade-up">
         <div className="text-center mb-8">
           <img src="/influunt-logo.png" alt="Influunt" width={180} className="mx-auto" />
-          <p className="text-sm text-brand-muted mt-2">Investor Data Room</p>
+          <p className="text-[13px] text-brand-muted mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
         </div>
 
         <Card padding="lg">
