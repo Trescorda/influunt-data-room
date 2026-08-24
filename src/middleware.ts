@@ -34,8 +34,26 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
+  const isProtected =
+    pathname.startsWith('/room') || pathname.startsWith('/admin') || pathname === '/nda'
+
+  // Anonymous visitors never reach a protected route.
+  //
+  // Gating used to be done per-page with redirect('/login'), which only covers
+  // Server Components — every 'use client' page under /room rendered its markup
+  // to anyone with the URL. On /room/invest that meant the raise terms (target
+  // raise, pre-money valuation, minimum cheque, all four stages) were public,
+  // because that page hardcodes them rather than fetching them. Enforcing here
+  // covers every current and future page in one place.
+  if (!user && isProtected) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.search = ''
+    return NextResponse.redirect(url)
+  }
+
   // Check access expiration for authenticated users on protected routes
-  if (user && (pathname.startsWith('/room') || pathname.startsWith('/admin') || pathname === '/nda')) {
+  if (user && isProtected) {
     const { data: investor } = await supabase
       .from('investors')
       .select('access_expires_at')
