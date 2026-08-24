@@ -39,7 +39,12 @@ function DonutChart({ data, totalShares }: { data: { type: string; pct: number }
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const gap = data.length > 1 ? 2.5 : 0 // px breathing room between segments
-  let offset = 0
+  // Precompute each arc's start offset. Previously this accumulated into a
+  // `let` inside the render pass, which mutates during render.
+  const offsets = data.reduce<number[]>((acc, seg, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + (data[i - 1].pct / 100) * circumference)
+    return acc
+  }, [])
 
   return (
     <div className="flex flex-col items-center gap-5">
@@ -47,8 +52,7 @@ function DonutChart({ data, totalShares }: { data: { type: string; pct: number }
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           {data.map((seg, i) => {
             const dashLength = Math.max((seg.pct / 100) * circumference - gap, 0)
-            const dashOffset = -offset
-            offset += (seg.pct / 100) * circumference
+            const dashOffset = -offsets[i]
             return (
               <circle
                 key={i}

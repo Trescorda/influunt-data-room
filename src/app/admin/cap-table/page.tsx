@@ -66,9 +66,14 @@ export default function AdminCapTablePage() {
     }))
   }
 
-  const updateField = (index: number, field: string, value: any) => {
-    const updated = [...entries]
-    ;(updated[index] as any)[field] = value
+  const updateField = <K extends keyof EditableEntry>(
+    index: number,
+    field: K,
+    value: EditableEntry[K],
+  ) => {
+    // Replace the row rather than mutating it: [...entries] is a shallow
+    // copy, so assigning into updated[index] also mutated the original.
+    const updated = entries.map((row, i) => (i === index ? { ...row, [field]: value } : row))
     if (field === 'shares_held') {
       setEntries(recalcPercentages(updated))
     } else {
@@ -174,7 +179,7 @@ export default function AdminCapTablePage() {
                   <td className="px-3 py-2">
                     <select
                       value={e.entity_type}
-                      onChange={(ev) => updateField(i, 'entity_type', ev.target.value)}
+                      onChange={(ev) => updateField(i, 'entity_type', ev.target.value as CapTableEntityType)}
                       className="w-full text-sm"
                     >
                       {entityTypes.map((t) => (

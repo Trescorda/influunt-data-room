@@ -75,19 +75,23 @@ function PoaDonut() {
   const C = 2 * Math.PI * R; // circumference
   const GAP = 1.4; // visual gap between segments, in percent
 
-  let cursor = 0;
+  // Running start position for each arc, precomputed so nothing mutates
+  // during the render pass.
+  const cursors = POA_WATERFALL.reduce<number[]>((acc, seg, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + POA_WATERFALL[i - 1].share);
+    return acc;
+  }, []);
 
   return (
     <svg viewBox="0 0 200 200" className="w-full h-full" role="img" aria-label="POA revenue waterfall donut">
       {/* track */}
       <circle cx={CX} cy={CY} r={R} fill="none" stroke="#174133" strokeOpacity={0.06} strokeWidth={26} />
-      {POA_WATERFALL.map((seg) => {
+      {POA_WATERFALL.map((seg, segIndex) => {
         const len = (seg.share / 100) * C;
         const gap = (GAP / 100) * C;
         const dash = `${Math.max(len - gap, 0)} ${C - Math.max(len - gap, 0)}`;
         // rotate so the arc starts where the previous left off; -90 puts 0% at 12 o'clock
-        const rotation = (cursor / 100) * 360 - 90;
-        cursor += seg.share;
+        const rotation = (cursors[segIndex] / 100) * 360 - 90;
         return (
           <motion.circle
             key={seg.label}

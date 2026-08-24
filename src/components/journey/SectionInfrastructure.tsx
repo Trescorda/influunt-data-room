@@ -159,8 +159,8 @@ export default function SectionInfrastructure() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:items-start">
           <div>
             <p className="text-lg md:text-xl text-[#2B2B2B]/80 leading-relaxed">
-              Influunt's{" "}
-              <strong className="font-semibold text-[#174133]">"phygital"</strong>{" "}
+              Influunt&apos;s{" "}
+              <strong className="font-semibold text-[#174133]">&quot;phygital&quot;</strong>{" "}
               thesis is that the intangible monetary layer runs on physical
               infrastructure that is itself part of the value proposition — not a
               commodity input.
@@ -248,9 +248,9 @@ export default function SectionInfrastructure() {
             <p className="mt-4 text-[#2B2B2B]/70 leading-relaxed">
               The distributed node network is also the answer to the consumer-node{" "}
               <strong className="font-semibold text-[#174133]">
-                "graveyard" problem
+                &quot;graveyard&quot; problem
               </strong>{" "}
-              in decentralised infrastructure: every client's sovereign
+              in decentralised infrastructure: every client&apos;s sovereign
               financial-and-wellbeing data is genuine, contracted, demand-first
               usage, with{" "}
               <strong className="font-semibold text-[#174133]">

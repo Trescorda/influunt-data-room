@@ -46,7 +46,11 @@ export default async function AdminDashboard() {
     .select('*', { count: 'exact', head: true })
     .eq('status', 'pending')
 
-  // Weekly activity
+  // Weekly activity.
+  // This is an async Server Component: it runs once per request on the server,
+  // not in a React render pass, so reading the clock here is correct. The
+  // React Compiler purity rule targets client renders and misfires here.
+  // eslint-disable-next-line react-hooks/purity
   const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data: weeklyActivity } = await admin
     .from('activity_log')

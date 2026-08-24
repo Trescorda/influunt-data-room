@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+type QuestionInvestorJoin = { email: string | null; name: string | null }
+
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -22,7 +24,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Question not found' }, { status: 404 })
   }
 
-  const investorEmail = (question.investors as any).email
+  const investorEmail = (question.investors as unknown as QuestionInvestorJoin).email
+  if (!investorEmail) {
+    return NextResponse.json({ error: 'Investor has no email on record' }, { status: 422 })
+  }
 
   try {
     await admin.auth.admin.generateLink({

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth'
 
-async function verifyAdmin(supabase: any) {
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>
+
+async function verifyAdmin(supabase: SupabaseServerClient) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const admin = createAdminClient()
@@ -15,7 +18,8 @@ async function verifyAdmin(supabase: any) {
 }
 
 export async function GET() {
-  const admin = createAdminClient()
+  const admin = await requireAdmin()
+  if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { data, error } = await admin.from('cap_table_entries').select('*').order('sort_order')
   console.log('[CapTable API] GET entries:', data?.length, 'error:', error?.message)
   if (error) {

@@ -31,7 +31,9 @@ export function DocumentViewer({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const activityIdRef = useRef<string | null>(null)
-  const startTimeRef = useRef(Date.now())
+  // Set on mount by the view-logging effect below; Date.now() must not be
+  // called during render.
+  const startTimeRef = useRef(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef<(HTMLDivElement | null)[]>([])
 

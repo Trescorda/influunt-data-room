@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth'
 
 // GET: Fetch all folders with documents
 // Read-only endpoint — auth check removed because the data isn't sensitive
 // (same data is visible via the investor app) and the auth check was the root
 // cause of admin pages showing empty data.
 export async function GET() {
-  const admin = createAdminClient()
+  const admin = await requireAdmin()
+  if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   console.log('[Admin Documents GET] Service key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
 

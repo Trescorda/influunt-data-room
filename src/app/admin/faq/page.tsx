@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -20,14 +20,34 @@ export default function AdminFAQPage() {
   const [form, setForm] = useState({ question: '', answer: '', category: defaultCategories[0], is_published: true, sort_order: 0 })
   const [saving, setSaving] = useState(false)
 
-  const loadFaqs = async () => {
+  // Fetching is kept separate from state-setting so the initial load can set
+  // state from a promise callback (guarded against unmount) while the mutation
+  // handlers below still get a simple refresh helper.
+  const fetchFaqs = useCallback(async (): Promise<FAQ[]> => {
     const res = await fetch('/api/admin/faq')
     const d = await res.json()
-    setFaqs(d.faqs || [])
-    setLoading(false)
-  }
+    return d.faqs || []
+  }, [])
 
-  useEffect(() => { loadFaqs() }, [])
+  const loadFaqs = useCallback(async () => {
+    setFaqs(await fetchFaqs())
+    setLoading(false)
+  }, [fetchFaqs])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchFaqs()
+      .then((rows) => {
+        if (cancelled) return
+        setFaqs(rows)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[Admin FAQ] Load failed:', err)
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [fetchFaqs])
 
   const openCreate = () => {
     setEditingFaq(null)

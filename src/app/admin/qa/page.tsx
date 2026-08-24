@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -37,21 +37,38 @@ export default function AdminQAPage() {
   const [successId, setSuccessId] = useState<string | null>(null)
   const [error, setError] = useState('')
 
-  const loadQuestions = async () => {
+  // Fetch is separated from state-setting so the initial load can set state
+  // from a promise callback, guarded against unmount.
+  const fetchQuestions = useCallback(async () => {
+    const res = await fetch('/api/admin/questions')
+    const data = await res.json()
+    console.log('[Admin Q&A] Loaded:', data.questions?.length, 'error:', data.error)
+    return data.questions || []
+  }, [])
+
+  const loadQuestions = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/questions')
-      const data = await res.json()
-      console.log('[Admin Q&A] Loaded:', data.questions?.length, 'error:', data.error)
-      setQuestions(data.questions || [])
+      setQuestions(await fetchQuestions())
     } catch (err) {
       console.error('[Admin Q&A] Fetch failed:', err)
     }
     setLoading(false)
-  }
+  }, [fetchQuestions])
 
   useEffect(() => {
-    loadQuestions()
-  }, [])
+    let cancelled = false
+    fetchQuestions()
+      .then((rows) => {
+        if (cancelled) return
+        setQuestions(rows)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[Admin Q&A] Fetch failed:', err)
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [fetchQuestions])
 
   const handleAnswer = async (questionId: string) => {
     const text = (answerDrafts[questionId] || '').trim()

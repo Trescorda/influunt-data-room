@@ -51,40 +51,58 @@ export default function DocumentsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const loadDocuments = async () => {
+  // Fetching is kept separate from state-setting so the initial load can set
+  // state from a promise callback (guarded against unmount) while the upload
+  // and delete handlers below still get a simple refresh helper.
+  const fetchDocuments = useCallback(async (): Promise<{ folders: Folder[]; documents: Document[] } | null> => {
+    const res = await fetch('/api/admin/documents')
+    const data = await res.json()
+    console.log('[Admin Docs] Folders:', data.folders?.length, 'Documents:', data.documents?.length)
+    if (!res.ok) {
+      console.error('[Admin Docs] API error:', data.error)
+      return null
+    }
+    return { folders: data.folders || [], documents: data.documents || [] }
+  }, [])
+
+  // Default the upload picker to the first top-level folder, but never
+  // clobber a choice the admin has already made.
+  const applyDocuments = useCallback((payload: { folders: Folder[]; documents: Document[] }) => {
+    setFolders(payload.folders)
+    setDocuments(payload.documents)
+    setUploadFolderId((current) => {
+      if (current) return current
+      const topLevel = payload.folders
+        .filter((f) => !f.parent_id)
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      return topLevel[0] ? topLevel[0].id : current
+    })
+  }, [])
+
+  const loadDocuments = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/documents')
-      const data = await res.json()
-      console.log('[Admin Docs] Raw API response:', data)
-      console.log('[Admin Docs] Folders:', data.folders?.length, 'Documents:', data.documents?.length)
-
-      if (!res.ok) {
-        console.error('[Admin Docs] API error:', data.error)
-        setLoading(false)
-        return
-      }
-
-      setFolders(data.folders || [])
-      setDocuments(data.documents || [])
-
-      // Set default upload folder to the first top-level folder
-      // (Subcategories temporarily hidden from upload UI — only macro categories used)
-      if ((data.folders || []).length > 0 && !uploadFolderId) {
-        const allFolders: Folder[] = data.folders
-        const topLevel = allFolders
-          .filter((f) => !f.parent_id)
-          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-        if (topLevel[0]) setUploadFolderId(topLevel[0].id)
-      }
+      const payload = await fetchDocuments()
+      if (payload) applyDocuments(payload)
     } catch (err) {
       console.error('[Admin Docs] Fetch failed:', err)
     }
     setLoading(false)
-  }
+  }, [fetchDocuments, applyDocuments])
 
   useEffect(() => {
-    loadDocuments()
-  }, [])
+    let cancelled = false
+    fetchDocuments()
+      .then((payload) => {
+        if (cancelled) return
+        if (payload) applyDocuments(payload)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[Admin Docs] Fetch failed:', err)
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [fetchDocuments, applyDocuments])
 
   // Build display path for a folder ("Parent > Child")
   const folderPath = (folderId: string | null | undefined): string => {
@@ -122,19 +140,20 @@ export default function DocumentsPage() {
     })
   }, [folders])
 
-  const handleFileSelect = (file: File) => {
+  // Functional setState so this needs no dependencies — the previous version
+  // closed over uploadTitle, which handleDrop then captured at memoisation
+  // time and could read stale.
+  const handleFileSelect = useCallback((file: File) => {
     setSelectedFile(file)
-    if (!uploadTitle) {
-      setUploadTitle(file.name.replace(/\.[^/.]+$/, ''))
-    }
-  }
+    setUploadTitle((current) => current || file.name.replace(/\.[^/.]+$/, ''))
+  }, [])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file) handleFileSelect(file)
-  }, [uploadTitle])
+  }, [handleFileSelect])
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail, answerEmail } from '@/lib/email'
+import { requireAdmin } from '@/lib/auth'
+
+type QuestionInvestorJoin = { email: string | null; name: string | null }
 
 export async function GET() {
-  const admin = createAdminClient()
+  const admin = await requireAdmin()
+  if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { data: questions, error } = await admin
     .from('questions')
@@ -54,8 +58,9 @@ export async function PATCH(request: Request) {
 
   // Notify the investor via email (don't block on failure)
   if (question?.investors) {
-    const investorEmail = (question.investors as any).email
-    const investorName = (question.investors as any).name
+    const investor = question.investors as unknown as QuestionInvestorJoin
+    const investorEmail = investor.email
+    const investorName = investor.name
     if (investorEmail) {
       try {
         await sendEmail(

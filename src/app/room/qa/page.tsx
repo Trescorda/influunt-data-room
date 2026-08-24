@@ -27,15 +27,20 @@ export default function QAPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
 
-  const loadQuestions = async () => {
-    const res = await fetch('/api/questions')
-    const data = await res.json()
-    setQuestions(data.questions || [])
-    setPageLoading(false)
-  }
-
   useEffect(() => {
+    let cancelled = false
+    const loadQuestions = async () => {
+      try {
+        const res = await fetch('/api/questions')
+        const data = await res.json()
+        if (!cancelled) setQuestions(data.questions || [])
+      } catch (err) {
+        console.error('[Q&A] Load failed:', err)
+      }
+      if (!cancelled) setPageLoading(false)
+    }
     loadQuestions()
+    return () => { cancelled = true }
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,7 +68,7 @@ export default function QAPage() {
       } else {
         setError(data.error || 'Failed to submit question')
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('[Q&A Submit] Fetch failed:', err)
       setError('Network error — please try again')
     }

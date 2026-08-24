@@ -4,6 +4,15 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Badge } from '@/components/ui/Badge'
 import { TimeCell } from '@/components/admin/TimeCell'
 
+/** Shape of the activity_log rows as selected below, with their joins. */
+type ActivityRow = {
+  id: string
+  action: string
+  created_at: string
+  investors: { name: string | null; email: string | null; organisation: string | null } | null
+  documents: { title: string | null } | null
+}
+
 const actionLabels: Record<string, string> = {
   login: 'Logged in',
   logout: 'Logged out',
@@ -65,7 +74,7 @@ export default async function ActivityPage() {
                 </tr>
               </thead>
               <tbody>
-                {activities.map((a: any) => (
+                {(activities as ActivityRow[]).map((a) => (
                   <tr key={a.id} className="border-t border-inf-line hover:bg-inf-gold/[0.04] transition-colors">
                     <td className="px-4 py-3.5">
                       <p className="text-sm font-medium text-inf-green">{a.investors?.name || 'Unknown'}</p>

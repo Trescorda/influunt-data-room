@@ -97,7 +97,7 @@ export default function SectionIntroduction() {
           <p className="text-lg md:text-xl text-[#2B2B2B]/80 leading-relaxed">
             Influunt is an AI-native, gold-anchored monetary operating system — a{" "}
             <strong className="font-semibold text-[#174133]">
-              "Bank of the Future"
+              &quot;Bank of the Future&quot;
             </strong>{" "}
             that unifies a regulated digital-asset bank, a diversified
             metal-reserve token (ICC), and a sovereign agentic-AI layer

@@ -238,7 +238,7 @@ export default function SectionRegulatory() {
 
               <div className="mt-5 border-t border-white/10 pt-4">
                 <p className="text-[12.5px] leading-relaxed text-white/60">
-                  ICC's ART classification gates the Malta MiCA submission and
+                  ICC&apos;s ART classification gates the Malta MiCA submission and
                   requires a formal ART-scope legal opinion before any white
                   paper is filed.
                 </p>

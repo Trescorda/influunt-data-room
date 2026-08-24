@@ -25,9 +25,10 @@ export async function sendEmail(to: string | string[], subject: string, html: st
     })
     console.log('[Email] Sent to', to, '— messageId:', result.messageId)
     return { success: true }
-  } catch (error: any) {
-    console.error('[Email] Send error:', error?.message || error)
-    return { success: false, error: error?.message || 'Unknown error' }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('[Email] Send error:', message)
+    return { success: false, error: message }
   }
 }
 

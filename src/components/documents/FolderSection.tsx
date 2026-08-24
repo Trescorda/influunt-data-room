@@ -4,11 +4,12 @@ import { useState } from 'react'
 import {
   ChevronDown, Folder, Briefcase, Scale, Shield,
   BarChart3, Code, Handshake, TrendingUp, Users,
+  type LucideIcon,
 } from 'lucide-react'
 import { DocumentCard } from './DocumentCard'
 import type { FolderWithDocuments } from '@/lib/types'
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   briefcase: Briefcase,
   scale: Scale,
   shield: Shield,

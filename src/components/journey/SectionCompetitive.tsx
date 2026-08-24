@@ -162,8 +162,8 @@ export default function SectionCompetitive() {
 
         {/* Lead */}
         <p className="text-lg md:text-xl text-[#2B2B2B]/80 leading-relaxed max-w-3xl">
-          Influunt's benchmarks each occupy one slice of the stack; none combine
-          all four of Influunt's differentiators —{" "}
+          Influunt&apos;s benchmarks each occupy one slice of the stack; none combine
+          all four of Influunt&apos;s differentiators —{" "}
           <strong className="font-semibold text-[#174133]">
             AI-native orchestration
           </strong>
@@ -301,7 +301,7 @@ export default function SectionCompetitive() {
               <strong className="font-semibold text-[#174133]">Shiza</strong> or
               compute networks such as{" "}
               <strong className="font-semibold text-[#174133]">Bittensor</strong>
-              , Influunt's edge is the opposite of permissionless: it is{" "}
+              , Influunt&apos;s edge is the opposite of permissionless: it is{" "}
               <strong className="font-semibold text-[#174133]">
                 regulated, gold-backed and compliance-gated
               </strong>
@@ -363,7 +363,7 @@ export default function SectionCompetitive() {
             Supply → token → intelligence → compliance, combined with owned IP
             and the five-jurisdiction regulatory perimeter.{" "}
             <strong className="font-semibold text-[#174133]">
-              Margin compounds to Influunt's own balance sheet
+              Margin compounds to Influunt&apos;s own balance sheet
             </strong>{" "}
             rather than leaking to third-party vendors.
           </p>
@@ -438,7 +438,7 @@ export default function SectionCompetitive() {
                 <strong className="font-semibold text-white">
                   Owned IP, end to end.
                 </strong>{" "}
-                Margin compounds on Influunt's balance sheet — no leakage to
+                Margin compounds on Influunt&apos;s balance sheet — no leakage to
                 third-party vendors.
               </p>
             </motion.div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
@@ -40,19 +40,38 @@ export default function InvestorsPage() {
   const [copiedLink, setCopiedLink] = useState<string | null>(null)
   const [generatingLink, setGeneratingLink] = useState<string | null>(null)
 
-  const loadInvestors = async () => {
+  // Fetch is separated from state-setting so the initial load can set state
+  // from a promise callback, guarded against unmount.
+  const fetchInvestors = useCallback(async () => {
+    const res = await fetch('/api/admin/investors')
+    const data = await res.json()
+    if (!res.ok) console.error('[Investors] API error:', data.error)
+    return data.investors || []
+  }, [])
+
+  const loadInvestors = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/investors')
-      const data = await res.json()
-      if (!res.ok) console.error('[Investors] API error:', data.error)
-      setInvestors(data.investors || [])
+      setInvestors(await fetchInvestors())
     } catch (err) {
       console.error('[Investors] Fetch error:', err)
     }
     setLoading(false)
-  }
+  }, [fetchInvestors])
 
-  useEffect(() => { loadInvestors() }, [])
+  useEffect(() => {
+    let cancelled = false
+    fetchInvestors()
+      .then((rows) => {
+        if (cancelled) return
+        setInvestors(rows)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[Investors] Fetch error:', err)
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [fetchInvestors])
 
   const handleInvite = async (data: {
     name: string

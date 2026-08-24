@@ -411,20 +411,19 @@ export function CountUp({
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [val, setVal] = useState(reduce ? to : 0);
+  const [val, setVal] = useState(0);
   useEffect(() => {
-    if (!inView) return;
-    if (reduce) {
-      setVal(to);
-      return;
-    }
+    // Reduced motion needs no animation and no state write — the rendered
+    // value is derived below, which keeps setState out of this effect.
+    if (!inView || reduce) return;
     const controls = animate(0, to, { duration, ease: EASE_ATMOS, onUpdate: (v) => setVal(v) });
     return () => controls.stop();
   }, [inView, to, duration, reduce]);
+  const display = reduce ? to : val;
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {val.toFixed(decimals)}
+      {display.toFixed(decimals)}
       {suffix}
     </span>
   );

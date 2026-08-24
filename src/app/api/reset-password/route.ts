@@ -28,9 +28,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid link' }, { status: 400 })
   }
 
-  let tokenData: any = null
+  // investor.notes holds a JSON blob carrying the reset token and its expiry.
+  type ResetTokenData = { reset_token?: string; reset_expires?: string }
+  let tokenData: ResetTokenData = {}
   try {
-    tokenData = JSON.parse(investor.notes || '{}')
+    tokenData = JSON.parse(investor.notes || '{}') as ResetTokenData
   } catch {
     return NextResponse.json({ error: 'Invalid link' }, { status: 400 })
   }

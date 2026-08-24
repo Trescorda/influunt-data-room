@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireUser } from '@/lib/auth'
 
 export async function GET() {
-  const admin = createAdminClient()
+  const admin = await requireUser()
+  if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { data: settings, error } = await admin.from('settings').select('*').single()
   console.log('[Settings GET] result:', settings ? 'OK' : 'NULL', 'error:', error?.message)
   if (error) {
