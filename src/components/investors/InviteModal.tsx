@@ -63,7 +63,7 @@ export function InviteModal({ open, onClose, onInvite }: InviteModalProps) {
           placeholder="Acme Capital"
         />
         <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-brand-text">Investor type</label>
+          <label className="inf-label block">Investor type</label>
           <select
             value={investorType}
             onChange={(e) => setInvestorType(e.target.value)}

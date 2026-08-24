@@ -84,51 +84,51 @@ export default function AdminFAQPage() {
   const categories = [...new Set(faqs.map((f) => f.category))]
   const allCategories = [...new Set([...defaultCategories, ...categories])]
 
-  if (loading) return <div className="p-8 text-center text-brand-muted text-sm">Loading...</div>
+  if (loading) return <div className="p-8 text-center text-inf-muted text-sm">Loading...</div>
 
   return (
     <div className="p-6 overflow-y-auto h-full">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-brand-text">FAQ Management</h1>
-          <p className="text-sm text-brand-muted mt-1">Manage frequently asked questions</p>
+          <h1 className="text-xl font-semibold text-inf-green">FAQ Management</h1>
+          <p className="text-sm text-inf-muted mt-1">Manage frequently asked questions</p>
         </div>
         <Button onClick={openCreate}><Plus size={16} className="mr-2" /> Add FAQ</Button>
       </div>
 
       {faqs.length === 0 ? (
         <Card padding="lg">
-          <p className="text-center text-brand-muted text-sm py-8">No FAQs yet. Add your first FAQ.</p>
+          <p className="text-center text-inf-muted text-sm py-8">No FAQs yet. Add your first FAQ.</p>
         </Card>
       ) : (
         <div className="space-y-6">
           {categories.map((cat) => (
             <div key={cat}>
-              <h2 className="text-xs font-semibold text-brand-gold uppercase tracking-wider mb-2">{cat}</h2>
-              <Card padding="sm">
-                <div className="divide-y divide-brand-border">
+              <h2 className="inf-eyebrow text-[10px] mb-2">{cat}</h2>
+              <div className="bg-white border border-inf-line rounded-inf-card overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                <div className="divide-y divide-inf-line">
                   {faqs.filter((f) => f.category === cat).map((faq) => (
-                    <div key={faq.id} className={`flex items-center gap-3 px-4 py-3 ${!faq.is_published ? 'opacity-40' : ''}`}>
+                    <div key={faq.id} className={`flex items-center gap-3 px-4 py-3 transition-colors hover:bg-inf-gold/[0.04] ${!faq.is_published ? 'opacity-40' : ''}`}>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-brand-text truncate">{faq.question}</p>
-                        <p className="text-xs text-brand-muted truncate mt-0.5">{faq.answer}</p>
+                        <p className="text-sm text-inf-body truncate">{faq.question}</p>
+                        <p className="text-xs text-inf-muted truncate mt-0.5">{faq.answer}</p>
                       </div>
-                      <span className="text-xs text-brand-muted flex-shrink-0">#{faq.sort_order}</span>
+                      <span className="text-xs text-inf-subtle flex-shrink-0" data-numeric>#{faq.sort_order}</span>
                       <button onClick={() => togglePublished(faq)} className="flex-shrink-0">
                         <Badge variant={faq.is_published ? 'green' : 'gray'}>
                           {faq.is_published ? 'Published' : 'Draft'}
                         </Badge>
                       </button>
-                      <button onClick={() => openEdit(faq)} className="text-brand-muted hover:text-brand-gold transition-colors flex-shrink-0">
+                      <button onClick={() => openEdit(faq)} className="text-inf-muted hover:text-inf-gold transition-colors flex-shrink-0">
                         <Edit2 size={14} />
                       </button>
-                      <button onClick={() => setDeleteId(faq.id)} className="text-brand-muted hover:text-red-400 transition-colors flex-shrink-0">
+                      <button onClick={() => setDeleteId(faq.id)} className="text-inf-muted hover:text-red-600 transition-colors flex-shrink-0">
                         <Trash2 size={14} />
                       </button>
                     </div>
                   ))}
                 </div>
-              </Card>
+              </div>
             </div>
           ))}
         </div>
@@ -138,27 +138,27 @@ export default function AdminFAQPage() {
       <Modal open={showModal} onClose={() => setShowModal(false)} title={editingFaq ? 'Edit FAQ' : 'Add FAQ'}>
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Question</label>
+            <label className="inf-label block">Question</label>
             <textarea
               value={form.question}
               onChange={(e) => setForm({ ...form, question: e.target.value })}
               rows={2}
-              className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50 resize-none"
+              className="w-full px-4 py-2.5 bg-white border border-inf-line-strong rounded-inf text-sm text-inf-body placeholder:text-inf-subtle outline-none hover:border-inf-gold/40 focus:border-inf-gold/60 focus:ring-1 focus:ring-inf-gold/30 transition-all duration-200 resize-none"
               placeholder="What is...?"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Answer</label>
+            <label className="inf-label block">Answer</label>
             <textarea
               value={form.answer}
               onChange={(e) => setForm({ ...form, answer: e.target.value })}
               rows={4}
-              className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50 resize-y"
+              className="w-full px-4 py-2.5 bg-white border border-inf-line-strong rounded-inf text-sm text-inf-body placeholder:text-inf-subtle outline-none hover:border-inf-gold/40 focus:border-inf-gold/60 focus:ring-1 focus:ring-inf-gold/30 transition-all duration-200 resize-y"
               placeholder="The answer is..."
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Category</label>
+            <label className="inf-label block">Category</label>
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -169,12 +169,12 @@ export default function AdminFAQPage() {
           </div>
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} className="w-4 h-4 accent-brand-gold" />
-              <span className="text-sm text-brand-text">Published</span>
+              <input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} className="w-4 h-4 accent-inf-gold" />
+              <span className="text-sm text-inf-body">Published</span>
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-brand-muted">Order:</span>
-              <input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} className="w-16 px-2 py-1 bg-brand-dark border border-brand-border rounded text-sm text-brand-text" />
+              <span className="text-sm text-inf-muted">Order:</span>
+              <input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} className="w-16 px-2 py-1 bg-white border border-inf-line-strong rounded-inf text-sm text-inf-body outline-none focus:border-inf-gold/60 focus:ring-1 focus:ring-inf-gold/30 transition-all duration-200" data-numeric />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
@@ -187,7 +187,7 @@ export default function AdminFAQPage() {
       </Modal>
 
       <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete FAQ">
-        <p className="text-sm text-brand-muted mb-4">Are you sure? This cannot be undone.</p>
+        <p className="text-sm text-inf-muted mb-4">Are you sure? This cannot be undone.</p>
         <div className="flex gap-3">
           <Button variant="secondary" onClick={() => setDeleteId(null)} className="flex-1">Cancel</Button>
           <Button variant="danger" onClick={handleDelete} className="flex-1">Delete</Button>

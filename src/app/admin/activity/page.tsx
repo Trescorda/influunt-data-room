@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { TimeCell } from '@/components/admin/TimeCell'
 
@@ -39,49 +38,49 @@ export default async function ActivityPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-brand-text">Activity log</h1>
-        <p className="text-sm text-brand-muted mt-1">Track all investor actions in the data room</p>
+        <h1 className="text-2xl font-semibold text-inf-green">Activity log</h1>
+        <p className="text-sm text-inf-muted mt-1">Track all investor actions in the data room</p>
       </div>
 
-      <Card padding="sm">
+      <div className="bg-white border border-inf-line rounded-inf-card overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
         {(!activities || activities.length === 0) ? (
-          <div className="py-12 text-center text-brand-muted text-sm">No activity yet</div>
+          <div className="py-12 text-center text-inf-muted text-sm">No activity yet</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="border-b border-brand-border">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">
+              <thead className="bg-inf-green/[0.04]">
+                <tr>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">
                     Investor
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">
                     Action
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">
                     Document
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">
                     Time
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {activities.map((a: any) => (
-                  <tr key={a.id} className="border-b border-brand-border last:border-0 hover:bg-brand-card/50">
-                    <td className="px-4 py-3">
-                      <p className="text-sm text-brand-text">{a.investors?.name || 'Unknown'}</p>
-                      <p className="text-xs text-brand-muted">{a.investors?.email}</p>
+                  <tr key={a.id} className="border-t border-inf-line hover:bg-inf-gold/[0.04] transition-colors">
+                    <td className="px-4 py-3.5">
+                      <p className="text-sm font-medium text-inf-green">{a.investors?.name || 'Unknown'}</p>
+                      <p className="text-xs text-inf-muted">{a.investors?.email}</p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <Badge variant={actionVariant[a.action] || 'gray'}>
                         {actionLabels[a.action] || a.action}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-sm text-brand-muted">
+                    <td className="px-4 py-3.5 text-sm text-inf-body">
                       {a.documents?.title || '—'}
                     </td>
-                    <td className="px-4 py-3">
-                      <TimeCell timestamp={a.created_at} className="text-xs text-brand-muted" />
+                    <td className="px-4 py-3.5">
+                      <TimeCell timestamp={a.created_at} className="text-xs text-inf-muted" />
                     </td>
                   </tr>
                 ))}
@@ -89,7 +88,7 @@ export default async function ActivityPage() {
             </table>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   )
 }

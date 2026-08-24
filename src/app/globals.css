@@ -1,33 +1,70 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════
+   influunt — DATA ROOM
+   Consumes the brand's core tokens and the web layer's PORTAL SURFACE
+   rules. Source of truth: influunt-website-design-system/tokens/
+   (influunt-core.css + influunt-web.css).
+
+   The data room is the member portal, not a marketing page. Per the
+   design system: structure is drawn in GREEN at low opacity, and GOLD is
+   reserved for focus, hover and the primary action. A gold hairline
+   everywhere would read as decoration on a working surface.
+
+   Grounds: paper #F8F7F4 app under an obsidian #111111 header.
+   Auth screens are obsidian with a gold bloom.
+   ═══════════════════════════════════════════════════════════════════════ */
+
 @theme inline {
-  /* Layered surfaces — each step up is one level of elevation */
-  --color-brand-darker: #0f0f10;
-  --color-brand-dark: #161617;
-  --color-brand-card: #1d1d1f;
-  --color-brand-card-hover: #232325;
-  --color-brand-border: rgba(255, 255, 255, 0.08);
-  --color-brand-border-strong: rgba(255, 255, 255, 0.14);
+  /* ── Primary brand ───────────────────────────────────────────────── */
+  --color-inf-green: #174133;
+  --color-inf-gold: #C8964F;
 
-  /* Gold accent family */
-  --color-brand-gold: #C8A85C;
-  --color-brand-gold-bright: #DCBE74;
-  --color-brand-gold-light: #FAEEDA;
-  --color-brand-gold-dark: #412402;
+  /* ── Gold scale ──────────────────────────────────────────────────── */
+  --color-inf-gold-hover: #B8853D;
+  --color-inf-gold-display: #D6B075;
+  --color-inf-gold-deep: #9A6B27;
+  --color-inf-gold-bright: #E2BC7F;
 
-  /* Text */
-  --color-brand-text: #f2f0eb;
-  --color-brand-muted: #a09d97;
+  /* ── Secondary greens — charts and infographics only ─────────────── */
+  --color-inf-green-600: #2E6B53;
+  --color-inf-green-500: #4A7C59;
+  --color-inf-wordmark-green: #254F41;
 
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-serif: 'Georgia', serif;
+  /* ── Neutrals ────────────────────────────────────────────────────── */
+  --color-inf-black: #111111;
+  --color-inf-body: #2B2B2B;
+  --color-inf-paper: #F8F7F4;
+  --color-inf-white: #FFFFFF;
+  --color-inf-offwhite: #FBF8F2;
 
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-scale-in: scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-fade-in: fade-in 0.3s ease-out both;
+  /* ── Dark UI surfaces ────────────────────────────────────────────── */
+  --color-inf-obsidian: #111111;
+  --color-inf-dark-card: #16181C;
+  --color-inf-dark-input: #0E0F12;
+
+  /* ── Portal structure — green hairlines, never gold ──────────────── */
+  --color-inf-line: rgba(23, 65, 51, 0.10);
+  --color-inf-line-strong: rgba(23, 65, 51, 0.18);
+  --color-inf-muted: rgba(43, 43, 43, 0.60);
+  --color-inf-subtle: rgba(43, 43, 43, 0.45);
+
+  /* ── Type ────────────────────────────────────────────────────────── */
+  --font-sans: var(--font-instrument-sans), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ── Radius ──────────────────────────────────────────────────────── */
+  --radius-inf: 0.5rem;
+  --radius-inf-card: 0.75rem;
+  --radius-inf-panel: 1rem;
+
+  /* ── Motion ──────────────────────────────────────────────────────── */
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-scale-in: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-shimmer: inf-shimmer 3.6s ease-in-out infinite;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes scale-in {
@@ -38,44 +75,81 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
+  @keyframes inf-shimmer {
+    0%, 100% { background-position: 0% 0; }
+    50% { background-position: 100% 0; }
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-body {
-  background-color: #0f0f10;
-  /* Quiet gold ambience bleeding down from the top of the viewport */
-  background-image:
-    radial-gradient(1200px 500px at 50% -10%, rgba(200, 168, 92, 0.055), transparent 70%),
-    radial-gradient(800px 400px at 85% 0%, rgba(200, 168, 92, 0.025), transparent 65%);
-  background-attachment: fixed;
-  color: #f2f0eb;
-  font-family: var(--font-sans);
-  letter-spacing: -0.011em;
-  text-rendering: optimizeLegibility;
+/* Element defaults live in @layer base so Tailwind utilities can override
+   them. Unlayered CSS beats every layered rule regardless of specificity —
+   without this, `text-white` on a heading loses to the green default and
+   headings vanish on dark grounds. */
+@layer base {
+  body {
+    background: #F8F7F4;
+    color: #2B2B2B;
+    font-family: var(--font-sans);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Headings carry the brand green and tighten up. */
+  h1, h2, h3, h4 {
+    color: #174133;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+
+  /* Financial figures line up in columns everywhere. */
+  table, [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-h1, h2, h3 {
-  letter-spacing: -0.02em;
+/* ── The eyebrow — the brand's most recognisable typographic move ──── */
+.inf-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #C8964F;
+  font-weight: 600;
 }
 
-/* Financial figures line up in columns everywhere */
-table, [data-numeric] {
-  font-variant-numeric: tabular-nums;
+/* ── Portal label — tighter tracking than the marketing eyebrow ────── */
+.inf-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(23, 65, 51, 0.6);
+  font-weight: 600;
 }
 
-/* Gold selection */
+/* ── Shimmering gold divider ───────────────────────────────────────── */
+.inf-divider {
+  width: 100%;
+  max-width: 320px;
+  height: 1px;
+  margin: 44px auto;
+  background: linear-gradient(90deg, transparent, #C8964F 30%, #E2BC7F 50%, #C8964F 70%, transparent);
+  background-size: 200% 100%;
+  animation: inf-shimmer 3.6s ease-in-out infinite;
+}
+
+/* Gold selection. */
 ::selection {
-  background: rgba(200, 168, 92, 0.28);
-  color: #faeeda;
+  background: rgba(200, 150, 79, 0.28);
+  color: #174133;
 }
 
-/* Keyboard focus is always visible, never a default blue ring */
+/* Focus is gold and always visible. Never remove it. */
 :focus-visible {
-  outline: 2px solid rgba(200, 168, 92, 0.7);
-  outline-offset: 2px;
+  outline: 2px solid #C8964F;
+  outline-offset: 3px;
   border-radius: 4px;
 }
 
@@ -89,30 +163,38 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Custom select dropdown styling globally */
+/* Custom select — light app surface: green hairline, gold focus */
 select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: #1d1d1f;
-  color: #C8A85C;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 8px 36px 8px 12px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a09d97' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-color: #FFFFFF;
+  color: #2B2B2B;
+  border: 1px solid rgba(23, 65, 51, 0.15);
+  border-radius: 0.5rem;
+  padding: 10px 40px 10px 16px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C8964F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 14px center;
   cursor: pointer;
   font-size: inherit;
+  font-family: inherit;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 select:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(200, 150, 79, 0.5);
 }
 select:focus {
-  border-color: rgba(200, 168, 92, 0.6);
-  box-shadow: 0 0 0 3px rgba(200, 168, 92, 0.15);
+  border-color: rgba(200, 150, 79, 0.6);
+  box-shadow: 0 0 0 1px rgba(200, 150, 79, 0.3);
+}
+
+/* Selects sitting on a dark ground (auth / obsidian sections) */
+.inf-on-dark select {
+  background-color: #0E0F12;
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(200, 150, 79, 0.3);
 }
 
 /* Mobile-friendly touch targets */
@@ -125,23 +207,30 @@ select:focus {
   }
 }
 
-/* Scrollbar styling */
+/* Scrollbar — green on the light app surface */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(23, 65, 51, 0.18);
   border-radius: 8px;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border: 2px solid transparent;
+  background: rgba(23, 65, 51, 0.32);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark surfaces get a light scrollbar */
+.inf-on-dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border: 3px solid transparent;
   background-clip: padding-box;
 }
 
@@ -153,4 +242,5 @@ select:focus {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .inf-divider { animation: none; }
 }

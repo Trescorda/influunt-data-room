@@ -58,16 +58,16 @@ const stages: Stage[] = [
 
 // Stage 1 — Foundation: pillars (structure / tech / team)
 function FoundationIcon({ active }: { active: boolean }) {
-  const stroke = '#C8A85C'
+  const stroke = '#C8964F'
   const op = active ? 1 : 0.5
   return (
     <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
       {/* Base / ground line */}
       <line x1="6" y1="48" x2="62" y2="48" stroke={stroke} strokeWidth="1.5" opacity={op * 0.7} />
       {/* Three pillars of slightly different heights */}
-      <rect x="12" y="22" width="10" height="26" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.12)' : 'transparent'} rx="1" />
-      <rect x="29" y="14" width="10" height="34" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.18)' : 'transparent'} rx="1" />
-      <rect x="46" y="20" width="10" height="28" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,168,92,0.12)' : 'transparent'} rx="1" />
+      <rect x="12" y="22" width="10" height="26" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,150,79,0.12)' : 'transparent'} rx="1" />
+      <rect x="29" y="14" width="10" height="34" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,150,79,0.18)' : 'transparent'} rx="1" />
+      <rect x="46" y="20" width="10" height="28" stroke={stroke} strokeWidth="1.6" opacity={op} fill={active ? 'rgba(200,150,79,0.12)' : 'transparent'} rx="1" />
       {/* Small markers on each pillar to suggest structure / tech / team */}
       <circle cx="17" cy="30" r="1.6" fill={stroke} opacity={op} />
       <circle cx="34" cy="22" r="1.6" fill={stroke} opacity={op} />
@@ -80,9 +80,9 @@ function FoundationIcon({ active }: { active: boolean }) {
 
 // Stage 1 — Pre-Seed: a sprout / seedling (the very first growth from the ground)
 function SproutIcon({ active }: { active: boolean }) {
-  const stroke = '#C8A85C'
+  const stroke = '#C8964F'
   const op = active ? 1 : 0.5
-  const leafFill = active ? 'rgba(200,168,92,0.25)' : 'rgba(200,168,92,0.1)'
+  const leafFill = active ? 'rgba(200,150,79,0.25)' : 'rgba(200,150,79,0.1)'
   return (
     <svg width="68" height="56" viewBox="0 0 68 56" fill="none" className="mx-auto">
       {/* Ground line */}
@@ -117,10 +117,10 @@ function SproutIcon({ active }: { active: boolean }) {
 
 // Stage 2 — Pyramid stack of gold bars
 function BarsIcon({ active }: { active: boolean }) {
-  const stroke = '#C8A85C'
+  const stroke = '#C8964F'
   const op = active ? 1 : 0.5
-  const fillStrong = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
-  const fillSoft = active ? 'rgba(200,168,92,0.25)' : 'rgba(200,168,92,0.1)'
+  const fillStrong = active ? 'rgba(200,150,79,0.35)' : 'rgba(200,150,79,0.15)'
+  const fillSoft = active ? 'rgba(200,150,79,0.25)' : 'rgba(200,150,79,0.1)'
 
   // Each bar is a small trapezoid (wider at bottom, narrower at top — classic gold bar profile)
   const bar = (cx: number, cy: number, key: string, fill: string) => (
@@ -155,10 +155,10 @@ function BarsIcon({ active }: { active: boolean }) {
 
 // Stage 3 — Expansion: growing stacks of gold bars + upward growth arrow
 function ExpansionIcon({ active }: { active: boolean }) {
-  const stroke = '#C8A85C'
+  const stroke = '#C8964F'
   const op = active ? 1 : 0.5
-  const fillSoft = active ? 'rgba(200,168,92,0.2)' : 'rgba(200,168,92,0.1)'
-  const fillStrong = active ? 'rgba(200,168,92,0.35)' : 'rgba(200,168,92,0.15)'
+  const fillSoft = active ? 'rgba(200,150,79,0.2)' : 'rgba(200,150,79,0.1)'
+  const fillStrong = active ? 'rgba(200,150,79,0.35)' : 'rgba(200,150,79,0.15)'
 
   // Reusable gold-bar trapezoid centred at (cx, cy)
   const bar = (cx: number, cy: number, key: string, fill: string) => (
@@ -226,10 +226,10 @@ function ConnectorSegment() {
   // Clean horizontal connector between stages with subtle progress dots
   return (
     <svg width="100%" height="40" viewBox="0 0 200 40" preserveAspectRatio="none" fill="none" className="flex-1">
-      <line x1="0" y1="20" x2="200" y2="20" stroke="#C8A85C" strokeWidth="1.5" opacity="0.4" strokeDasharray="3 4" />
-      <circle cx="60" cy="20" r="2" fill="#C8A85C" opacity="0.5" />
-      <circle cx="100" cy="20" r="2.5" fill="#C8A85C" opacity="0.6" />
-      <circle cx="140" cy="20" r="2" fill="#C8A85C" opacity="0.5" />
+      <line x1="0" y1="20" x2="200" y2="20" stroke="#C8964F" strokeWidth="1.5" opacity="0.4" strokeDasharray="3 4" />
+      <circle cx="60" cy="20" r="2" fill="#C8964F" opacity="0.5" />
+      <circle cx="100" cy="20" r="2.5" fill="#C8964F" opacity="0.6" />
+      <circle cx="140" cy="20" r="2" fill="#C8964F" opacity="0.5" />
     </svg>
   )
 }
@@ -246,42 +246,42 @@ function StageNode({ stage }: { stage: Stage }) {
       {/* Node / circle */}
       <div className="relative mt-4 mb-3">
         {isActive && (
-          <div className="absolute inset-0 rounded-full bg-brand-gold/30 blur-md animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-inf-gold/25 blur-md animate-pulse" />
         )}
         <div
           className={`relative w-12 h-12 rounded-full flex items-center justify-center border-2 ${
             isActive
-              ? 'bg-brand-gold border-brand-gold shadow-lg shadow-brand-gold/40'
+              ? 'bg-inf-gold border-inf-gold shadow-lg shadow-inf-gold/25'
               : isUpcoming
-                ? 'bg-brand-dark border-brand-gold'
-                : 'bg-brand-dark border-brand-border'
+                ? 'bg-white border-inf-gold/50'
+                : 'bg-white border-inf-line-strong'
           }`}
         >
-          <span className={`text-sm font-bold ${isActive ? 'text-brand-darker' : isUpcoming ? 'text-brand-gold' : 'text-brand-muted'}`}>
+          <span className={`text-sm font-bold ${isActive ? 'text-white' : isUpcoming ? 'text-inf-gold' : 'text-inf-muted'}`} data-numeric>
             {stage.number}
           </span>
         </div>
       </div>
 
-      <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isActive ? 'text-brand-gold' : 'text-brand-muted'}`}>
+      <p className={`text-xs font-semibold uppercase tracking-wider mb-1 ${isActive ? 'text-inf-gold-deep' : 'text-inf-muted'}`}>
         {stage.label}
       </p>
 
-      <p className={`text-3xl font-bold mb-2 ${isActive ? 'text-brand-gold' : 'text-brand-text'}`}>
+      <p className={`text-3xl font-bold mb-2 ${isActive ? 'text-inf-gold-deep' : 'text-inf-green'}`} data-numeric>
         {stage.amount}
       </p>
 
-      <p className="text-xs text-brand-muted max-w-[220px] leading-relaxed mb-2">
+      <p className="text-xs text-inf-muted max-w-[220px] leading-relaxed mb-2">
         {stage.description}
       </p>
 
-      <p className="text-xs text-brand-muted/70 mb-3">{stage.timing}</p>
+      <p className="text-xs text-inf-subtle mb-3">{stage.timing}</p>
 
       <div className="mb-4">
         {isActive ? (
           <Badge variant="gold">Active</Badge>
         ) : (
-          <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border border-brand-border text-brand-muted">
+          <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border border-inf-line text-inf-muted">
             {isUpcoming ? 'Upcoming' : 'Planned'}
           </span>
         )}
@@ -290,8 +290,8 @@ function StageNode({ stage }: { stage: Stage }) {
       <ul className="space-y-1.5 text-left">
         {stage.milestones.map((m, i) => (
           <li key={i} className="flex items-start gap-2 text-xs">
-            <span className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? 'bg-brand-gold' : 'bg-brand-gold/40'}`} />
-            <span className="text-brand-muted">{m}</span>
+            <span className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? 'bg-inf-gold' : 'bg-inf-gold/40'}`} />
+            <span className="text-inf-muted">{m}</span>
           </li>
         ))}
       </ul>
@@ -301,11 +301,11 @@ function StageNode({ stage }: { stage: Stage }) {
 
 export function CapitalRoadmap() {
   return (
-    <section className="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_1px_3px_rgba(0,0,0,0.3)]">
+    <section className="bg-white border border-inf-line rounded-inf-panel p-6 md:p-8 shadow-[0_1px_3px_rgba(23,65,51,0.06)]">
       <div className="mb-6">
-        <p className="text-[11px] font-semibold text-brand-gold uppercase tracking-[0.14em] mb-1.5">The Raise</p>
-        <h2 className="text-xl md:text-2xl font-bold text-brand-text">Capital Raise Timeline</h2>
-        <p className="text-sm text-brand-muted mt-1 max-w-3xl leading-relaxed">
+        <p className="inf-eyebrow text-[11px] mb-1.5">The Raise</p>
+        <h2 className="text-xl md:text-2xl font-bold text-inf-green">Capital Raise Timeline</h2>
+        <p className="text-sm text-inf-muted mt-1 max-w-3xl leading-relaxed">
           Four-stage trajectory totalling A$291.6M. Stage 1 (Pre-Seed) is the active raise — A$1.6M bridge at A$20M pre-money (A$200K = 1%). Stage 2 (Seed) closes during the bridge period. Stages 3 (Round A) and 4 (Round B) are ring-fenced for acquisitions and BioGold deployment respectively.
         </p>
       </div>
@@ -329,15 +329,15 @@ export function CapitalRoadmap() {
       {/* Mobile: stacked vertical */}
       <div className="md:hidden space-y-6">
         {stages.map((stage) => (
-          <div key={stage.number} className="border-l-2 border-brand-gold/40 pl-5 py-2">
+          <div key={stage.number} className="border-l-2 border-inf-line-strong pl-5 py-2">
             <StageNode stage={stage} />
           </div>
         ))}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-brand-border text-center">
-        <p className="text-sm text-brand-muted">
-          Total raise: <span className="text-brand-gold font-bold text-base">A$291.6M</span> across four stages
+      <div className="mt-8 pt-6 border-t border-inf-line text-center">
+        <p className="text-sm text-inf-muted">
+          Total raise: <span className="text-inf-gold-deep font-bold text-base" data-numeric>A$291.6M</span> across four stages
         </p>
       </div>
     </section>

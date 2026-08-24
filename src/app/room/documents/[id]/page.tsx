@@ -39,20 +39,20 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
   return (
     <div className="flex flex-col h-[calc(100vh-65px)]">
       {/* Fixed header */}
-      <div className="flex-shrink-0 px-6 py-3 border-b border-brand-border bg-brand-darker">
+      <div className="flex-shrink-0 px-6 py-3 border-b border-inf-line bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 min-w-0">
             <Link
               href="/room"
-              className="flex-shrink-0 text-brand-muted hover:text-brand-gold transition-colors"
+              className="flex-shrink-0 text-inf-muted hover:text-inf-gold transition-colors"
             >
               <ArrowLeft size={18} />
             </Link>
-            <div className="w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText size={20} className="text-brand-gold" />
+            <div className="w-10 h-10 bg-inf-gold/10 rounded-inf flex items-center justify-center flex-shrink-0">
+              <FileText size={20} className="text-inf-gold" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-base font-semibold text-brand-text truncate">{document.title}</h1>
+              <h1 className="text-base font-semibold text-inf-green truncate">{document.title}</h1>
               <div className="flex items-center gap-2 mt-0.5">
                 <Badge variant="gold">{document.file_type.toUpperCase()}</Badge>
                 {document.is_watermarked && (
@@ -61,7 +61,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
                     Watermarked
                   </Badge>
                 )}
-                <span className="text-xs text-brand-muted">v{document.version}</span>
+                <span className="text-xs text-inf-muted">v{document.version}</span>
               </div>
             </div>
           </div>

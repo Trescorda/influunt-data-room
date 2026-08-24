@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { Upload, FileText, Eye, Download, Lock, Trash2, UploadCloud } from 'lucide-react'
@@ -209,8 +208,8 @@ export default function DocumentsPage() {
     <div className="px-4 md:px-8 py-4 md:py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-brand-text">Documents</h1>
-          <p className="text-sm text-brand-muted mt-1">Upload and manage data room documents</p>
+          <h1 className="text-2xl font-semibold text-inf-green">Documents</h1>
+          <p className="text-sm text-inf-muted mt-1">Upload and manage data room documents</p>
         </div>
         <Button onClick={() => { resetUploadForm(); setShowUpload(true) }}>
           <Upload size={16} className="mr-2" />
@@ -220,7 +219,7 @@ export default function DocumentsPage() {
 
       {/* Filter */}
       <div className="mb-4 flex items-center gap-3">
-        <label className="text-xs text-brand-muted">Filter:</label>
+        <label className="inf-label">Filter:</label>
         <select
           value={filterFolderId}
           onChange={(e) => setFilterFolderId(e.target.value)}
@@ -231,80 +230,80 @@ export default function DocumentsPage() {
             <option key={parent.id} value={parent.id}>{parent.name}</option>
           ))}
         </select>
-        <span className="text-xs text-brand-muted ml-auto">
+        <span className="text-xs text-inf-muted ml-auto" data-numeric>
           {filteredDocs.length} {filteredDocs.length === 1 ? 'document' : 'documents'}
         </span>
       </div>
 
       {/* Flat table */}
-      <Card padding="sm">
+      <div className="bg-white border border-inf-line rounded-inf-card overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
         {loading ? (
-          <div className="py-12 text-center text-brand-muted text-sm">Loading...</div>
+          <div className="py-12 text-center text-inf-muted text-sm">Loading...</div>
         ) : filteredDocs.length === 0 ? (
-          <div className="py-12 text-center text-brand-muted text-sm">
+          <div className="py-12 text-center text-inf-muted text-sm">
             No documents {filterFolderId !== 'all' ? 'in this folder' : 'uploaded yet'}.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="border-b border-brand-border">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Title</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Folder</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Type</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Size</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Uploaded</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-brand-muted uppercase tracking-wider">Actions</th>
+              <thead className="bg-inf-green/[0.04]">
+                <tr>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Title</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Folder</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Type</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Size</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Uploaded</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDocs.map((doc) => (
-                  <tr key={doc.id} className="border-b border-brand-border hover:bg-brand-card/50 transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={doc.id} className="border-t border-inf-line hover:bg-inf-gold/[0.04] transition-colors">
+                    <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <FileText size={16} className="text-brand-gold flex-shrink-0" />
+                        <FileText size={16} className="text-inf-green/40 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-brand-text truncate">{doc.title}</p>
+                          <p className="text-sm font-medium text-inf-green truncate">{doc.title}</p>
                           {doc.description && (
-                            <p className="text-xs text-brand-muted truncate">{doc.description}</p>
+                            <p className="text-xs text-inf-muted truncate">{doc.description}</p>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-brand-muted">
+                    <td className="px-4 py-3.5 text-xs text-inf-muted">
                       {folderPath(doc.folder_id)}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-medium text-brand-gold uppercase">{doc.file_type}</span>
+                    <td className="px-4 py-3.5">
+                      <span className="text-[11px] font-semibold text-inf-green/60 uppercase tracking-[0.1em]">{doc.file_type}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-brand-muted">{formatSize(doc.file_size)}</td>
-                    <td className="px-4 py-3 text-xs text-brand-muted">{formatDate(doc.created_at)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 text-xs text-inf-muted" data-numeric>{formatSize(doc.file_size)}</td>
+                    <td className="px-4 py-3.5 text-xs text-inf-muted" data-numeric>{formatDate(doc.created_at)}</td>
+                    <td className="px-4 py-3.5">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_viewable', !doc.is_viewable)}
-                          className={`p-1.5 rounded transition-colors ${doc.is_viewable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
+                          className={`p-1.5 rounded-inf transition-colors ${doc.is_viewable ? 'text-inf-gold-deep bg-inf-gold/[0.12]' : 'text-inf-subtle hover:text-inf-green hover:bg-inf-green/[0.06]'}`}
                           title={doc.is_viewable ? 'Viewable (click to hide)' : 'Hidden (click to show)'}
                         >
                           <Eye size={14} />
                         </button>
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_downloadable', !doc.is_downloadable)}
-                          className={`p-1.5 rounded transition-colors ${doc.is_downloadable ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
+                          className={`p-1.5 rounded-inf transition-colors ${doc.is_downloadable ? 'text-inf-gold-deep bg-inf-gold/[0.12]' : 'text-inf-subtle hover:text-inf-green hover:bg-inf-green/[0.06]'}`}
                           title={doc.is_downloadable ? 'Downloadable (click to disable)' : 'View only (click to allow downloads)'}
                         >
                           <Download size={14} />
                         </button>
                         <button
                           onClick={() => toggleDocProp(doc.id, 'is_watermarked', !doc.is_watermarked)}
-                          className={`p-1.5 rounded transition-colors ${doc.is_watermarked ? 'text-brand-gold bg-brand-gold/10' : 'text-brand-muted hover:text-brand-text'}`}
+                          className={`p-1.5 rounded-inf transition-colors ${doc.is_watermarked ? 'text-inf-gold-deep bg-inf-gold/[0.12]' : 'text-inf-subtle hover:text-inf-green hover:bg-inf-green/[0.06]'}`}
                           title={doc.is_watermarked ? 'Watermarked (click to remove)' : 'No watermark (click to add)'}
                         >
                           <Lock size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteId(doc.id)}
-                          className="p-1.5 rounded text-[#666] hover:text-red-500 transition-colors"
+                          className="p-1.5 rounded-inf text-inf-subtle hover:text-red-600 transition-colors"
                           title="Delete document"
                         >
                           <Trash2 size={14} />
@@ -317,7 +316,7 @@ export default function DocumentsPage() {
             </table>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Upload modal */}
       <Modal open={showUpload} onClose={() => setShowUpload(false)} title="Upload document">
@@ -327,17 +326,17 @@ export default function DocumentsPage() {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-              dragOver ? 'border-brand-gold bg-brand-gold/5' : 'border-brand-border hover:border-brand-gold/50'
+            className={`border-2 border-dashed rounded-inf-card p-6 text-center cursor-pointer transition-colors ${
+              dragOver ? 'border-inf-gold bg-inf-gold/[0.06]' : 'border-inf-line-strong hover:border-inf-gold/50 hover:bg-inf-green/[0.02]'
             }`}
           >
-            <UploadCloud size={24} className="mx-auto text-brand-muted mb-2" />
+            <UploadCloud size={24} className="mx-auto text-inf-green/40 mb-2" />
             {selectedFile ? (
-              <p className="text-sm text-brand-gold">{selectedFile.name} ({formatSize(selectedFile.size)})</p>
+              <p className="text-sm font-medium text-inf-gold-deep">{selectedFile.name} ({formatSize(selectedFile.size)})</p>
             ) : (
               <>
-                <p className="text-sm text-brand-muted">Drag and drop a file here, or click to browse</p>
-                <p className="text-xs text-brand-muted mt-1">PDF, DOCX, XLSX, PPTX, PNG, JPG</p>
+                <p className="text-sm text-inf-body">Drag and drop a file here, or click to browse</p>
+                <p className="text-xs text-inf-muted mt-1">PDF, DOCX, XLSX, PPTX, PNG, JPG</p>
               </>
             )}
             <input
@@ -355,17 +354,17 @@ export default function DocumentsPage() {
             required
           />
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Description (optional)</label>
+            <label className="inf-label block">Description (optional)</label>
             <textarea
               value={uploadDescription}
               onChange={(e) => setUploadDescription(e.target.value)}
               placeholder="Brief description"
-              className="w-full px-4 py-2.5 bg-brand-dark border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-gold/50 resize-none"
+              className="w-full px-4 py-2.5 bg-white border border-inf-line-strong rounded-inf text-sm text-inf-body placeholder:text-inf-subtle outline-none hover:border-inf-gold/40 focus:border-inf-gold/60 focus:ring-1 focus:ring-inf-gold/30 transition-all duration-200 resize-none"
               rows={2}
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-brand-text">Category</label>
+            <label className="inf-label block">Category</label>
             <select
               value={uploadFolderId}
               onChange={(e) => setUploadFolderId(e.target.value)}
@@ -378,16 +377,16 @@ export default function DocumentsPage() {
           </div>
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={uploadViewable} onChange={(e) => setUploadViewable(e.target.checked)} className="w-4 h-4 accent-brand-gold" />
-              <span className="text-sm text-brand-text">Viewable</span>
+              <input type="checkbox" checked={uploadViewable} onChange={(e) => setUploadViewable(e.target.checked)} className="w-4 h-4 accent-inf-gold" />
+              <span className="text-sm text-inf-body">Viewable</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={uploadDownloadable} onChange={(e) => setUploadDownloadable(e.target.checked)} className="w-4 h-4 accent-brand-gold" />
-              <span className="text-sm text-brand-text">Downloadable</span>
+              <input type="checkbox" checked={uploadDownloadable} onChange={(e) => setUploadDownloadable(e.target.checked)} className="w-4 h-4 accent-inf-gold" />
+              <span className="text-sm text-inf-body">Downloadable</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={uploadWatermarked} onChange={(e) => setUploadWatermarked(e.target.checked)} className="w-4 h-4 accent-brand-gold" />
-              <span className="text-sm text-brand-text">Watermarked</span>
+              <input type="checkbox" checked={uploadWatermarked} onChange={(e) => setUploadWatermarked(e.target.checked)} className="w-4 h-4 accent-inf-gold" />
+              <span className="text-sm text-inf-body">Watermarked</span>
             </label>
           </div>
           <div className="flex gap-3 pt-2">
@@ -403,7 +402,7 @@ export default function DocumentsPage() {
 
       {/* Delete confirmation modal */}
       <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete document">
-        <p className="text-sm text-brand-muted mb-4">
+        <p className="text-sm text-inf-muted mb-4">
           Are you sure you want to delete this document? This action cannot be undone.
         </p>
         <div className="flex gap-3">

@@ -185,21 +185,21 @@ export default async function AdminDashboard() {
     <div className="flex flex-col min-h-screen p-4 md:p-6 gap-4 md:gap-5">
       {/* Header */}
       <div className="flex-shrink-0">
-        <h1 className="text-xl font-semibold text-brand-text">Dashboard</h1>
-        <p className="text-xs text-brand-muted mt-0.5">Overview of your data room</p>
+        <h1 className="text-xl font-semibold text-inf-green">Dashboard</h1>
+        <p className="text-xs text-inf-muted mt-0.5">Overview of your data room</p>
       </div>
 
       {/* Top metrics */}
       <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {metrics.map(({ label, value, icon: Icon }) => (
-          <Card key={label} padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-brand-muted">{label}</p>
-                <p className="text-2xl font-bold text-brand-text mt-1">{value}</p>
+          <Card key={label} padding="sm" className="p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="inf-label">{label}</p>
+                <p className="text-[1.75rem] font-bold text-inf-green tracking-[-0.02em] mt-1" data-numeric>{value}</p>
               </div>
-              <div className="w-10 h-10 bg-brand-gold/10 rounded-lg flex items-center justify-center">
-                <Icon size={20} className="text-brand-gold" />
+              <div className="w-10 h-10 bg-inf-green/[0.06] rounded-inf flex items-center justify-center flex-shrink-0">
+                <Icon size={20} className="text-inf-green/70" />
               </div>
             </div>
           </Card>
@@ -209,41 +209,41 @@ export default async function AdminDashboard() {
       {/* Two-column analytics grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
         {/* Investor Overview */}
-        <Card padding="sm" className="flex flex-col">
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-brand-border">
-            <h2 className="text-sm font-semibold text-brand-text">Investor Overview</h2>
-            <Link href="/admin/investors" className="text-xs text-brand-gold hover:text-brand-gold/80 flex items-center gap-1">
+        <div className="bg-white border border-inf-line rounded-inf-card overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-inf-line">
+            <h2 className="text-sm font-semibold text-inf-green">Investor Overview</h2>
+            <Link href="/admin/investors" className="text-xs text-inf-gold hover:text-inf-gold-hover flex items-center gap-1 transition-colors">
               View all <ArrowRight size={12} />
             </Link>
           </div>
           {investorStats.length === 0 ? (
-            <p className="text-xs text-brand-muted py-8 text-center">No investors yet</p>
+            <p className="text-xs text-inf-muted py-8 text-center">No investors yet</p>
           ) : (
             <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
               <table className="w-full">
-                <thead className="sticky top-0 bg-brand-card z-10">
-                  <tr className="border-b border-brand-border">
-                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Name</th>
-                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Last Active</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Docs</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Time</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Status</th>
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="bg-inf-green/[0.04] border-b border-inf-line">
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Name</th>
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Last Active</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Docs</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Time</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {investorStats.map((inv) => (
-                    <tr key={inv.id} className="border-b border-brand-border last:border-0 hover:bg-brand-dark/30">
+                    <tr key={inv.id} className="border-b border-inf-line last:border-0 hover:bg-inf-gold/[0.04] transition-colors">
                       <td className="px-3 py-2">
-                        <p className="text-xs text-brand-text truncate max-w-[140px]">{inv.name}</p>
+                        <p className="text-xs text-inf-body font-medium truncate max-w-[140px]">{inv.name}</p>
                         {inv.organisation && (
-                          <p className="text-[10px] text-brand-muted truncate max-w-[140px]">{inv.organisation}</p>
+                          <p className="text-[10px] text-inf-muted truncate max-w-[140px]">{inv.organisation}</p>
                         )}
                       </td>
-                      <td className="px-3 py-2 text-[11px] text-brand-muted">
+                      <td className="px-3 py-2 text-[11px] text-inf-muted" data-numeric>
                         {inv.lastActivityAt ? <RelativeTime timestamp={inv.lastActivityAt} /> : '—'}
                       </td>
-                      <td className="px-3 py-2 text-[11px] text-brand-text text-right">{inv.docsViewed}</td>
-                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right">
+                      <td className="px-3 py-2 text-[11px] text-inf-green font-medium text-right" data-numeric>{inv.docsViewed}</td>
+                      <td className="px-3 py-2 text-[11px] text-inf-muted text-right" data-numeric>
                         {inv.timeSpent > 0 ? formatDuration(inv.timeSpent) : '—'}
                       </td>
                       <td className="px-3 py-2 text-right">
@@ -257,44 +257,44 @@ export default async function AdminDashboard() {
               </table>
             </div>
           )}
-        </Card>
+        </div>
 
         {/* Document Engagement */}
-        <Card padding="sm" className="flex flex-col">
-          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-brand-border">
-            <h2 className="text-sm font-semibold text-brand-text">Document Engagement</h2>
-            <Link href="/admin/documents" className="text-xs text-brand-gold hover:text-brand-gold/80 flex items-center gap-1">
+        <div className="bg-white border border-inf-line rounded-inf-card overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-inf-line">
+            <h2 className="text-sm font-semibold text-inf-green">Document Engagement</h2>
+            <Link href="/admin/documents" className="text-xs text-inf-gold hover:text-inf-gold-hover flex items-center gap-1 transition-colors">
               View all <ArrowRight size={12} />
             </Link>
           </div>
           {docEngagement.length === 0 ? (
-            <p className="text-xs text-brand-muted py-8 text-center">No document views yet</p>
+            <p className="text-xs text-inf-muted py-8 text-center">No document views yet</p>
           ) : (
             <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
               <table className="w-full">
-                <thead className="sticky top-0 bg-brand-card z-10">
-                  <tr className="border-b border-brand-border">
-                    <th className="text-left px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Document</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Views</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Unique</th>
-                    <th className="text-right px-3 py-2 text-[10px] font-medium text-brand-muted uppercase tracking-wider">Avg Time</th>
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="bg-inf-green/[0.04] border-b border-inf-line">
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Document</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Views</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Unique</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Avg Time</th>
                   </tr>
                 </thead>
                 <tbody>
                   {docEngagement.map((doc) => (
-                    <tr key={doc.id} className="border-b border-brand-border last:border-0 hover:bg-brand-dark/30">
+                    <tr key={doc.id} className="border-b border-inf-line last:border-0 hover:bg-inf-gold/[0.04] transition-colors">
                       <td className="px-3 py-2">
-                        <p className="text-xs text-brand-text truncate max-w-[180px] mb-1">{doc.title}</p>
-                        <div className="w-full bg-brand-border rounded-full h-1">
+                        <p className="text-xs text-inf-body font-medium truncate max-w-[180px] mb-1.5">{doc.title}</p>
+                        <div className="w-full bg-inf-green/[0.08] rounded-full h-1">
                           <div
-                            className="bg-brand-gold rounded-full h-1"
+                            className="bg-inf-green-600 rounded-full h-1"
                             style={{ width: `${(doc.views / maxDocViews) * 100}%` }}
                           />
                         </div>
                       </td>
-                      <td className="px-3 py-2 text-[11px] text-brand-text text-right align-top">{doc.views}</td>
-                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right align-top">{doc.uniqueViewers}</td>
-                      <td className="px-3 py-2 text-[11px] text-brand-muted text-right align-top">
+                      <td className="px-3 py-2 text-[11px] text-inf-green font-medium text-right align-top" data-numeric>{doc.views}</td>
+                      <td className="px-3 py-2 text-[11px] text-inf-muted text-right align-top" data-numeric>{doc.uniqueViewers}</td>
+                      <td className="px-3 py-2 text-[11px] text-inf-muted text-right align-top" data-numeric>
                         {doc.avgTime > 0 ? formatAvgTime(doc.avgTime) : '—'}
                       </td>
                     </tr>
@@ -303,23 +303,23 @@ export default async function AdminDashboard() {
               </table>
             </div>
           )}
-        </Card>
+        </div>
       </div>
 
       {/* Quick stats row */}
       <div className="flex-shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {quickStats.map(({ label, value, icon: Icon, href, gold }) => {
           const content = (
-            <Card padding="md" className={`hover:border-brand-gold/40 transition-colors ${href ? 'cursor-pointer' : ''}`}>
-              <div className="flex items-center justify-between">
+            <Card padding="sm" className={`p-5 hover:border-inf-gold/50 transition-colors ${href ? 'cursor-pointer' : ''}`}>
+              <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] text-brand-muted uppercase tracking-wider">{label}</p>
-                  <p className={`text-lg font-bold mt-1 truncate ${gold ? 'text-brand-gold' : 'text-brand-text'}`}>
+                  <p className="inf-label text-[10px]">{label}</p>
+                  <p className={`text-lg font-bold mt-1 truncate ${gold ? 'text-inf-gold-deep' : 'text-inf-green'}`} data-numeric>
                     {value}
                   </p>
                 </div>
-                <div className="w-8 h-8 bg-brand-gold/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Icon size={16} className="text-brand-gold" />
+                <div className={`w-8 h-8 rounded-inf flex items-center justify-center flex-shrink-0 ${gold ? 'bg-inf-gold/[0.12]' : 'bg-inf-green/[0.06]'}`}>
+                  <Icon size={16} className={gold ? 'text-inf-gold' : 'text-inf-green/70'} />
                 </div>
               </div>
             </Card>

@@ -26,27 +26,27 @@ const stages = [
 
 export function CapitalTimeline() {
   return (
-    <div className="bg-brand-card border border-brand-border rounded-xl p-6">
-      <h3 className="text-base font-bold text-brand-text mb-5">Capital raise timeline</h3>
+    <div className="bg-white border border-inf-line rounded-inf-card p-6">
+      <h3 className="text-base font-bold text-inf-green mb-5">Capital raise timeline</h3>
       <div className="space-y-4">
         {stages.map((stage, i) => (
           <div key={stage.name} className="flex items-center gap-4">
             <div className="flex flex-col items-center">
               <div
                 className={`w-3.5 h-3.5 rounded-full ${
-                  stage.active ? 'bg-brand-gold' : 'bg-brand-border'
+                  stage.active ? 'bg-inf-gold' : 'bg-inf-line-strong'
                 }`}
               />
               {i < stages.length - 1 && (
-                <div className="w-px h-8 bg-brand-border mt-1" />
+                <div className="w-px h-8 bg-inf-line-strong mt-1" />
               )}
             </div>
             <div className="flex-1 flex items-center justify-between">
               <div>
-                <p className={`text-lg font-bold ${stage.active ? 'text-brand-gold' : 'text-brand-text'}`}>
+                <p className={`text-lg font-bold ${stage.active ? 'text-inf-gold-deep' : 'text-inf-green'}`} data-numeric>
                   {stage.name} — {stage.amount}
                 </p>
-                <p className="text-sm text-brand-muted">{stage.timing}</p>
+                <p className="text-sm text-inf-muted">{stage.timing}</p>
               </div>
               <Badge variant={stage.active ? 'gold' : 'gray'}>
                 {stage.status}
@@ -55,9 +55,9 @@ export function CapitalTimeline() {
           </div>
         ))}
       </div>
-      <div className="mt-5 pt-4 border-t border-brand-border">
-        <p className="text-sm text-brand-muted font-medium">
-          Total raise: <span className="text-brand-gold font-bold">$290M</span> across three stages
+      <div className="mt-5 pt-4 border-t border-inf-line">
+        <p className="text-sm text-inf-muted font-medium">
+          Total raise: <span className="text-inf-gold-deep font-bold" data-numeric>$290M</span> across three stages
         </p>
       </div>
     </div>

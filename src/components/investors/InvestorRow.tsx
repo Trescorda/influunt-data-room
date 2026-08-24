@@ -20,34 +20,34 @@ const typeLabels: Record<string, string> = {
 
 export function InvestorRow({ investor }: { investor: Investor }) {
   return (
-    <tr className="border-b border-brand-border hover:bg-brand-card/50 transition-colors">
-      <td className="px-4 py-3">
+    <tr className="border-t border-inf-line hover:bg-inf-gold/[0.04] transition-colors">
+      <td className="px-4 py-3.5">
         <div>
-          <p className="text-sm font-medium text-brand-text">{investor.name}</p>
-          <p className="text-xs text-brand-muted">{investor.email}</p>
+          <p className="text-sm font-medium text-inf-green">{investor.name}</p>
+          <p className="text-xs text-inf-muted">{investor.email}</p>
         </div>
       </td>
-      <td className="px-4 py-3 text-sm text-brand-muted">
+      <td className="px-4 py-3.5 text-sm text-inf-body">
         {investor.organisation || '—'}
       </td>
-      <td className="px-4 py-3">
-        <span className="text-xs text-brand-muted">
+      <td className="px-4 py-3.5">
+        <span className="text-xs text-inf-muted">
           {typeLabels[investor.investor_type] || investor.investor_type}
         </span>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-4 py-3.5">
         <Badge variant={statusVariant[investor.status] || 'gray'}>
           {investor.status}
         </Badge>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-4 py-3.5">
         {investor.nda_signed ? (
           <Badge variant="green">Signed</Badge>
         ) : (
           <Badge variant="gray">Pending</Badge>
         )}
       </td>
-      <td className="px-4 py-3 text-xs text-brand-muted">
+      <td className="px-4 py-3.5 text-xs text-inf-muted" data-numeric>
         {new Date(investor.created_at).toLocaleDateString()}
       </td>
     </tr>

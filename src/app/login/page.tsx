@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Card } from '@/components/ui/Card'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -80,29 +79,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-      {/* Ambient gold glow behind the card */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="w-[600px] h-[600px] rounded-full bg-brand-gold/[0.05] blur-[120px]" />
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-obsidian inf-on-dark">
+      {/* Ambient gold bloom behind the card */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-[33%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-inf-gold/10 blur-[140px]" />
       </div>
 
       <div className="relative w-full max-w-md animate-fade-up">
         <div className="text-center mb-8">
-          <img src="/influunt-logo.png" alt="Influunt" width={180} className="mx-auto" />
-          <p className="text-[13px] text-brand-muted mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
+          <img src="/influunt-lockup-dark.png" alt="Influunt" width={180} className="mx-auto" />
+          <p className="text-[13px] text-white/50 mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
         </div>
 
-        <Card padding="lg">
+        <div className="bg-inf-dark-card/80 backdrop-blur-sm border border-inf-gold/20 rounded-inf-panel shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] p-8">
           {mode === 'forgot' ? (
             resetSent ? (
               <div className="text-center py-4">
-                <h2 className="text-lg font-semibold text-brand-text mb-2">Check your email</h2>
-                <p className="text-sm text-brand-muted">
+                <h2 className="text-lg font-semibold text-white mb-2">Check your email</h2>
+                <p className="text-sm text-white/60">
                   If an account exists with that email, you&apos;ll receive a reset link shortly.
                 </p>
                 <button
                   onClick={() => { setMode('login'); setResetSent(false); setError('') }}
-                  className="text-sm text-brand-gold hover:text-brand-gold/80 mt-4 transition-colors"
+                  className="text-sm text-inf-gold hover:text-inf-gold-display mt-4 transition-colors"
                 >
                   Back to sign in
                 </button>
@@ -110,12 +109,13 @@ export default function LoginPage() {
             ) : (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="text-center mb-2">
-                  <h2 className="text-lg font-semibold text-brand-text">Reset password</h2>
-                  <p className="text-sm text-brand-muted mt-1">
+                  <h2 className="text-lg font-semibold text-white">Reset password</h2>
+                  <p className="text-sm text-white/60 mt-1">
                     Enter your email and we&apos;ll send you a reset link
                   </p>
                 </div>
                 <Input
+                  onDark
                   type="email"
                   label="Email"
                   placeholder="you@example.com"
@@ -130,7 +130,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setError('') }}
-                  className="block w-full text-center text-sm text-brand-gold hover:text-brand-gold/80 transition-colors"
+                  className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-display transition-colors"
                 >
                   Back to sign in
                 </button>
@@ -139,12 +139,13 @@ export default function LoginPage() {
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="text-center mb-2">
-                <h2 className="text-lg font-semibold text-brand-text">Welcome</h2>
-                <p className="text-sm text-brand-muted mt-1">
+                <h2 className="text-lg font-semibold text-white">Welcome</h2>
+                <p className="text-sm text-white/60 mt-1">
                   Sign in to access the data room
                 </p>
               </div>
               <Input
+                onDark
                 type="email"
                 label="Email"
                 placeholder="you@example.com"
@@ -153,6 +154,7 @@ export default function LoginPage() {
                 required
               />
               <Input
+                onDark
                 type="password"
                 label="Password"
                 placeholder="Enter your password"
@@ -167,18 +169,18 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setMode('forgot'); setError('') }}
-                className="block w-full text-center text-sm text-brand-gold hover:text-brand-gold/80 transition-colors"
+                className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-display transition-colors"
               >
                 Forgot password?
               </button>
-              <p className="text-xs text-brand-muted text-center">
+              <p className="text-xs text-white/50 text-center">
                 Access is by invitation only. Contact your Influunt representative if you need an invite.
               </p>
             </form>
           )}
-        </Card>
+        </div>
 
-        <p className="text-xs text-brand-muted text-center mt-6">
+        <p className="text-xs text-white/40 text-center mt-6">
           &copy; {new Date().getFullYear()} Influunt Pty Ltd. All rights reserved.
         </p>
       </div>

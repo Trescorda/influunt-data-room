@@ -11,11 +11,17 @@ const paddings = {
   lg: 'p-8',
 }
 
+/**
+ * Portal-surface card: white on paper, green hairline, real shadow.
+ * Gold is reserved for hover — never the resting border.
+ */
 export function Card({ padding = 'md', hover = false, className = '', children, ...props }: CardProps) {
   return (
     <div
-      className={`bg-brand-card border border-brand-border rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_1px_3px_rgba(0,0,0,0.3)] ${
-        hover ? 'transition-all duration-200 hover:border-brand-border-strong hover:bg-brand-card-hover hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_24px_rgba(0,0,0,0.35)]' : ''
+      className={`bg-white border border-inf-line rounded-inf-card shadow-[0_1px_2px_rgba(0,0,0,0.05)] ${
+        hover
+          ? 'transition-[border-color,box-shadow,transform] duration-300 hover:border-inf-gold/50 hover:shadow-[0_16px_32px_rgba(23,65,51,0.10)] hover:-translate-y-0.5'
+          : ''
       } ${paddings[padding]} ${className}`}
       {...props}
     >

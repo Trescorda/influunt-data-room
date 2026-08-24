@@ -73,8 +73,8 @@ export default function QAPage() {
   return (
     <div className="px-4 md:px-8 py-4 md:py-6">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-brand-text">Questions & Answers</h2>
-        <p className="text-sm text-brand-muted mt-1">
+        <h2 className="text-lg font-semibold text-inf-green">Questions & Answers</h2>
+        <p className="text-sm text-inf-muted mt-1">
           Ask the Influunt team anything about the opportunity
         </p>
       </div>
@@ -85,17 +85,17 @@ export default function QAPage() {
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
             placeholder="Type your question here..."
-            className="w-full px-4 py-3 bg-brand-darker/60 border border-brand-border rounded-lg text-brand-text placeholder:text-brand-muted/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)] hover:border-brand-border-strong focus:outline-none focus:ring-[3px] focus:ring-brand-gold/15 focus:border-brand-gold/60 transition-[border-color,box-shadow] duration-200 resize-none"
+            className="w-full px-4 py-3 bg-white border border-inf-line-strong rounded-inf text-inf-body placeholder:text-inf-subtle shadow-[inset_0_1px_2px_rgba(23,65,51,0.04)] hover:border-inf-green/25 focus:outline-none focus:ring-1 focus:ring-inf-gold/30 focus:border-inf-gold/60 transition-[border-color,box-shadow] duration-200 resize-none"
             rows={3}
           />
           <div className="flex items-center justify-between mt-3">
             {success ? (
-              <div className="flex items-center gap-2 text-green-400 text-sm">
+              <div className="flex items-center gap-2 text-inf-green-600 text-sm">
                 <CheckCircle size={16} />
                 Question submitted successfully
               </div>
             ) : error ? (
-              <p className="text-sm text-red-400">{error}</p>
+              <p className="text-sm text-red-700">{error}</p>
             ) : (
               <div />
             )}
@@ -113,30 +113,30 @@ export default function QAPage() {
         <div className="space-y-3">
           {questions.length === 0 && (
             <div className="text-center py-12">
-              <MessageSquare size={32} className="text-brand-muted mx-auto mb-3" />
-              <p className="text-sm text-brand-muted">No questions yet. Ask us anything!</p>
+              <MessageSquare size={32} className="text-inf-subtle mx-auto mb-3" />
+              <p className="text-sm text-inf-muted">No questions yet. Ask us anything!</p>
             </div>
           )}
           {questions.map((q) => (
             <Card key={q.id} padding="md">
               <div className="flex items-start justify-between mb-2">
-                <p className="text-sm font-medium text-brand-text">{q.question}</p>
+                <p className="text-sm font-medium text-inf-green">{q.question}</p>
                 <Badge variant={q.status === 'answered' ? 'green' : 'gold'}>
                   {q.status}
                 </Badge>
               </div>
               {q.status === 'answered' && q.answer ? (
-                <div className="mt-3 pt-3 border-t border-brand-border">
-                  <p className="text-xs font-medium text-brand-gold mb-1">Influunt team:</p>
-                  <p className="text-sm text-brand-text/80 whitespace-pre-wrap">{q.answer}</p>
-                  <p className="text-xs text-brand-muted mt-2">
+                <div className="mt-3 pt-3 border-t border-inf-line">
+                  <p className="text-xs font-semibold text-inf-gold-deep mb-1">Influunt team:</p>
+                  <p className="text-sm text-inf-body whitespace-pre-wrap">{q.answer}</p>
+                  <p className="text-xs text-inf-muted mt-2">
                     Answered on {q.answered_at ? formatDateTime(q.answered_at) : ''}
                   </p>
                 </div>
               ) : (
-                <p className="text-xs text-brand-muted mt-2 italic">Awaiting response</p>
+                <p className="text-xs text-inf-muted mt-2 italic">Awaiting response</p>
               )}
-              <p className="text-xs text-brand-muted mt-1">
+              <p className="text-xs text-inf-muted mt-1">
                 Asked on {formatDateTime(q.created_at)}
               </p>
             </Card>

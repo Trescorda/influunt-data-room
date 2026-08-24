@@ -128,7 +128,7 @@ export function DocumentViewer({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Loader2 className="animate-spin text-brand-gold" size={32} />
+        <Loader2 className="animate-spin text-inf-gold" size={32} />
       </div>
     )
   }
@@ -136,7 +136,7 @@ export function DocumentViewer({
   if (error) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-red-400 text-sm">{error}</p>
+        <p className="text-red-700 text-sm">{error}</p>
       </div>
     )
   }
@@ -148,7 +148,7 @@ export function DocumentViewer({
     <div onContextMenu={handleContextMenu} className="flex flex-col h-full">
       {/* Download bar */}
       {isDownloadable && (
-        <div className="flex justify-end px-4 py-2 flex-shrink-0">
+        <div className="flex justify-end px-4 py-2 flex-shrink-0 bg-white border-b border-inf-line">
           <Button onClick={handleDownload} variant="secondary" size="sm">
             <Download size={14} className="mr-2" />
             Download
@@ -157,7 +157,7 @@ export function DocumentViewer({
       )}
 
       {/* Scrollable document area */}
-      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-brand-darker">
+      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-inf-paper">
         {isPdf && signedUrl && (
           <div className="flex flex-col items-center py-4">
             <Document
@@ -168,12 +168,12 @@ export function DocumentViewer({
               }}
               loading={
                 <div className="flex items-center justify-center py-32">
-                  <Loader2 className="animate-spin text-brand-gold" size={32} />
+                  <Loader2 className="animate-spin text-inf-gold" size={32} />
                 </div>
               }
               error={
                 <div className="text-center py-32">
-                  <p className="text-red-400 text-sm">Failed to load PDF</p>
+                  <p className="text-red-700 text-sm">Failed to load PDF</p>
                 </div>
               }
             >
@@ -181,7 +181,7 @@ export function DocumentViewer({
                 <div
                   key={i}
                   ref={(el) => { pageRefs.current[i] = el }}
-                  className="relative mb-3"
+                  className="relative mb-3 bg-white shadow-[0_1px_3px_rgba(23,65,51,0.10)]"
                 >
                   <Page
                     pageNumber={i + 1}
@@ -191,7 +191,7 @@ export function DocumentViewer({
                   />
                   {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
                   {i < numPages - 1 && (
-                    <div className="border-b border-brand-border/30 mt-3" />
+                    <div className="border-b border-inf-line mt-3" />
                   )}
                 </div>
               ))}
@@ -204,7 +204,7 @@ export function DocumentViewer({
             <img
               src={signedUrl}
               alt="Document"
-              className="max-w-full rounded"
+              className="max-w-full rounded-inf border border-inf-line"
               draggable={false}
             />
             {isWatermarked && <PageWatermark opacity={watermarkOpacity} />}
@@ -214,7 +214,7 @@ export function DocumentViewer({
         {!isPdf && !isImage && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <p className="text-brand-muted text-sm">
+              <p className="text-inf-muted text-sm">
                 This document type ({fileType.toUpperCase()}) cannot be previewed in-browser.
               </p>
               {isDownloadable && (
@@ -230,7 +230,7 @@ export function DocumentViewer({
         {/* Floating page counter */}
         {isPdf && numPages > 1 && (
           <div className="sticky bottom-3 flex justify-end pr-4 pointer-events-none z-20">
-            <span className="pointer-events-auto bg-brand-dark/90 border border-brand-border text-xs text-brand-muted px-3 py-1.5 rounded-lg">
+            <span className="pointer-events-auto bg-white/90 backdrop-blur-sm border border-inf-line text-xs text-inf-muted px-3 py-1.5 rounded-inf shadow-[0_1px_3px_rgba(23,65,51,0.08)]" data-numeric>
               Page {currentPage} of {numPages}
             </span>
           </div>

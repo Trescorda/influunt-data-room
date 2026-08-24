@@ -6,13 +6,13 @@ import { Loading } from '@/components/ui/Loading'
 import type { CapTableEntry } from '@/lib/types'
 
 const typeColors: Record<string, string> = {
-  founder: '#C8A85C',
-  investor: '#2ECC71',
-  advisor: '#9B59B6',
-  esop: '#4A90D9',
-  sweat_equity: '#1ABC9C',
-  gifted: '#E67E22',
-  reserved: '#666666',
+  founder: '#BA8535',
+  investor: '#3FA986',
+  advisor: '#794DB6',
+  esop: '#348DCF',
+  sweat_equity: '#5E6B01',
+  gifted: '#C55C44',
+  reserved: 'rgba(23,65,51,0.35)',
 }
 
 const typeLabels: Record<string, string> = {
@@ -56,7 +56,7 @@ function DonutChart({ data, totalShares }: { data: { type: string; pct: number }
                 cy={size / 2}
                 r={radius}
                 fill="none"
-                stroke={typeColors[seg.type] || '#666'}
+                stroke={typeColors[seg.type] || 'rgba(23,65,51,0.35)'}
                 strokeWidth={strokeWidth}
                 strokeLinecap={gap ? 'round' : 'butt'}
                 strokeDasharray={`${dashLength} ${circumference - dashLength}`}
@@ -68,15 +68,15 @@ function DonutChart({ data, totalShares }: { data: { type: string; pct: number }
         </svg>
         {/* Centre label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <p className="text-2xl font-bold text-brand-text" data-numeric>{formatNumber(totalShares)}</p>
-          <p className="text-[11px] text-brand-muted uppercase tracking-[0.14em] mt-0.5">Total shares</p>
+          <p className="text-2xl font-bold text-inf-green" data-numeric>{formatNumber(totalShares)}</p>
+          <p className="text-[11px] text-inf-muted uppercase tracking-[0.14em] mt-0.5">Total shares</p>
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         {data.map((seg) => (
           <div key={seg.type} className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: typeColors[seg.type] || '#666' }} />
-            <span className="text-xs text-brand-muted" data-numeric>
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: typeColors[seg.type] || 'rgba(23,65,51,0.35)' }} />
+            <span className="text-xs text-inf-muted" data-numeric>
               {typeLabels[seg.type] || seg.type} ({seg.pct.toFixed(1)}%)
             </span>
           </div>
@@ -115,13 +115,13 @@ export default function CapTablePage() {
   return (
     <div className="px-4 md:px-8 py-4 md:py-6 space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-brand-text">Cap Table</h1>
-        <p className="text-sm text-brand-muted mt-1">Current ownership structure</p>
+        <h1 className="text-xl font-semibold text-inf-green">Cap Table</h1>
+        <p className="text-sm text-inf-muted mt-1">Current ownership structure</p>
       </div>
 
       {entries.length === 0 ? (
         <Card padding="lg">
-          <p className="text-center text-brand-muted text-sm py-8">Cap table data not yet available.</p>
+          <p className="text-center text-inf-muted text-sm py-8">Cap table data not yet available.</p>
         </Card>
       ) : (
         <>
@@ -129,35 +129,41 @@ export default function CapTablePage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-brand-border">
-                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Shareholder</th>
-                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Type</th>
-                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Share Class</th>
-                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Shares</th>
-                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Ownership %</th>
-                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-brand-muted uppercase tracking-[0.08em]">Investment</th>
+                  <tr className="bg-inf-green/[0.04]">
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Shareholder</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Type</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Share Class</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Shares</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Ownership %</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-semibold text-inf-green/70 uppercase tracking-[0.15em]">Investment</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entries.map((e) => (
-                    <tr key={e.id} className="border-b border-brand-border last:border-0 hover:bg-white/[0.03] transition-colors">
-                      <td className="px-4 py-3 text-sm text-brand-text font-medium">{e.shareholder_name}</td>
+                    <tr key={e.id} className="border-t border-inf-line hover:bg-inf-gold/[0.04] transition-colors">
+                      <td className="px-4 py-3 text-sm text-inf-green font-medium">{e.shareholder_name}</td>
                       <td className="px-4 py-3">
-                        <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: `${typeColors[e.entity_type]}20`, color: typeColors[e.entity_type] }}>
+                        <span
+                          className="text-[11px] font-semibold tracking-[0.04em] px-2.5 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: `color-mix(in srgb, ${typeColors[e.entity_type] || 'rgba(23,65,51,0.35)'} 14%, transparent)`,
+                            color: `color-mix(in srgb, ${typeColors[e.entity_type] || 'rgba(23,65,51,0.35)'} 70%, #174133)`,
+                          }}
+                        >
                           {typeLabels[e.entity_type] || e.entity_type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-brand-muted">{e.share_class}</td>
-                      <td className="px-4 py-3 text-sm text-brand-text text-right">{formatNumber(e.shares_held)}</td>
-                      <td className="px-4 py-3 text-sm text-brand-gold text-right font-medium">{e.ownership_percentage.toFixed(2)}%</td>
-                      <td className="px-4 py-3 text-sm text-brand-muted text-right">{e.investment_amount > 0 ? formatCurrency(e.investment_amount) : '—'}</td>
+                      <td className="px-4 py-3 text-sm text-inf-muted">{e.share_class}</td>
+                      <td className="px-4 py-3 text-sm text-inf-body text-right">{formatNumber(e.shares_held)}</td>
+                      <td className="px-4 py-3 text-sm text-inf-gold-deep text-right font-semibold">{e.ownership_percentage.toFixed(2)}%</td>
+                      <td className="px-4 py-3 text-sm text-inf-muted text-right">{e.investment_amount > 0 ? formatCurrency(e.investment_amount) : '—'}</td>
                     </tr>
                   ))}
-                  <tr className="bg-brand-card/30">
-                    <td className="px-4 py-3 text-sm font-semibold text-brand-text" colSpan={3}>Total</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-brand-text text-right">{formatNumber(totalShares)}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-brand-gold text-right">100.00%</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-brand-muted text-right">
+                  <tr className="border-t border-inf-line-strong bg-inf-green/[0.03]">
+                    <td className="px-4 py-3 text-sm font-semibold text-inf-green" colSpan={3}>Total</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-inf-green text-right">{formatNumber(totalShares)}</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-inf-gold-deep text-right">100.00%</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-inf-muted text-right">
                       {formatCurrency(entries.reduce((sum, e) => sum + e.investment_amount, 0))}
                     </td>
                   </tr>
@@ -167,16 +173,16 @@ export default function CapTablePage() {
           </Card>
 
           <Card padding="lg">
-            <h2 className="text-sm font-semibold text-brand-text mb-4 text-center">Ownership Breakdown</h2>
+            <h2 className="text-sm font-semibold text-inf-green mb-4 text-center">Ownership Breakdown</h2>
             <DonutChart data={chartData} totalShares={totalShares} />
           </Card>
         </>
       )}
 
       <div className="space-y-1">
-        <p className="text-xs text-brand-muted">Cap table is indicative and subject to change. Final allocation confirmed upon close of each funding round.</p>
-        <p className="text-xs text-brand-muted">Pro forma cap table reflecting post-round ownership is available upon request.</p>
-        <p className="text-xs text-brand-muted italic mt-2">Influunt&apos;s cap table is managed and verified through Cake Equity. Investors receive access to the Cake Equity portal upon completion of their investment to view their holdings in real time.</p>
+        <p className="text-xs text-inf-muted">Cap table is indicative and subject to change. Final allocation confirmed upon close of each funding round.</p>
+        <p className="text-xs text-inf-muted">Pro forma cap table reflecting post-round ownership is available upon request.</p>
+        <p className="text-xs text-inf-muted italic mt-2">Influunt&apos;s cap table is managed and verified through Cake Equity. Investors receive access to the Cake Equity portal upon completion of their investment to view their holdings in real time.</p>
       </div>
     </div>
   )

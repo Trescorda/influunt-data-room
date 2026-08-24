@@ -26,17 +26,17 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-inf-green/40 backdrop-blur-sm animate-fade-in"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose()
       }}
     >
-      <div className="bg-brand-card border border-brand-border rounded-2xl w-full max-w-lg mx-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_24px_64px_rgba(0,0,0,0.5)] animate-scale-in">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border">
-          <h2 className="text-lg font-semibold text-brand-text">{title}</h2>
+      <div className="bg-white border border-inf-line rounded-inf-panel w-full max-w-lg mx-4 shadow-[0_32px_64px_rgba(23,65,51,0.22)] animate-scale-in">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-inf-line">
+          <h2 className="text-lg font-semibold text-inf-green">{title}</h2>
           <button
             onClick={onClose}
-            className="text-brand-muted hover:text-brand-text p-1.5 -mr-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+            className="text-inf-muted hover:text-inf-green p-1.5 -mr-1.5 rounded-inf hover:bg-inf-green/[0.06] transition-colors"
           >
             <X size={18} />
           </button>
