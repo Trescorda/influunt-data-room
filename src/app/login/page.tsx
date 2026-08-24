@@ -79,7 +79,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-obsidian inf-on-dark">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-paper">
       {/* Ambient gold bloom behind the card */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-[33%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-inf-gold/10 blur-[140px]" />
@@ -87,21 +87,21 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-md animate-fade-up">
         <div className="text-center mb-8">
-          <img src="/influunt-lockup-dark.png" alt="Influunt" width={180} className="mx-auto" />
-          <p className="text-[13px] text-white/50 mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
+          <img src="/influunt-lockup-light.png" alt="Influunt" width={180} className="mx-auto" />
+          <p className="text-[13px] text-inf-muted mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
         </div>
 
-        <div className="bg-inf-dark-card/80 backdrop-blur-sm border border-inf-gold/20 rounded-inf-panel shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] p-8">
+        <div className="bg-white border border-inf-line rounded-inf-panel shadow-[0_24px_48px_-12px_rgba(23,65,51,0.14)] p-8">
           {mode === 'forgot' ? (
             resetSent ? (
               <div className="text-center py-4">
-                <h2 className="text-lg font-semibold text-white mb-2">Check your email</h2>
-                <p className="text-sm text-white/60">
+                <h2 className="text-lg font-semibold text-inf-green mb-2">Check your email</h2>
+                <p className="text-sm text-inf-muted">
                   If an account exists with that email, you&apos;ll receive a reset link shortly.
                 </p>
                 <button
                   onClick={() => { setMode('login'); setResetSent(false); setError('') }}
-                  className="text-sm text-inf-gold hover:text-inf-gold-display mt-4 transition-colors"
+                  className="text-sm text-inf-gold hover:text-inf-gold-hover mt-4 transition-colors"
                 >
                   Back to sign in
                 </button>
@@ -109,13 +109,12 @@ export default function LoginPage() {
             ) : (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="text-center mb-2">
-                  <h2 className="text-lg font-semibold text-white">Reset password</h2>
-                  <p className="text-sm text-white/60 mt-1">
+                  <h2 className="text-lg font-semibold text-inf-green">Reset password</h2>
+                  <p className="text-sm text-inf-muted mt-1">
                     Enter your email and we&apos;ll send you a reset link
                   </p>
                 </div>
                 <Input
-                  onDark
                   type="email"
                   label="Email"
                   placeholder="you@example.com"
@@ -123,14 +122,14 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
                 <Button type="submit" loading={loading} className="w-full" size="lg">
                   Send reset link
                 </Button>
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setError('') }}
-                  className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-display transition-colors"
+                  className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-hover transition-colors"
                 >
                   Back to sign in
                 </button>
@@ -139,13 +138,12 @@ export default function LoginPage() {
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="text-center mb-2">
-                <h2 className="text-lg font-semibold text-white">Welcome</h2>
-                <p className="text-sm text-white/60 mt-1">
+                <h2 className="text-lg font-semibold text-inf-green">Welcome</h2>
+                <p className="text-sm text-inf-muted mt-1">
                   Sign in to access the data room
                 </p>
               </div>
               <Input
-                onDark
                 type="email"
                 label="Email"
                 placeholder="you@example.com"
@@ -154,7 +152,6 @@ export default function LoginPage() {
                 required
               />
               <Input
-                onDark
                 type="password"
                 label="Password"
                 placeholder="Enter your password"
@@ -162,25 +159,25 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+              {error && <p className="text-sm text-red-600 text-center">{error}</p>}
               <Button type="submit" loading={loading} className="w-full" size="lg">
                 Sign in
               </Button>
               <button
                 type="button"
                 onClick={() => { setMode('forgot'); setError('') }}
-                className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-display transition-colors"
+                className="block w-full text-center text-sm text-inf-gold hover:text-inf-gold-hover transition-colors"
               >
                 Forgot password?
               </button>
-              <p className="text-xs text-white/50 text-center">
+              <p className="text-xs text-inf-muted text-center">
                 Access is by invitation only. Contact your Influunt representative if you need an invite.
               </p>
             </form>
           )}
         </div>
 
-        <p className="text-xs text-white/40 text-center mt-6">
+        <p className="text-xs text-inf-subtle text-center mt-6">
           &copy; {new Date().getFullYear()} Influunt Pty Ltd. All rights reserved.
         </p>
       </div>

@@ -64,14 +64,14 @@ export default function ResetPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-inf-obsidian inf-on-dark flex items-center justify-center p-4">
+      <div className="min-h-screen bg-inf-paper flex items-center justify-center p-4">
         <Loader2 className="animate-spin text-inf-gold" size={32} />
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-obsidian inf-on-dark">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-paper">
       {/* Ambient gold bloom behind the card */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-[33%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-inf-gold/10 blur-[140px]" />
@@ -79,18 +79,18 @@ export default function ResetPage() {
 
       <div className="relative w-full max-w-md animate-fade-up">
         <div className="text-center mb-8">
-          <img src="/influunt-lockup-dark.png" alt="Influunt" width={180} className="mx-auto" />
-          <p className="text-[13px] text-white/50 mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
+          <img src="/influunt-lockup-light.png" alt="Influunt" width={180} className="mx-auto" />
+          <p className="text-[13px] text-inf-muted mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
         </div>
 
-        <div className="bg-inf-dark-card/80 backdrop-blur-sm border border-inf-gold/20 rounded-inf-panel shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] p-8">
+        <div className="bg-white border border-inf-line rounded-inf-panel shadow-[0_24px_48px_-12px_rgba(23,65,51,0.14)] p-8">
           {success ? (
             <div className="text-center py-4">
               <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check size={24} className="text-green-400" />
               </div>
-              <h2 className="text-lg font-semibold text-white mb-2">Password updated</h2>
-              <p className="text-sm text-white/60 mb-4">Your password has been updated successfully.</p>
+              <h2 className="text-lg font-semibold text-inf-green mb-2">Password updated</h2>
+              <p className="text-sm text-inf-muted mb-4">Your password has been updated successfully.</p>
               <a
                 href="/login"
                 className="inline-flex items-center justify-center w-full px-4 py-3 bg-inf-gold text-white font-semibold rounded-inf hover:bg-inf-gold-hover transition-colors"
@@ -100,10 +100,10 @@ export default function ResetPage() {
             </div>
           ) : !sessionValid ? (
             <div className="text-center py-4">
-              <p className="text-sm text-red-400 mb-2">Invalid or expired reset link.</p>
-              <p className="text-xs text-white/50">
+              <p className="text-sm text-red-600 mb-2">Invalid or expired reset link.</p>
+              <p className="text-xs text-inf-muted">
                 Please request a new password reset from the{' '}
-                <a href="/login" className="text-inf-gold hover:text-inf-gold-display transition-colors">login page</a>.
+                <a href="/login" className="text-inf-gold hover:text-inf-gold-hover transition-colors">login page</a>.
               </p>
             </div>
           ) : (
@@ -112,11 +112,10 @@ export default function ResetPage() {
                 <div className="w-12 h-12 bg-inf-gold/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Lock size={20} className="text-inf-gold" />
                 </div>
-                <h2 className="text-lg font-semibold text-white">Set new password</h2>
-                <p className="text-sm text-white/60 mt-1">Choose a new password for your account</p>
+                <h2 className="text-lg font-semibold text-inf-green">Set new password</h2>
+                <p className="text-sm text-inf-muted mt-1">Choose a new password for your account</p>
               </div>
               <Input
-                onDark
                 type="password"
                 label="New password"
                 placeholder="Minimum 12 characters, must include a number"
@@ -125,7 +124,6 @@ export default function ResetPage() {
                 required
               />
               <Input
-                onDark
                 type="password"
                 label="Confirm password"
                 placeholder="Re-enter your password"
@@ -133,7 +131,7 @@ export default function ResetPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
-              {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+              {error && <p className="text-sm text-red-600 text-center">{error}</p>}
               <Button type="submit" loading={loading} className="w-full" size="lg">
                 Update password
               </Button>

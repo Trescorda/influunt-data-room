@@ -15,7 +15,7 @@ export function RoomShell({ isAdmin, children }: RoomShellProps) {
   return (
     <div className="min-h-screen">
       <InvestorSidebar isAdmin={isAdmin} mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="md:ml-60 flex flex-col min-h-screen">
+      <div className="md:ml-52 flex flex-col min-h-screen">
         <Header
           title="Data Room"
           subtitle="Influunt — Pre-Seed A$1.6M"

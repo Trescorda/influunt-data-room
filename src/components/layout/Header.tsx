@@ -21,23 +21,23 @@ export function Header({ title, subtitle, actions, onMenuClick }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-white/10 bg-inf-obsidian">
+    <header className="sticky top-0 z-20 flex items-center justify-between px-4 md:px-8 py-4 border-b border-inf-line bg-white/85 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         {onMenuClick && (
-          <button onClick={onMenuClick} className="md:hidden text-white/60 hover:text-white p-1.5 rounded-inf hover:bg-white/[0.06] transition-colors">
+          <button onClick={onMenuClick} className="md:hidden text-inf-muted hover:text-inf-green p-1.5 rounded-inf hover:bg-inf-green/[0.06] transition-colors">
             <Menu size={22} />
           </button>
         )}
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">{title}</h1>
-          {subtitle && <p className="text-sm md:text-base text-white/60 mt-0.5">{subtitle}</p>}
+          <h1 className="text-lg md:text-xl font-bold text-inf-green">{title}</h1>
+          {subtitle && <p className="text-[13px] md:text-sm text-inf-muted mt-0.5">{subtitle}</p>}
         </div>
       </div>
       <div className="flex items-center gap-3">
         {actions}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors px-3 py-2 rounded-inf hover:bg-white/[0.06] min-h-[44px]"
+          className="flex items-center gap-2 text-sm text-inf-muted hover:text-inf-green transition-colors px-3 py-2 rounded-inf hover:bg-inf-green/[0.06] min-h-[44px]"
         >
           <LogOut size={16} />
           <span className="hidden sm:inline">Sign out</span>

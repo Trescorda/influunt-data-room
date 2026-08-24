@@ -8,7 +8,7 @@ import { Check, Lock } from 'lucide-react'
 
 /** Auth-surface panel — dark card on the obsidian ground. */
 const panel =
-  'bg-inf-dark-card/80 backdrop-blur-sm border border-inf-gold/20 rounded-inf-panel shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] p-8'
+  'bg-white border border-inf-line rounded-inf-panel shadow-[0_24px_48px_-12px_rgba(23,65,51,0.14)] p-8'
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams()
@@ -58,8 +58,8 @@ function ResetPasswordForm() {
   if (!token || !email) {
     return (
       <div className={panel}>
-        <p className="text-sm text-red-400 text-center">Invalid password reset link.</p>
-        <p className="text-xs text-white/50 text-center mt-2">Contact brad@influunt.global for assistance.</p>
+        <p className="text-sm text-red-600 text-center">Invalid password reset link.</p>
+        <p className="text-xs text-inf-muted text-center mt-2">Contact brad@influunt.global for assistance.</p>
       </div>
     )
   }
@@ -71,8 +71,8 @@ function ResetPasswordForm() {
           <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check size={24} className="text-green-400" />
           </div>
-          <h2 className="text-lg font-semibold text-white mb-2">Password set</h2>
-          <p className="text-sm text-white/60 mb-4">Your password has been set. You can now sign in.</p>
+          <h2 className="text-lg font-semibold text-inf-green mb-2">Password set</h2>
+          <p className="text-sm text-inf-muted mb-4">Your password has been set. You can now sign in.</p>
           <a
             href="/login"
             className="inline-flex items-center justify-center w-full px-4 py-3 bg-inf-gold text-white font-semibold rounded-inf hover:bg-inf-gold-hover transition-colors"
@@ -91,13 +91,12 @@ function ResetPasswordForm() {
           <div className="w-12 h-12 bg-inf-gold/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <Lock size={20} className="text-inf-gold" />
           </div>
-          <h2 className="text-lg font-semibold text-white">Set your password</h2>
-          <p className="text-sm text-white/60 mt-1">
+          <h2 className="text-lg font-semibold text-inf-green">Set your password</h2>
+          <p className="text-sm text-inf-muted mt-1">
             Choose a password for <span className="text-inf-gold">{email}</span>
           </p>
         </div>
         <Input
-          onDark
           type="password"
           label="Password"
           placeholder="Minimum 12 characters, must include a number"
@@ -106,7 +105,6 @@ function ResetPasswordForm() {
           required
         />
         <Input
-          onDark
           type="password"
           label="Confirm password"
           placeholder="Re-enter your password"
@@ -114,7 +112,7 @@ function ResetPasswordForm() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+        {error && <p className="text-sm text-red-600 text-center">{error}</p>}
         <Button type="submit" loading={loading} className="w-full" size="lg">
           Set password
         </Button>
@@ -125,7 +123,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-obsidian inf-on-dark">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-inf-paper">
       {/* Ambient gold bloom behind the card */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-[33%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-inf-gold/10 blur-[140px]" />
@@ -133,10 +131,10 @@ export default function ResetPasswordPage() {
 
       <div className="relative w-full max-w-md animate-fade-up">
         <div className="text-center mb-8">
-          <img src="/influunt-lockup-dark.png" alt="Influunt" width={180} className="mx-auto" />
-          <p className="text-[13px] text-white/50 mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
+          <img src="/influunt-lockup-light.png" alt="Influunt" width={180} className="mx-auto" />
+          <p className="text-[13px] text-inf-muted mt-3 uppercase tracking-[0.18em]">Investor Data Room</p>
         </div>
-        <Suspense fallback={<div className="text-center text-white/50 text-sm">Loading...</div>}>
+        <Suspense fallback={<div className="text-center text-inf-muted text-sm">Loading...</div>}>
           <ResetPasswordForm />
         </Suspense>
       </div>
