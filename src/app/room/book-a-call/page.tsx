@@ -56,7 +56,7 @@ export default function BookACallPage() {
               To schedule a call, email <span className="text-inf-gold-deep font-medium">brad@influunt.global</span>
             </p>
             <p className="text-xs text-inf-muted">
-              We typically respond within 24 hours and can arrange a call at a time that suits you.
+              We respond within 24 hours and can arrange a time that suits you.
             </p>
           </div>
         </Card>
